@@ -1,0 +1,2 @@
+Export-Package: org.apache.opennlp.models;version=${Bundle-Version}
+Bundle-Version: 1.5.2

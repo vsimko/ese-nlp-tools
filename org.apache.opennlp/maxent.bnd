@@ -1,0 +1,6 @@
+Bundle-Version: 3.0.3.custom
+Export-Package: opennlp.maxent;version=${Bundle-Version},\
+	opennlp.maxent.io;version=${Bundle-Version},\
+	opennlp.maxent.quasinewton;version=${Bundle-Version},\
+	opennlp.model;version=${Bundle-Version},\
+	opennlp.perceptron;version=${Bundle-Version}
