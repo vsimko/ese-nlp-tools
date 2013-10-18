@@ -1,0 +1,32 @@
+## For EMF Feature 2.6.1
+#version: 2.6.1
+#ecore-version: 2.6.1.v20100914-1218
+#common-version: 2.6.0.v20100914-1218
+#xmi-version: 2.5.0.v20100521-1846
+#osgi-version: [1.5,2)
+#libpath: libs/2.6.1
+
+# For EMF Feature 2.7.0 M5
+#version: 2.7.0.M5
+#ecore-version: 2.7.0.v20110128-1409
+#common-version: 2.7.0.v20110128-1409
+#xmi-version: 2.6.0.v20110126-1727
+#osgi-version: [1.6,2)
+#libpath: libs/2.7.0M5
+
+## For EMF Feature 2.9.0
+version: 2.9.0
+ecore-version: 2.9.0.v20130528-0742
+common-version: 2.9.0.v20130528-0742
+xmi-version: 2.9.0.v20130528-0742
+libpath: libs/2.9.0
+
+-sub: *.bnd
+-buildpath: ${libpath}/org.eclipse.emf.ecore_${ecore-version}.jar;version=file,\
+	${libpath}/org.eclipse.emf.common_${common-version}.jar;version=file,\
+	${libpath}/org.eclipse.emf.ecore.xmi_${xmi-version}.jar;version=file
+-runfw: org.apache.felix.framework;version='[4.0.3,4.0.3]'
+-runee: J2SE-1.5
+-runbundles: org.apache.felix.gogo.shell,\
+	org.apache.felix.gogo.command,\
+	org.apache.felix.gogo.runtime
