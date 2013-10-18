@@ -1,0 +1,2 @@
+Export-Package: edu.stanford.nlp.models.pos-tagger.english-left3words
+Bundle-Version: ${corenlp-version}

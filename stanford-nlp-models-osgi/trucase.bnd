@@ -1,0 +1,2 @@
+Export-Package: edu.stanford.nlp.models.truecase
+Bundle-Version: ${corenlp-version}

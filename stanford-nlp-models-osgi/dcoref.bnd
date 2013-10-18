@@ -1,0 +1,2 @@
+Export-Package: edu.stanford.nlp.dcoref,edu.stanford.nlp.models.dcoref
+Bundle-Version: ${corenlp-version}
