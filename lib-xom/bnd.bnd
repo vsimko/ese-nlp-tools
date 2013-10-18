@@ -1,0 +1,20 @@
+-buildpath: lib/xom-1.2.10.jar;version=file,\
+	org.apache.xerces;version=2.9.0.v201101211617
+Export-Package: nu.xom;version=${Bundle-Version},\
+	com.sun.org.apache.xerces.internal.parsers,\
+	com.sun.org.apache.xerces.internal.util,\
+	com.sun.org.apache.xerces.internal.xni.parser
+Bundle-Version: 1.2.10
+Private-Package: nu.xom.jaxen,\
+	nu.xom.jaxen.expr,\
+	nu.xom.jaxen.expr.iter,\
+	nu.xom.jaxen.function,\
+	nu.xom.jaxen.function.ext,\
+	nu.xom.jaxen.function.xslt,\
+	nu.xom.jaxen.saxpath,\
+	nu.xom.jaxen.saxpath.base,\
+	nu.xom.jaxen.saxpath.helpers,\
+	nu.xom.jaxen.util
+-runfw: org.apache.felix.framework;version='[4.0.3,4.0.3]'
+-runee: JavaSE-1.6
+Bundle-ClassPath: 

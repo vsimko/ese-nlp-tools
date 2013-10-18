@@ -1,0 +1,2 @@
+-buildpath: lib/stanford-corenlp-1.3.4.jar;version=file
+-sub: *.bnd

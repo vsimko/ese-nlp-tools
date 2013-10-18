@@ -1,0 +1,17 @@
+-buildpath: lib/jwnl-1.4_rc3.jar;version=file
+Export-Package: net.didion.jwnl;version=${Bundle-Version},\
+	net.didion.jwnl.data;version=${Bundle-Version},\
+	net.didion.jwnl.data.list;version=${Bundle-Version},\
+	net.didion.jwnl.data.relationship;version=${Bundle-Version},\
+	net.didion.jwnl.dictionary;version=${Bundle-Version},\
+	net.didion.jwnl.dictionary.database;version=${Bundle-Version},\
+	net.didion.jwnl.dictionary.file;version=${Bundle-Version},\
+	net.didion.jwnl.dictionary.file_manager;version=${Bundle-Version},\
+	net.didion.jwnl.dictionary.morph;version=${Bundle-Version},\
+	net.didion.jwnl.princeton.data;version=${Bundle-Version},\
+	net.didion.jwnl.princeton.file;version=${Bundle-Version},\
+	net.didion.jwnl.util;version=${Bundle-Version},\
+	net.didion.jwnl.util.cache;version=${Bundle-Version},\
+	net.didion.jwnl.util.factory;version=${Bundle-Version},\
+	net.didion.jwnl.utilities;version=${Bundle-Version}
+Bundle-Version: 0.0.0

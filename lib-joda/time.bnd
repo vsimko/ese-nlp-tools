@@ -1,0 +1,8 @@
+Bundle-Version: 2.2
+Export-Package: org.joda.time;version=${Bundle-Version},\
+	org.joda.time.chrono;version=${Bundle-Version},\
+	org.joda.time.field;version=${Bundle-Version},\
+	org.joda.time.format;version=${Bundle-Version},\
+	org.joda.time.base;version=${Bundle-Version},\
+	org.joda.time.tz;version=${Bundle-Version}
+Private-Package: org.joda.time.convert

@@ -1,0 +1,2 @@
+-buildpath: lib/joda-convert-1.4.jar;version=file, lib/joda-time-2.2.jar;version=file
+-sub: *.bnd

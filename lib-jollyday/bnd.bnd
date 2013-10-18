@@ -1,0 +1,10 @@
+-buildpath: lib/jollyday-0.4.7.jar;version=file
+Export-Package: de.jollyday;version=${Bundle-Version},\
+	de.jollyday.config;version=${Bundle-Version},\
+	de.jollyday.impl;version=${Bundle-Version},\
+	de.jollyday.util;version=${Bundle-Version}
+Bundle-Version: 0.4.7
+Private-Package: de.jollyday.configuration,\
+	de.jollyday.configuration.internal,\
+	de.jollyday.holidaytype,\
+	de.jollyday.parser
