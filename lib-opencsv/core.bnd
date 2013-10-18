@@ -1,0 +1,2 @@
+Export-Package: au.com.bytecode.opencsv;version=${Bundle-Version}
+Bundle-Version: 2.3

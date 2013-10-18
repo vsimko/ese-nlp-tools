@@ -1,0 +1,3 @@
+-buildpath: lib/opencsv-2.3.jar;version=file
+
+-sub: *.bnd
