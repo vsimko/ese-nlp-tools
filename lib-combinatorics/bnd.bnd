@@ -1,0 +1,10 @@
+-buildpath: lib/combinatoricslib-2.0.jar;version=file
+Bundle-Version: 2.0.0
+Export-Package: org.paukov.combinatorics
+Private-Package: org.paukov.combinatorics.combination.multi,\
+	org.paukov.combinatorics.combination.simple,\
+	org.paukov.combinatorics.composition,\
+	org.paukov.combinatorics.partition,\
+	org.paukov.combinatorics.permutations,\
+	org.paukov.combinatorics.subsets,\
+	org.paukov.combinatorics.util
