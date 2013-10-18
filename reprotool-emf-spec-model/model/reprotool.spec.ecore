@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="spec" nsURI="spec" nsPrefix="spec">
+  <eClassifiers xsi:type="ecore:EClass" name="Specification">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documents" upperBound="-1"
+        eType="#//SpecDocument" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="glossary" lowerBound="1"
+        eType="#//Glossary" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="domainModel" lowerBound="1"
+        eType="#//DomainModel" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SpecSentence">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="words" upperBound="-1"
+        eType="#//SpecWord" containment="true" eOpposite="#//SpecWord/sentence"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typedDependencies" upperBound="-1"
+        eType="#//WordDependency" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entityLinks" upperBound="-1"
+        eType="#//EntityLink" containment="true" eOpposite="#//EntityLink/sentence"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="semanticRootWord" lowerBound="1"
+        eType="#//SpecWord"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SpecWord">
+    <eOperations name="isRepresentativeCoref" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="original" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lemma" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="posTag" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="semanticParent" eType="#//SpecWord"
+        changeable="false" volatile="true" transient="true" derived="true" resolveProxies="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invLinkDep" upperBound="-1"
+        eType="#//WordDependency" eOpposite="#//WordDependency/linkDep"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="semanticParentRelation"
+        eType="#//WordDependency" changeable="false" volatile="true" transient="true"
+        derived="true" resolveProxies="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="corefRepMention" eType="#//SpecWord"
+        eOpposite="#//SpecWord/corefMentions"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="corefMentions" upperBound="-1"
+        eType="#//SpecWord" eOpposite="#//SpecWord/corefRepMention"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relatedEntityLink" eType="#//EntityLink"
+        eOpposite="#//EntityLink/linkedWords"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sentence" lowerBound="1"
+        eType="#//SpecSentence" eOpposite="#//SpecSentence/words"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="semanticChildren" upperBound="-1"
+        eType="#//SpecWord" changeable="false" volatile="true" transient="true" resolveProxies="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invLinkGov" upperBound="-1"
+        eType="#//WordDependency" eOpposite="#//WordDependency/linkGov"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="corefRepOrSelf" lowerBound="1"
+        eType="#//SpecWord" changeable="false" volatile="true" transient="true" derived="true"
+        resolveProxies="false"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SpecDocument">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sentences" upperBound="-1"
+        eType="#//SpecSentence" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Glossary">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="terms" upperBound="-1"
+        eType="#//GlossaryTerm" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GlossaryTerm">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="aliases" lowerBound="1"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WordDependency">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="label" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="linkDep" lowerBound="1"
+        eType="#//SpecWord" eOpposite="#//SpecWord/invLinkDep"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="linkGov" lowerBound="1"
+        eType="#//SpecWord" eOpposite="#//SpecWord/invLinkGov"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EntityLink">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="entLabel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="linkedWords" lowerBound="1"
+        upperBound="-1" eType="#//SpecWord" eOpposite="#//SpecWord/relatedEntityLink"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="linkedEntity" lowerBound="1"
+        eType="#//DomainEntity"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="entType" eType="#//DomainEntityType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sentence" lowerBound="1"
+        eType="#//SpecSentence" eOpposite="#//SpecSentence/entityLinks"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EPackage" instanceClassName="org.eclipse.emf.ecore.EPackage"
+      abstract="true" interface="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DomainEntity" instanceClassName="org.eclipse.emf.ecore.ENamedElement"
+      abstract="true" interface="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DomainModel">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Represents a domain model stored as an EPackage.&#xA;The EPackage can be loaded from an XMI file created by the default Ecore model editor."/>
+    </eAnnotations>
+    <eOperations name="getNamedElement" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//ENamedElement">
+      <eParameters name="elementName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eOperations name="rebuildNameIndex"/>
+    <eOperations name="loadFromXmiFile" eExceptions="#//IOException">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="This method loads an EPackage from XMI file.&#xA;An already loaded Epackage will be replaced by this newly loaded version."/>
+      </eAnnotations>
+      <eParameters name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="modelPackage" lowerBound="1"
+        eType="#//EPackage" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="IOException" instanceClassName="java.io.IOException"
+      serializable="false"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="DomainEntityType">
+    <eLiterals name="other"/>
+    <eLiterals name="class" value="1" literal="class"/>
+    <eLiterals name="reference" value="2"/>
+    <eLiterals name="attribute" value="3"/>
+    <eLiterals name="operation" value="4"/>
+  </eClassifiers>
+</ecore:EPackage>

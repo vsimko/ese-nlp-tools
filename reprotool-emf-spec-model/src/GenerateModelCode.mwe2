@@ -1,0 +1,33 @@
+module GenerateUsecase
+
+import org.eclipse.emf.mwe.utils.*
+
+Workflow {
+	bean = StandaloneSetup {
+		scanClassPath = true
+		platformUri = ".."
+		
+		uriMap = {
+			from = "platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore"
+			to = "platform:/resource/org.eclipse.emf.ecore/model/Ecore.ecore"
+		}
+		uriMap = {
+			from = "platform:/plugin/org.eclipse.emf.ecore/model/Ecore.genmodel"
+			to = "platform:/resource/org.eclipse.emf.ecore/model/Ecore.genmodel"
+		}
+		registerGenModelFile = "platform:/resource/reprotool.emf.spec/model/reprotool.spec.genmodel"
+	}
+
+	component = DirectoryCleaner {
+		directory = "src-gen"
+	}
+
+	component = org.eclipse.emf.mwe2.ecore.EcoreGenerator {
+		genModel = "platform:/resource/reprotool.emf.spec/model/reprotool.spec.genmodel"
+		srcPath  = "platform:/resource/reprotool.emf.spec/src"
+		srcPath  = "platform:/resource/reprotool.emf.spec/xtend-gen"
+		generateEdit   = false
+		generateEditor = false
+	}
+	
+}

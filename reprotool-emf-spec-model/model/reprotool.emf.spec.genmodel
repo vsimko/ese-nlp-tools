@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/reprotool.emf.spec/src-gen" modelPluginID="reprotool.emf.spec"
+    modelName="Reprotool" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false" complianceLevel="7.0"
+    copyrightFields="false" language="" interfaceNamePattern="" operationReflection="true"
+    importOrganizing="true">
+  <foreignModel>reprotool.spec.ecore</foreignModel>
+  <genPackages prefix="Spec" disposableProviderFactory="true" ecorePackage="reprotool.spec.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="reprotool.spec.ecore#//DomainEntityType">
+      <genEnumLiterals ecoreEnumLiteral="reprotool.spec.ecore#//DomainEntityType/other"/>
+      <genEnumLiterals ecoreEnumLiteral="reprotool.spec.ecore#//DomainEntityType/class"/>
+      <genEnumLiterals ecoreEnumLiteral="reprotool.spec.ecore#//DomainEntityType/reference"/>
+      <genEnumLiterals ecoreEnumLiteral="reprotool.spec.ecore#//DomainEntityType/attribute"/>
+      <genEnumLiterals ecoreEnumLiteral="reprotool.spec.ecore#//DomainEntityType/operation"/>
+    </genEnums>
+    <genDataTypes ecoreDataType="reprotool.spec.ecore#//IOException"/>
+    <genClasses ecoreClass="reprotool.spec.ecore#//Specification">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//Specification/documents"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//Specification/glossary"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//Specification/domainModel"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//SpecSentence">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecSentence/words"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecSentence/typedDependencies"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecSentence/entityLinks"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//SpecWord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//SpecWord/original"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//SpecWord/lemma"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//SpecWord/posTag"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/semanticParentWord"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/invLinkDep"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/semanticParentRelation"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/corefRepMention"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/corefMentions"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/relatedEntityLink"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecWord/sentence"/>
+      <genOperations ecoreOperation="reprotool.spec.ecore#//SpecWord/isRepresentativeCoref"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//SpecDocument">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//SpecDocument/sentences"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//Glossary">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//Glossary/terms"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//GlossaryTerm">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//GlossaryTerm/aliases"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//GlossaryTerm/description"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//WordDependency">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//WordDependency/label"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//WordDependency/linkDep"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//WordDependency/linkGov"/>
+    </genClasses>
+    <genClasses ecoreClass="reprotool.spec.ecore#//EntityLink">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//EntityLink/entLabel"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//EntityLink/linkedWords"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//EntityLink/linkedEntity"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reprotool.spec.ecore#//EntityLink/entType"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference reprotool.spec.ecore#//EntityLink/sentence"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="reprotool.spec.ecore#//EPackage"/>
+    <genClasses image="false" ecoreClass="reprotool.spec.ecore#//DomainEntity"/>
+    <genClasses ecoreClass="reprotool.spec.ecore#//DomainModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reprotool.spec.ecore#//DomainModel/modelPackage"/>
+      <genOperations ecoreOperation="reprotool.spec.ecore#//DomainModel/getNamedElement">
+        <genParameters ecoreParameter="reprotool.spec.ecore#//DomainModel/getNamedElement/elementName"/>
+      </genOperations>
+      <genOperations ecoreOperation="reprotool.spec.ecore#//DomainModel/rebuildNameIndex"/>
+      <genOperations ecoreOperation="reprotool.spec.ecore#//DomainModel/loadFromXmiFile">
+        <genParameters ecoreParameter="reprotool.spec.ecore#//DomainModel/loadFromXmiFile/fileName"/>
+      </genOperations>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
