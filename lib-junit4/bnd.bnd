@@ -1,0 +1,17 @@
+-buildpath: lib/org.junit-4.4.0.jar;version=file
+Export-Package: org.junit;version=${Bundle-Version},\
+	org.hamcrest;version=${Bundle-Version},\
+	org.junit.internal;version=${Bundle-Version},\
+	org.junit.runner;version=${Bundle-Version},\
+	org.junit.runner.notification;version=${Bundle-Version},\
+	junit.framework;version=${Bundle-Version},\
+	org.junit.runner.manipulation;version=${Bundle-Version}
+Bundle-Version: 4.4.0
+Private-Package: junit.extensions,\
+	org.junit.runners,\
+	junit.runner,\
+	org.junit.internal.requests,\
+	org.junit.internal.runners,\
+	org.hamcrest.core,\
+	org.hamcrest.internal,\
+	org.junit.matchers
