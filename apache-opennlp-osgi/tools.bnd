@@ -1,2 +1,3 @@
 Bundle-Version: 1.5.2
 Export-Package: opennlp.tools.*;version=${Bundle-Version}
+Bundle-Name: Apache OpenNLP : Various NLP Tools

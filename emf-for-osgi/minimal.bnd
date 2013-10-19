@@ -32,3 +32,4 @@ Private-Package: org.eclipse.emf.common,\
 	org.eclipse.emf.ecore.xml.type.impl,\
 	org.eclipse.emf.ecore.xml.type.internal,\
 	org.eclipse.emf.ecore.xml.type.util
+Bundle-Name: EMF for OSGi (minimal setup without XMI support)

@@ -55,4 +55,4 @@ Private-Package: edu.stanford.nlp.dcoref.sievepasses,\
 	edu.stanford.nlp.trees.international.hebrew,\
 	edu.stanford.nlp.trees.international.negra,\
 	edu.stanford.nlp.trees.international.pennchinese
-Bundle-Name: CoreNLP: API
+Bundle-Name: Stanford CoreNLP: API

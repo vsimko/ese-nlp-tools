@@ -1,6 +1,7 @@
-Bundle-Version: 3.0.3.custom
+Bundle-Version: 1.5.2
 Export-Package: opennlp.maxent;version=${Bundle-Version},\
 	opennlp.maxent.io;version=${Bundle-Version},\
 	opennlp.maxent.quasinewton;version=${Bundle-Version},\
 	opennlp.model;version=${Bundle-Version},\
 	opennlp.perceptron;version=${Bundle-Version}
+Bundle-Name: Apache OpenNLP : Maximum Entropy API
