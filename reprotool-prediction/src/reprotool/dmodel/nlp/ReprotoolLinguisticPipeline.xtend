@@ -1,12 +1,16 @@
 package reprotool.dmodel.nlp
 
+import aQute.bnd.annotation.component.Activate
+import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import com.google.common.base.Charsets
 import com.google.common.io.Files
 import edu.stanford.nlp.dcoref.CorefChain
 import edu.stanford.nlp.dcoref.CorefChain.CorefMention
 import edu.stanford.nlp.dcoref.CorefCoreAnnotations.CorefChainAnnotation
+import edu.stanford.nlp.ie.AbstractSequenceClassifier
 import edu.stanford.nlp.ie.NERClassifierCombiner
-import edu.stanford.nlp.ie.regexp.NumberSequenceClassifier
+import edu.stanford.nlp.ie.crf.CRFClassifier
 import edu.stanford.nlp.ling.CoreAnnotations.IndexAnnotation
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation
@@ -26,6 +30,7 @@ import edu.stanford.nlp.pipeline.POSTaggerAnnotator
 import edu.stanford.nlp.pipeline.PTBTokenizerAnnotator
 import edu.stanford.nlp.pipeline.ParserAnnotator
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import edu.stanford.nlp.sequences.SeqClassifierFlags
 import edu.stanford.nlp.trees.Tree
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation
 import edu.stanford.nlp.trees.semgraph.SemanticGraph
@@ -37,50 +42,27 @@ import java.util.HashMap
 import java.util.List
 import java.util.Map
 import java.util.Properties
-import org.apache.log4j.Logger
+import java.util.zip.GZIPInputStream
 import org.eclipse.xtext.xbase.lib.Pair
+import org.osgi.framework.BundleContext
+import org.osgi.service.log.LogService
 import spec.EntityLink
 import spec.SpecDocument
 import spec.SpecFactory
 import spec.SpecWord
-import aQute.bnd.annotation.component.Component
-import org.osgi.service.log.LogService
-import aQute.bnd.annotation.component.Reference
-import aQute.bnd.annotation.component.Activate
-import org.osgi.framework.BundleContext
-import org.osgi.framework.FrameworkUtil
-import org.osgi.application.Framework
-import edu.stanford.nlp.ie.crf.CRFClassifier
-import java.util.zip.GZIPInputStream
-import edu.stanford.nlp.ie.AbstractSequenceClassifier
-import org.junit.runner.notification.RunNotifier
-import edu.stanford.nlp.time.JollyDayHolidays
-import edu.stanford.nlp.time.JollyDayHolidays.MyXMLManager
-import edu.stanford.nlp.sequences.SeqClassifierFlags
 
 class StanfordPoolHackAnnotatorFactory extends AnnotatorFactory {
 	@Property Annotator annotator
 	new() {
-		super(new Properties => [
-			it.put("sutime.binders","0")
-		])
+		super(new Properties)
 	}
 	new(Annotator a) { this(); annotator = a }
 	override create() { annotator }
 	override signature() '''hacked'''
 }
 
-interface ILinguisticPipeline {
-
-	/** Performs analysis by reading the text from file */
-	def Annotation analyzeTextFromFile(String fileName)
-
-	/** Convert analyzed document into a specification model */
-	def SpecDocument analyzedDocToSpecDoc(Annotation document)
-}
-
-@Component(immediate=true)
-class ReprotoolLinguisticPipeline extends AnnotationPipeline implements ILinguisticPipeline {
+@Component(immediate=true, provide=ReprotoolLinguisticPipeline)
+class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 	
 	LogService logService
 	boolean beVerbose = false
@@ -226,7 +208,8 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline implements ILinguis
 		]
 	}
 	
-	override Annotation analyzeTextFromFile(String fileName) {
+	/** Performs analysis by reading the text from file */
+	def Annotation analyzeTextFromFile(String fileName) {
 		Files.toString(new File(fileName), Charsets.UTF_8).analyzeText
 	}
 	
@@ -334,7 +317,8 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline implements ILinguis
 		return entlink
 	}
 	
-	override SpecDocument analyzedDocToSpecDoc(Annotation document) {
+	/** Convert analyzed document into a specification model */
+	def SpecDocument analyzedDocToSpecDoc(Annotation document) {
 		val specdoc = SpecFactory.eINSTANCE.createSpecDocument
 
 		val tag2entlink = new HashMap<XMLTag, EntityLink>
