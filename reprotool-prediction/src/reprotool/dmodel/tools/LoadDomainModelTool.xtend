@@ -1,7 +1,9 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
 
 @Component
@@ -16,6 +18,16 @@ class LoadDomainModelTool implements ITool {
 		[domainModelFile] = XMI file containing a domain model (any Ecore file)
 	'''
 
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+			this.loader = loader
+	}
+
 	override execute(String[] args) {
 		// check arguments
 		if(args.size != 2) {
@@ -26,16 +38,14 @@ class LoadDomainModelTool implements ITool {
 		val specModelFileName = args.get(0)
 		val domainModelFileName = args.get(1)
 		
-		val loader = new SpecModelLoader
-		
 		val specModel = loader.loadSpecificationModel(specModelFileName)
 		if(specModel.domainModel != null)
 			throw new Exception("This specification already contains a domain model")
 			
 		specModel.domainModel = loader.loadDomainModel(domainModelFileName)
-		
 		loader.saveSpecificationModel(specModel, specModelFileName)
 		
-		println('''Successfully loaded domain model from file «domainModelFileName» to specification model «specModelFileName»''')
-	}	
+		'''Successfully loaded domain model from file «domainModelFileName» to specification model «specModelFileName»'''.info
+		println("done. see logs")
+	}
 }

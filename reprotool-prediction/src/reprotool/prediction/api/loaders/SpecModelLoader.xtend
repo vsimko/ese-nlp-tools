@@ -1,14 +1,17 @@
 package reprotool.prediction.api.loaders
 
+import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import org.apache.log4j.Logger
 import org.eclipse.emf.ecore.EAttribute
 import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.ENamedElement
 import org.eclipse.emf.ecore.EOperation
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl
+import reprotool.predict.logging.ReprotoolLogger
 import spec.DomainEntityType
 import spec.DomainModel
 import spec.EntityLink
@@ -19,11 +22,14 @@ import spec.Specification
 
 import static extension reprotool.dmodel.extensions.ReprotoolEcoreExtensions.*
 import static extension reprotool.dmodel.extensions.StatisticalExtensions.*
-import org.eclipse.emf.ecore.ENamedElement
 
+@Component(provide=SpecModelLoader)
 class SpecModelLoader {
 	
-	extension Logger = Logger.getLogger(SpecModelLoader)
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
 	
 	def loadSpecificationModel(String fileName) {
 		

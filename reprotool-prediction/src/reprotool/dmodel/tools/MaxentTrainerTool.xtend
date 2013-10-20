@@ -1,29 +1,33 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
-import org.apache.log4j.Logger
+import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.FileBasedSamples
+import reprotool.predict.logging.ReprotoolLogger
 
 @Component
 class MaxentTrainerTool implements ITool {
 
-	extension Logger = Logger.getLogger(MaxentTrainerTool)
-
 	override getUsage() '''
-		USAGE: java -jar «MaxentTrainerTool.simpleName».jar [trainSamples] [outcomeFeature] [outputModel]
+		This tool is used for training a Maximum Entropy classifier.
 		
-		  trainSamples   = input file containing training samples
-		  outcomeFeature = name of the outcome feature e.g. "isdoment"
-		  outputModel    = output MaxEnt model file
+		[trainSamples]   = input file containing training samples
+		[outcomeFeature] = name of the outcome feature e.g. "linktype"
+		[outputModel]    = output MaxEnt model file
 	'''
 
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
 	override execute(String[] args) {
 
 		// check arguments
 		if(args.size != 3) {
-			usage.warn
+			println(usage)
 			return
 		}
 		
@@ -39,6 +43,6 @@ class MaxentTrainerTool implements ITool {
 			saveModelToFile(outputModelFileName)
 		]
 		
-		"done.".info
+		println("done. see logs")
 	}
 }

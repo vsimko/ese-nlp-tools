@@ -1,6 +1,7 @@
 package reprotool.dmodel.tools.phases
 
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import java.io.File
 import java.io.FileReader
 import java.io.PrintWriter
@@ -9,12 +10,13 @@ import java.util.Collections
 import java.util.List
 import java.util.Properties
 import java.util.Set
-import org.apache.log4j.Logger
+import reprotool.dmodel.api.FeatureExtractorFactory
 import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.CrossValidatingEvaluator
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.extensions.Combinations
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
 import spec.Specification
 
@@ -22,8 +24,6 @@ import static extension reprotool.dmodel.extensions.StatisticalExtensions.*
 
 @Component
 class FeatureSelectionPhase implements ITool {
-	
-	extension Logger = Logger.getLogger(FeatureSelectionPhase)
 	
 	override getUsage() '''
 	The feature selection phase requires a single configuration file which drives
@@ -36,11 +36,26 @@ class FeatureSelectionPhase implements ITool {
 		[config] = Configuration file describing the feature sets to be evaluated
 	'''
 
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+		this.loader = loader
+	}
+
+	private FeatureExtractorFactory fexFactory
+	@Reference def void setFexFactory(FeatureExtractorFactory factory) {
+		this.fexFactory = factory
+	}
+
 	override execute(String[] args) {
 			
 		// check arguments
 		if(args.size < 1) {
-			usage.warn
+			println(usage)
 			return
 		}
 		
@@ -55,7 +70,7 @@ class FeatureSelectionPhase implements ITool {
 		'''Using project directory "«config.projectDir»"'''.debug
 		
 		'''Loading the specification model from XMI file "«config.specModelFileName»"'''.info
-		val specModel = new SpecModelLoader().loadSpecificationModel(config.specModelFileName)
+		val specModel = loader.loadSpecificationModel(config.specModelFileName)
 		
 		'''# of documents: «specModel.documents.size»'''.info
 		'''# of domain model elements: «specModel.domainModel.modelPackage.eAllContents.size»'''.info
@@ -80,14 +95,13 @@ class FeatureSelectionPhase implements ITool {
 			writerAggreg.flush
 		]
 		writerAggreg.close
-		'''done.'''.info
-		
+		println("done. see logs")
 	}
 
 	def generateNewResult(Specification specModel, List<String> immutableContext, FeatureSelectionPhaseConfig config) {
 
 		// samples generation
-		val samples = new ExtractedSamples(specModel, config.contextGeneratorName, immutableContext, config.outcomeFeature)
+		val samples = new ExtractedSamples(fexFactory, specModel, config.contextGeneratorName, immutableContext, config.outcomeFeature)
 		val randsamples = samples.toList
 		Collections.shuffle(randsamples)
 		

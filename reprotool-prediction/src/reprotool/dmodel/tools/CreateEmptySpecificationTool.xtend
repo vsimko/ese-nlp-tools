@@ -1,7 +1,9 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
 import spec.SpecFactory
 
@@ -13,6 +15,16 @@ class CreateEmptySpecificationTool implements ITool {
 		[filename]	= XMI file to be created
 	'''
 	
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+		this.loader = loader
+	}
+
 	override execute(String[] args) {
 		
 		// check arguments
@@ -23,10 +35,9 @@ class CreateEmptySpecificationTool implements ITool {
 		
 		val saveToFileName = args.head
 		
-		new SpecModelLoader => [
-			saveSpecificationModel(SpecFactory.eINSTANCE.createSpecification, saveToFileName)
-		]
+		loader.saveSpecificationModel(SpecFactory.eINSTANCE.createSpecification, saveToFileName)
 		
-		println('''empty specification model created and saved to file: «saveToFileName»''')
+		'''empty specification model created and saved to file: «saveToFileName»'''.info
+		println("done. see logs")
 	}
 }

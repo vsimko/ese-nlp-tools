@@ -1,21 +1,21 @@
 package reprotool.dmodel.tools.phases
 
+import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import java.io.File
 import java.io.FileReader
 import java.util.Map
 import java.util.Properties
 import java.util.Set
-import org.apache.log4j.Logger
+import reprotool.dmodel.api.FeatureExtractorFactory
+import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
-import aQute.bnd.annotation.component.Component
-import reprotool.dmodel.api.ITool
 
 @Component
 class TrainingPhase implements ITool {
-
-	extension Logger = Logger.getLogger(TrainingPhase)
 
 	override getUsage() '''
 	The training phase requires a configuration file and a fully
@@ -27,11 +27,26 @@ class TrainingPhase implements ITool {
 		[config]   = configuration file (Java Properties format)
 	'''
 
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+		this.loader = loader
+	}
+
+	private FeatureExtractorFactory fexFactory
+	@Reference def void setFexFactory(FeatureExtractorFactory factory) {
+		this.fexFactory = factory
+	}
+
 	override execute(String[] args) {
 			
 		// check arguments
 		if(args.size != 2) {
-			usage.warn
+			println(usage)
 			return
 		}
 		
@@ -39,7 +54,6 @@ class TrainingPhase implements ITool {
 		val configFileName = args.get(1)
 		
 		'''Loading specification file from XMI "«specModelFileName»"'''.info
-		val loader = new SpecModelLoader
 		val specModel = loader.loadSpecificationModel(specModelFileName)
 		
 		'''Loading configuration file "«configFileName»"'''.info
@@ -57,7 +71,7 @@ class TrainingPhase implements ITool {
 			
 
 			'''Training the model for predicting "«outcomeFeature»" extracted by "«generatorName»" from: «contextFeatures.join(", ")»'''.info
-			val extractedSamples = new ExtractedSamples(specModel, generatorName, contextFeatures, outcomeFeature)
+			val extractedSamples = new ExtractedSamples(fexFactory, specModel, generatorName, contextFeatures, outcomeFeature)
 
 			'''Creating any necessary directories, where the trained models will be stored: «config.outputDir» ...'''.info
 			new File(config.outputDir).mkdirs
@@ -71,7 +85,7 @@ class TrainingPhase implements ITool {
 			'''Trained model saved to file "«outModelFileName»"'''.info
 		}
 		
-		"done.".info
+		println("done. see logs")
 	}
 }
 

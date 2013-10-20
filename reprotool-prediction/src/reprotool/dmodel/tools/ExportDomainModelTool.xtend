@@ -1,7 +1,9 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
 
 @Component
@@ -13,6 +15,16 @@ class ExportDomainModelTool implements ITool {
 		[outFile]	= output *.ecore (also XMI) file where the domain model will be exported 
 	'''
 	
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+		this.loader = loader
+	}
+
 	override execute(String[] args) {
 		
 		// check arguments
@@ -27,7 +39,6 @@ class ExportDomainModelTool implements ITool {
 		if(!outFileName.endsWith(".ecore"))
 			throw new Exception("The output filename should contain .ecore suffix")
 			
-		val loader = new SpecModelLoader
 		val specModel = loader.loadSpecificationModel(specFileName)
 		
 		if(specModel.domainModel?.modelPackage == null)
@@ -36,6 +47,7 @@ class ExportDomainModelTool implements ITool {
 		// Now we can finally save the XMI file
 		loader.saveDomainModel(specModel, outFileName)
 		
-		println('''Successfully exported domain model from "«specFileName»" to "«outFileName»"''')
+		'''Successfully exported domain model from "«specFileName»" to "«outFileName»"'''.info
+		println("done. see logs")
 	}
 }

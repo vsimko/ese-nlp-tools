@@ -1,28 +1,31 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import java.io.FileReader
 import java.io.FileWriter
-import org.apache.log4j.Logger
 import reprotool.dmodel.api.ITool
+import reprotool.predict.logging.ReprotoolLogger
 
 import static extension com.google.common.io.CharStreams.*
 
 @Component
 class RemoveAnnotationsFromDoc implements ITool {
 
-	extension Logger = Logger.getLogger(RemoveAnnotationsFromDoc)
-
 	override getUsage() '''
 	Removes annotations (HTML "a" tags) from a given document.
 		[doc] = the file containing annotated document
 	'''
 
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
 
 	override execute(String[] args) {
 		// check arguments
 		if(args.size != 1) {
-			usage.warn
+			println(usage)
 			return
 		}
 		
@@ -37,6 +40,7 @@ class RemoveAnnotationsFromDoc implements ITool {
 		writer.close
 		
 		'''Successfuly transformed to "«outFileName»"'''.info
+		println("done. see logs")
 	}
 	
 }

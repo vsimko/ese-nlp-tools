@@ -1,20 +1,25 @@
 package reprotool.dmodel.tools.phases
 
+import aQute.bnd.annotation.component.Activate
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Deactivate
+import aQute.bnd.annotation.component.Reference
 import java.io.File
 import java.util.HashMap
 import java.util.List
 import opennlp.model.IndexHashTable
 import opennlp.model.MaxentModel
-import org.apache.log4j.Logger
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EClassifier
 import org.eclipse.emf.ecore.EcoreFactory
+import org.osgi.framework.BundleContext
+import reprotool.dmodel.api.FeatureExtractorFactory
 import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.ctxgen.RelationContext
 import reprotool.dmodel.extract.mwent.RoleInLink
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
 import spec.DomainEntityType
 import spec.SpecFactory
@@ -27,37 +32,73 @@ import static extension reprotool.dmodel.extensions.ReprotoolEcoreExtensions.*
 @Component
 class ElicitationPhase implements ITool {
 	
-	extension Logger = Logger.getLogger(ElicitationPhase)
-
 	private static val DOMAIN_MODEL_PACKAGE_NAME = "domainmodel"
 	private var List<EClassifier> domainModel
-	private var SpecModelLoader loader
 	private var Specification specModel
 	private var String projectDir
 
 	override getUsage() '''
-	The elicitation phase requires a XMI file containing documents processed
-	by the linguistic pipeline.
-	Then it tries to predict the domain model based on the linguistic features
-	from the prerprocessed document. The result domain model is stored again
-	within the same XMI file and it can be exported by the ExportDomainModel tool.
-	
-		[specxmi] = XMI file containing the preprocessed specification model
+		The elicitation phase requires a XMI file containing documents processed
+		by the linguistic pipeline.
+		Then it tries to predict the domain model based on the linguistic features
+		from the prerprocessed document. The result domain model is stored again
+		within the same XMI file and it can be exported by the ExportDomainModel tool.
+		
+			[specxmi] = XMI file containing the preprocessed specification model
 	'''
+	
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+		this.loader = loader
+	}
+
+	private FeatureExtractorFactory fexFactory
+	@Reference def void setFexFactory(FeatureExtractorFactory factory) {
+		this.fexFactory = factory
+	}
+	
+	private MaxentModel linktypeModel
+	private MaxentModel relclModel
+	private MaxentModel roleinlinkModel
+	
+	@Activate def void activate(BundleContext bundleContext) {
+		linktypeModel = MaxentClassifier.loadMaxentModel(
+			bundleContext.bundle.getResource("reprotool/predict/models/dm/linktype.maxent.gz").openStream
+		)
+
+		relclModel = MaxentClassifier.loadMaxentModel(
+			bundleContext.bundle.getResource("reprotool/predict/models/dm/relcl.maxent.gz").openStream
+		)
+		
+		roleinlinkModel = MaxentClassifier.loadMaxentModel(
+			bundleContext.bundle.getResource("reprotool/predict/models/dm/roleinlink.maxent.gz").openStream
+		)
+		
+		'''Activated the «ElicitationPhase.name» with models: linktype=«linktypeModel», relcl=«relclModel», roleinlink=«roleinlinkModel»'''.debug
+	}
+	
+	@Deactivate def void deactivate(BundleContext bundleContext) {
+		linktypeModel = null
+		relclModel = null
+		roleinlinkModel = null
+	}
 	
 	override execute(String[] args) {
 		
 		// check arguments
 		if(args.size != 1) {
-			usage.warn
+			println(usage)
 			return
 		}
 		
 		val specModelFileName = args.get(0)
 
 		projectDir = new File(specModelFileName).absoluteFile.parent
-
-		loader = new SpecModelLoader
 		specModel = loader.loadSpecificationModel(specModelFileName)
 
 		// ensure we have at least empty domain model
@@ -81,6 +122,9 @@ class ElicitationPhase implements ITool {
 		mergeEClassesWithSameName		// requires "backlinks"
 		predictRelations				// requires "backlinks"
 		saveResults
+		
+		// ------------------------
+		println("done. see logs")
 	}
 		
 	private def void saveResults() {
@@ -107,9 +151,8 @@ class ElicitationPhase implements ITool {
 	private def void predictDomEntCandidates() {
 		"TASK : Predicting which words represent domain entities".info
 		
-		val maxentModel = MaxentClassifier.loadMaxentModel("models/linktype.maxent.gz")
-		val samples = new ExtractedSamples(specModel, "words", maxentModel.contextFeatureNames, maxentModel.getOutcomeFeatureName)
-		val classifier = MaxentClassifier.createFromModel(maxentModel)
+		val samples = new ExtractedSamples(fexFactory, specModel, "words", linktypeModel.contextFeatureNames, linktypeModel.getOutcomeFeatureName)
+		val classifier = MaxentClassifier.createFromModel(linktypeModel)
 
 		classifier.predictIterator(samples).forEach[ event |
 			val outcome = event.outcomeFeatureValue
@@ -137,9 +180,8 @@ class ElicitationPhase implements ITool {
 	private def void predictMultiWordEntities() {
 		"TASK : Predicting which words represent entities composed of multiple words".info
 		
-		val maxentModel = MaxentClassifier.loadMaxentModel("models/roleInLink.maxent.gz")
-		val samples = new ExtractedSamples(specModel, "words", maxentModel.contextFeatureNames, maxentModel.getOutcomeFeatureName)
-		val classifier = MaxentClassifier.createFromModel(maxentModel)
+		val samples = new ExtractedSamples(fexFactory, specModel, "words", roleinlinkModel.contextFeatureNames, roleinlinkModel.getOutcomeFeatureName)
+		val classifier = MaxentClassifier.createFromModel(roleinlinkModel)
 		
 		
 		var SpecWord lastWord
@@ -253,9 +295,8 @@ class ElicitationPhase implements ITool {
 		if( ! domainModel.filter(EClass).exists[getEAnnotation("backlinks") != null] )
 			throw new Exception('''There are no "backlinks" EAnnotations in the domain model attached to EClasses''')
 
-		val maxentModel = MaxentClassifier.loadMaxentModel("models/relcl.maxent.gz")
-		val samples = new ExtractedSamples(specModel, "relations", maxentModel.contextFeatureNames, maxentModel.getOutcomeFeatureName)
-		val classifier = MaxentClassifier.createFromModel(maxentModel)
+		val samples = new ExtractedSamples(fexFactory, specModel, "relations", relclModel.contextFeatureNames, relclModel.getOutcomeFeatureName)
+		val classifier = MaxentClassifier.createFromModel(relclModel)
 
 		classifier.predictIterator(samples).forEach[ event |
 			val outcome = event.outcomeFeatureValue

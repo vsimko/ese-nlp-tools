@@ -1,8 +1,9 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
-import org.apache.log4j.Logger
+import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
+import reprotool.predict.logging.ReprotoolLogger
 import reprotool.prediction.api.loaders.SpecModelLoader
 
 @Component
@@ -18,6 +19,16 @@ class ResolveEntityLinksTool implements ITool {
 		[specModelFile] = XMI file containing an existing specification model
 	'''
 
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
+	}
+	
+	private SpecModelLoader loader
+	@Reference def void setLoader(SpecModelLoader loader) {
+			this.loader = loader
+	}
+
 	override execute(String[] args) {
 
 		// check arguments
@@ -28,7 +39,6 @@ class ResolveEntityLinksTool implements ITool {
 		
 		val specModelFileName = args.get(0)
 		
-		val loader = new SpecModelLoader
 		val specModel = loader.loadSpecificationModel(specModelFileName)
 		
 		if(specModel.domainModel == null)
