@@ -13,10 +13,10 @@ class ExtractedSamples implements Iterable<FeatureEvent> {
 	val Iterable<FeatureExtractor> contextFeatureExtractors
 	val FeatureExtractor outcomeFeatureExtractor
 
-	new(Specification specModel, String ctxGenName, Iterable<String> contextFeatures, String outcomeFeature) {
+	new(FeatureExtractorFactory factory, Specification specModel, String ctxGenName, Iterable<String> contextFeatures, String outcomeFeature) {
 		generator = ContextGeneratorFactory.getContextGenerator(ctxGenName, specModel)
-		contextFeatureExtractors = FeatureExtractorFactory.INSTANCE.getFeatureExtractors(contextFeatures)
-		outcomeFeatureExtractor = FeatureExtractorFactory.INSTANCE.getFeatureExtractor(outcomeFeature)
+		contextFeatureExtractors = factory.getFeatureExtractors(contextFeatures)
+		outcomeFeatureExtractor = factory.getFeatureExtractor(outcomeFeature)
 	}
 	
 	override iterator() {

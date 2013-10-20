@@ -1,43 +1,68 @@
 package reprotool.dmodel.api
 
-import java.util.HashMap
+import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Reference
 import java.util.Map
-import org.apache.log4j.Logger
-import org.junit.Assert
-import org.junit.Test
+import reprotool.dmodel.extract.mwent.RoleInLink
+import reprotool.dmodel.extract.rel.ExistsContainmentBetweenClasses
+import reprotool.dmodel.extract.rel.ExistsRelationBetweenClasses
+import reprotool.dmodel.extract.rel.RelClassDepOnSentenceRoot
+import reprotool.dmodel.extract.rel.RelIntersectionVerbFeature
+import reprotool.dmodel.extract.rel.RelSentenceRootInPassive
+import reprotool.dmodel.extract.rel.RelSentenceSemRootLemma
+import reprotool.dmodel.extract.rel.RelationContextDebug
+import reprotool.dmodel.extract.rel.TypeOfRelationBetweenClasses
+import reprotool.dmodel.extract.words.SemParentPosTag
+import reprotool.dmodel.extract.words.SemParentRelation
+import reprotool.dmodel.extract.words.WordHasCapitalLetter
+import reprotool.dmodel.extract.words.WordHasDigit
+import reprotool.dmodel.extract.words.WordLemma
+import reprotool.dmodel.extract.words.WordLinkType
+import reprotool.dmodel.extract.words.WordLinkedToEClass
+import reprotool.dmodel.extract.words.WordMinLength
+import reprotool.dmodel.extract.words.WordPosTag
+import reprotool.dmodel.extract.words.WordPrefix
+import reprotool.dmodel.extract.words.WordSuffix
+import reprotool.predict.logging.ReprotoolLogger
 
+@Component(immediate=true, provide=FeatureExtractorFactory)
 class FeatureExtractorFactory {
-	private val logger = Logger.getLogger(FeatureExtractorFactory)
 	
-	public val static INSTANCE = new FeatureExtractorFactory => [
-		logger.info("feature extractor factory initialized")
-		loadFromPackage("reprotool.dmodel.extract.words")
-		loadFromPackage("reprotool.dmodel.extract.rel")
-		loadFromPackage("reprotool.dmodel.extract.mwent")
-	]
-	
-	// Private constructor is used because this class is a singleton
-	private new() {}
-	
-	private val classLoader = getClass.classLoader
-	
-	private val Map<String, Class<? extends FeatureExtractor>> mapExtractorNameToClass = newHashMap
-	
-	def getLoadedExtractors() {
-		mapExtractorNameToClass.keySet
-	}
-	
-	def loadFromPackage(String packageName) {
-		for(className : packageName.toClassNames) {
-			loadFromClass(packageName + "." + className)
-		}
-	}
-	
-	def loadFromClass(String canonicalName) {
-		classLoader.loadClass(canonicalName).loadFromClass
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
 	}
 
-	def loadFromClass(Class<?> clazz) {
+	private val avaiableExtractors = newArrayList(
+		SemParentPosTag,
+		SemParentRelation,
+		WordHasCapitalLetter,
+		WordHasDigit,
+		WordLemma,
+		WordLinkedToEClass,
+		WordLinkType,
+		WordMinLength,
+		WordPosTag,
+		WordPrefix,
+		WordSuffix,
+		// -------------------------------
+		ExistsContainmentBetweenClasses,
+		ExistsRelationBetweenClasses,
+		RelationContextDebug,
+		RelClassDepOnSentenceRoot,
+		RelIntersectionVerbFeature,
+		RelSentenceRootInPassive,
+		RelSentenceSemRootLemma,
+		TypeOfRelationBetweenClasses,
+		// -------------------------------
+		RoleInLink	
+	)
+	
+	new() {
+		avaiableExtractors.forEach[loadFromClass]
+	}
+
+	private def loadFromClass(Class<?> clazz) {
 		val annot = clazz.getAnnotation(Feature)
 		if(annot != null ) {
 			val extractorName = annot.value
@@ -46,7 +71,7 @@ class FeatureExtractorFactory {
 			// sanity check
 			if(mapExtractorNameToClass.containsKey(extractorName)) {
 				val storedClazz = mapExtractorNameToClass.get(extractorName)
-				logger.warn('''Feature extractor "«extractorName»" («storedClazz») already registered in the factory''')
+				'''Feature extractor "«extractorName»" («storedClazz») already registered in the factory'''.warn
 				
 				if(storedClazz != fexclazz)
 					throw new Exception('''The feature extractor "«extractorName»" is already registered with a different class («storedClazz.simpleName» != «fexclazz.simpleName»).''' )
@@ -55,60 +80,11 @@ class FeatureExtractorFactory {
 			mapExtractorNameToClass.put(extractorName, fexclazz)
 		}
 	}
+
+	private val Map<String, Class<? extends FeatureExtractor>> mapExtractorNameToClass = newHashMap
 	
-	def Iterable<String> toClassNames(String packageName) {
-
-// disabled because when using OSGi, the URL was a bundleresource:// which is not compoatible with File
-//		val packagePath = packageName.replace(".", "/")
-//		val filenameFilter = new PatternFilenameFilter("[A-Za-z0-9]+\\.class")
-//		
-//		val resources = classLoader.getResources(packagePath).list
-//		if(resources.empty)
-//			throw new FileNotFoundException(packageName)
-//			
-//		return resources.map[ pkgUrl |
-//			val connection = pkgUrl.openConnection
-//			switch connection {
-//				JarURLConnection : connection.jarFile.entries.list.map[name]
-//				default : new File(pkgUrl.toURI).list(filenameFilter).toList
-//			}
-//		]
-//		.flatten
-//		.map[replaceFirst("\\.class$", "")] // class names from the package
-		
-		val pkgmap = new HashMap<String, String>
-		pkgmap.put("reprotool.dmodel.extract.words",
-		'''
-			SemParentPosTag
-			SemParentRelation
-			WordHasCapitalLetter
-			WordHasDigit
-			WordLemma
-			WordLinkedToEClass
-			WordLinkType
-			WordMinLength
-			WordPosTag
-			WordPosTagTest
-			WordPrefix
-			WordSuffix
-		'''.toString)
-		pkgmap.put("reprotool.dmodel.extract.rel",
-		'''
-			ExistsContainmentBetweenClasses
-			ExistsRelationBetweenClasses
-			RelationContextDebug
-			RelClassDepOnSentenceRoot
-			RelIntersectionVerbFeature
-			RelSentenceRootInPassive
-			RelSentenceSemRootLemma
-			TypeOfRelationBetweenClasses
-		'''.toString)
-		pkgmap.put("reprotool.dmodel.extract.mwent",
-		'''
-			RoleInLink
-		'''.toString)
-
-		return pkgmap.get(packageName).split("\n").map[trim]
+	def getLoadedExtractors() {
+		mapExtractorNameToClass.keySet
 	}
 	
 	def getFeatureExtractor(String featureName) {
@@ -135,22 +111,3 @@ class FeatureExtractorFactory {
 		featureNames.map[featureExtractor]
 	}
 }
-
-class FeatureExtractorFactoryTest {
-
-	extension FeatureExtractorFactory = FeatureExtractorFactory.INSTANCE
-	
-	@Test
-	def void testLoadingExtractorFromPackage() {
-	
-		getClass.canonicalName.replaceFirst("\\.[^.]+$", "").loadFromPackage
-		Assert.assertTrue("Contains the mock extractor", loadedExtractors.contains("mock"))
-		
-		val f_mock = "mock:1".featureExtractor
-		Assert.assertEquals("mock:1", f_mock.featureName)
-		Assert.assertEquals("mock", f_mock.extractorName)
-	}
-}
-
-@Feature("mock")
-class MockFeatureExtractor extends AbstractFeatureExtractor {}
