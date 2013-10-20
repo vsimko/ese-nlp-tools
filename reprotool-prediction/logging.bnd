@@ -1,0 +1,5 @@
+Bundle-Version: 3.0.0
+Export-Package: reprotool.predict.logging
+Service-Component: *
+Bundle-Name: REPROTOOL: Logging API similar to log4j mapped to OSGi LogService
+Bundle-Vendor: Viliam Simko

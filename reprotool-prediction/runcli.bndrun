@@ -10,7 +10,8 @@
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.metatype)',\
 	osgi.identity;filter:='(&(osgi.identity=org.apache.felix.scr)(version>=1.6.2))',\
 	osgi.identity;filter:='(osgi.identity=reprotool-prediction.launcher)',\
-	osgi.identity;filter:='(osgi.identity=reprotool-prediction.dmtools)'
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.dmtools)',\
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.dmtools.phases)'
 -resolve.effective: active
 -runbundles: apache-opennlp-osgi.maxent;version=latest,\
 	com.google.guava;version='[12.0.1,12.0.2)',\
@@ -45,7 +46,11 @@
 	reprotool-emf-spec-model;version=latest,\
 	reprotool-prediction.api;version=latest,\
 	reprotool-prediction.dmtools;version=latest,\
+	reprotool-prediction.dmtools.phases;version=latest,\
+	reprotool-prediction.extractors;version=latest,\
 	reprotool-prediction.launcher;version=latest,\
+	reprotool-prediction.logging;version=latest,\
+	reprotool-prediction.models.dm;version=latest,\
 	reprotool-prediction.models.ssplit;version=latest,\
 	stanford-corenlp-osgi.api;version=latest,\
 	stanford-corenlp-osgi.net;version=latest,\
