@@ -12,6 +12,7 @@ class ShowAvailFeatureExtractors implements ITool {
 	'''
 	
 	override execute(String[] args) {
+		println(usage)
 		println("Here is the list:")
 		val factory = FeatureExtractorFactory.INSTANCE
 		factory.loadedExtractors.forEach[

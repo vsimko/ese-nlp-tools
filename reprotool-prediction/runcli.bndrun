@@ -46,9 +46,14 @@
 	reprotool-prediction.api;version=latest,\
 	reprotool-prediction.dmtools;version=latest,\
 	reprotool-prediction.launcher;version=latest,\
+	reprotool-prediction.models.ssplit;version=latest,\
 	stanford-corenlp-osgi.api;version=latest,\
-	stanford-corenlp-osgi.net;version=latest
+	stanford-corenlp-osgi.net;version=latest,\
+	stanford-nlp-models-osgi.dcoref;version=latest,\
+	stanford-nlp-models-osgi.lexparser;version=latest,\
+	stanford-nlp-models-osgi.ner;version=latest,\
+	stanford-nlp-models-osgi.pos.wsj.bidir;version=latest,\
+	stanford-nlp-models-osgi.sutime;version=latest
 -runrepos: Workspace,\
-	Local,\
 	Bndtools Hub,\
-	Release
+	Local

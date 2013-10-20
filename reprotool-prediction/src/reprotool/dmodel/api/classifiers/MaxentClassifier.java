@@ -79,9 +79,18 @@ public class MaxentClassifier implements IClassifier {
 	final public static MaxentModel loadMaxentModel(final String maxentModelName) throws Exception {
 		
 		final InputStream inputStream = MaxentClassifier.class.getClassLoader().getResourceAsStream(maxentModelName);
-
 		if(inputStream == null)
 			throw new Exception( String.format("Could not find the Maxent model '%s' on classpath", maxentModelName));
+		
+		return loadMaxentModel(inputStream);
+	}
+	
+	/**
+	 * This will prepare the MaxEnt model if we already have an InputStream
+	 * @param inputStream
+	 * @throws IOException
+	 */
+	final public static MaxentModel loadMaxentModel(final InputStream inputStream) throws IOException {
 			
 		final InputStream decodedInputStream = new GZIPInputStream(inputStream);
 		final DataReader modelReader = new PlainTextFileDataReader(decodedInputStream);
@@ -89,6 +98,7 @@ public class MaxentClassifier implements IClassifier {
 		
 		return maxentModel;
 	}
+	
 	
 	
 	// these constants can be redefined in some Guice configuration module

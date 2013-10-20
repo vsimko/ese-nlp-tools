@@ -48,7 +48,7 @@ public class MaxentSSplitAnnotator implements Annotator {
 	}
 	
 	public MaxentSSplitAnnotator(final String maxentModelFileName) throws Exception {
-		logger.info("Reding a Maxent model for sentence splitter");
+		logger.info("Reding a Maxent model for sentence splitter from a file on the classpath");
 		model = MaxentClassifier.loadMaxentModel(maxentModelFileName);
 	}
 	

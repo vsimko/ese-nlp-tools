@@ -8,8 +8,6 @@ import reprotool.prediction.api.loaders.SpecModelLoader
 @Component
 class ResolveEntityLinksTool implements ITool {
 
-	extension Logger = Logger.getLogger(ResolveEntityLinksTool)
-	
 	override getUsage() '''
 	This tool requires that the input specification model contained a domain model
 	and also documents processed by the linguistic pipeline.
@@ -24,7 +22,7 @@ class ResolveEntityLinksTool implements ITool {
 
 		// check arguments
 		if(args.size != 1) {
-			usage.warn
+			println(usage)
 			return
 		}
 		
@@ -42,6 +40,6 @@ class ResolveEntityLinksTool implements ITool {
 		loader.resolveEntityLinks(specModel)
 		loader.saveSpecificationModel(specModel, specModelFileName)
 		
-		"Saved updated specification back to file".info
+		println("Saved updated specification back to file")
 	}
 }

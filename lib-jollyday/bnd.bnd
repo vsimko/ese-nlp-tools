@@ -1,10 +1,23 @@
 -buildpath: lib/jollyday-0.4.7.jar;version=file
-Export-Package: de.jollyday;version=${Bundle-Version},\
-	de.jollyday.config;version=${Bundle-Version},\
-	de.jollyday.impl;version=${Bundle-Version},\
-	de.jollyday.util;version=${Bundle-Version}
-Bundle-Version: 0.4.7
-Private-Package: de.jollyday.configuration,\
-	de.jollyday.configuration.internal,\
+Export-Package: de.jollyday,\
+	de.jollyday.impl,\
+	de.jollyday.config,\
+	de.jollyday.util,\
+	de.jollyday.configuration,\
 	de.jollyday.holidaytype,\
-	de.jollyday.parser
+	de.jollyday.parser,\
+	descriptions,\
+	holidays
+Bundle-Version: 0.4.7
+Private-Package: de.jollyday.configuration.internal,\
+	de.jollyday.parser.impl
+
+# there is a class JollyDayHolidays inside standford corenlp framework which passes a filename to HolidayManager from jollyday
+# and a classloader from jollyday is used to resolve the file
+# we need to either merge jollyday back to stanford or introduce this nasty dependency
+Import-Package: edu/stanford/nlp/models/sutime/jollyday,\
+	*
+
+# This is a hack for the jollytime which loads the property file using a classloader
+Bundle-ClassPath: .
+Include-Resource: src/jollyday.properties

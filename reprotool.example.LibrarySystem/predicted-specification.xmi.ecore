@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="domainmodel">
+  <eClassifiers xsi:type="ecore:EClass" name="Media">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="manage" eType="#//User"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="register" eType="#//Instance"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="User">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="manage" eType="#//Media"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library%20System"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Staff"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Librarian"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library%20User"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contain" eType="#//User%20Account"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="available" eType="#//User%20Account"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Library">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="manage" eType="#//Media"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="manage" eType="#//User"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library%20System"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Staff"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Librarian"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library%20User"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//User"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Library System"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Staff"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Librarian">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library%20System"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Staff"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//Library%20User"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operate" eType="#//User"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Library User"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Terminal"/>
+  <eClassifiers xsi:type="ecore:EClass" name="User Administration"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Media Administration"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Administration"/>
+  <eClassifiers xsi:type="ecore:EClass" name="User Account">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="register" eType="#//Instance"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borrow" eType="#//Instance"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borrow" eType="#//Instance"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="register" eType="#//Instance"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="System"/>
+  <eClassifiers xsi:type="ecore:EClass" name="User Number"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Identification">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="scan" eType="#//User%20Number"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Card">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="scan" eType="#//User%20Number"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Code"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Scanner"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Medium"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Instance">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="register" eType="#//User"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Media Instance"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Account"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Criterion"/>
+</ecore:EPackage>

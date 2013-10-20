@@ -1,0 +1,2 @@
+Bundle-Version: ${corenlp-version}
+Export-Package: edu.stanford.nlp.models.sutime.*

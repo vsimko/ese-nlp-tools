@@ -43,26 +43,57 @@ import spec.EntityLink
 import spec.SpecDocument
 import spec.SpecFactory
 import spec.SpecWord
+import aQute.bnd.annotation.component.Component
+import org.osgi.service.log.LogService
+import aQute.bnd.annotation.component.Reference
+import aQute.bnd.annotation.component.Activate
+import org.osgi.framework.BundleContext
+import org.osgi.framework.FrameworkUtil
+import org.osgi.application.Framework
+import edu.stanford.nlp.ie.crf.CRFClassifier
+import java.util.zip.GZIPInputStream
+import edu.stanford.nlp.ie.AbstractSequenceClassifier
+import org.junit.runner.notification.RunNotifier
+import edu.stanford.nlp.time.JollyDayHolidays
+import edu.stanford.nlp.time.JollyDayHolidays.MyXMLManager
+import edu.stanford.nlp.sequences.SeqClassifierFlags
 
 class StanfordPoolHackAnnotatorFactory extends AnnotatorFactory {
 	@Property Annotator annotator
-	new() { super(new Properties) }
+	new() {
+		super(new Properties => [
+			it.put("sutime.binders","0")
+		])
+	}
 	new(Annotator a) { this(); annotator = a }
 	override create() { annotator }
 	override signature() '''hacked'''
 }
 
-class ReprotoolLinguisticPipeline extends AnnotationPipeline {
-	
-	private extension Logger = Logger.getLogger(ReprotoolLinguisticPipeline)
+interface ILinguisticPipeline {
 
-	/**
-	 * The pipeline is not verbose by default.
-	 */
-	new() {
-		this(false)
+	/** Performs analysis by reading the text from file */
+	def Annotation analyzeTextFromFile(String fileName)
+
+	/** Convert analyzed document into a specification model */
+	def SpecDocument analyzedDocToSpecDoc(Annotation document)
+}
+
+@Component(immediate=true)
+class ReprotoolLinguisticPipeline extends AnnotationPipeline implements ILinguisticPipeline {
+	
+	LogService logService
+	boolean beVerbose = false
+	val hackedAnnotatorPool = new AnnotatorPool
+	 
+	@Reference def void setLogService(LogService logService){
+		this.logService = logService
 	}
 	
+	private def void info(CharSequence s) {
+		logService.log(LogService.LOG_INFO, s.toString)
+	}
+
 	def List<String> getXmlContext(CoreLabel token) {
 		token.get(XmlContextAnnotation)
 	}
@@ -71,19 +102,17 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 		document.get(CorefChainAnnotation)
 	}
 	
-	private val hackedAnnotatorPool = new AnnotatorPool
-	
 	def addAnnotator(String name, Annotator a) {
-		info('''Adding "«name»" annotator to the pipeline''')
+		'''Adding "«name»" annotator to the pipeline'''.info
 		addAnnotator(a)
 		hackedAnnotatorPool.register(name, new StanfordPoolHackAnnotatorFactory(a))
 	}
 	
-	/**
-	 * Registers all annotators relevant for Reprotool
-	 */
-	new(boolean verbose) {
-
+	/** Registers all annotators relevant for Reprotool */
+	@Activate def void activate(BundleContext bundleContext) {
+		
+		"REPROTOOL Linguistic Pipeline - Activation Started".info
+		
 		// hacking the poor Stanford implementation which refers to this static field from multiple places in the code
 		StanfordCoreNLP.getDeclaredField("pool") => [
 			accessible = true
@@ -92,12 +121,13 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 
 		val MAXSENTENCELEN = 256
 		
-//		if(true) return;
-		
+		// TODO: this is not thread-safe !!!
+		// TODO: also there is no deactivation code for this component
+		new Thread([|
 		// TOKENIZE: Identifies tokens using edu.stanford.nlp.process.PTBTokenizer
 		// ========================================================================
 		"tokenize".addAnnotator(new PTBTokenizerAnnotator(
-			verbose,
+			beVerbose,
 			"tokenizeNLs,invertible,ptb3Escaping=true" // options
 		))
 		
@@ -110,61 +140,72 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 			"style|STYLE|script|SCRIPT|head|HEAD", // don't create tokens from text within these tags
 			true // allow flaws
 		))
-		
+
 		// SSPLIT: Sentence splitter (based on the OpenNLP MaxEnt classifier)
 		// ========================================================================
-		"ssplit".addAnnotator(new MaxentSSplitAnnotator("models/reprotool-maxent-ssplit.gz")) // classpath
+		"ssplit".addAnnotator(new MaxentSSplitAnnotator("reprotool/predict/models/ssplit/ssplit.maxent.gz")) // must be on classpath
 		
-//		// SSPLIT: Sentence splitter
-//		// ========================================================================
-//		"ssplit".addAnnotator(
-//		WordsToSentencesAnnotator.newlineSplitter(
-//			verbose,
-//			PTBTokenizer.newlineToken, "\n" // new line tokens ...
-//		) => [
-//			//setOneSentence(false)
-//			//addHtmlSentenceBoundaryToDiscard(newHashSet("S"))
-//			//setSentenceBoundaryToDiscard("???")
-//		])
-//		
+	//		// SSPLIT: Sentence splitter
+	//		// ========================================================================
+	//		"ssplit".addAnnotator(
+	//		WordsToSentencesAnnotator.newlineSplitter(
+	//			verbose,
+	//			PTBTokenizer.newlineToken, "\n" // new line tokens ...
+	//		) => [
+	//			//setOneSentence(false)
+	//			//addHtmlSentenceBoundaryToDiscard(newHashSet("S"))
+	//			//setSentenceBoundaryToDiscard("???")
+	//		])
+	//		
 		// POSTAG: Maximum Entropy POS-tagger
 		// ========================================================================
 		"pos".addAnnotator(new POSTaggerAnnotator(
 			//DefaultPaths.DEFAULT_POS_MODEL, // POS model location (on classpath)
 			//"reprotool/dmodel/nlp/models/wsj-0-18-bidirectional-distsim.tagger",
-			"edu/stanford/nlp/models/pos-tagger/wsj-bidirectional/wsj-0-18-bidirectional-distsim.tagger", // POS model location (on classpath)
-			verbose,
+			bundleContext.bundle.getResource("edu/stanford/nlp/models/pos-tagger/wsj-bidirectional/wsj-0-18-bidirectional-distsim.tagger").toExternalForm,
+			beVerbose,
 			MAXSENTENCELEN // maximum sentence length
 		))
 
 		// LEMMATIZER:
 		// ========================================================================
-		"lemma".addAnnotator(new MorphaAnnotator(verbose))
-		
+		"lemma".addAnnotator(new MorphaAnnotator(beVerbose))
+
 		// NER: Stanford NER
 		// ========================================================================
 		"ner".addAnnotator(new NERCombinerAnnotator(
 			new NERClassifierCombiner(
 				NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
-                NumberSequenceClassifier.USE_SUTIME_DEFAULT,
-                new Properties => [
-					// todo
-				],//			save(System.out, null)
-				
-                newArrayList(
-                	DefaultPaths.DEFAULT_NER_THREECLASS_MODEL,
-                	DefaultPaths.DEFAULT_NER_MUC_MODEL,
-                	DefaultPaths.DEFAULT_NER_CONLL_MODEL
-                ) as String[] // trained models
+                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
+                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
+                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
+                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
             ),
-			verbose
+			beVerbose
 		))
+
+	//		"ner".addAnnotator(new NERCombinerAnnotator(
+	//			new NERClassifierCombiner(
+	//				NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
+	//                NumberSequenceClassifier.USE_SUTIME_DEFAULT,
+	//                new Properties => [
+	//					// todo
+	//				],//			save(System.out, null)
+	//				
+	//                newArrayList(
+	//                	DefaultPaths.DEFAULT_NER_THREECLASS_MODEL,
+	//                	DefaultPaths.DEFAULT_NER_MUC_MODEL,
+	//                	DefaultPaths.DEFAULT_NER_CONLL_MODEL
+	//                ) as String[] // trained models
+	//            ),
+	//			beVerbose
+	//		))
 
 		// PARSER: Standard Lexicalized Parser of sentences
 		// ========================================================================
 		"parse".addAnnotator(new ParserAnnotator(
 			DefaultPaths.DEFAULT_PARSER_MODEL, // trained model
-			verbose,
+			beVerbose,
 			MAXSENTENCELEN, // maximum sentence length
 			newArrayList("-retainTmpSubcategories") as String[] // flags
       	))
@@ -172,12 +213,20 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 		// COREF: Stanford Deterministic Coreference Resolution System
 		// ========================================================================
 		"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
+
+		"REPROTOOL Linguistic Pipeline - Activation Finished".info
+		]).start
 	}
 	
-	/**
-	 * Performs analysis by reading the text from file.
-	 */
-	def Annotation analyzeTextFromFile(String fileName) {
+	def private AbstractSequenceClassifier<CoreLabel> prepareCRFClassifier(BundleContext bundleContext, String resourceName) {
+		val inputStream = bundleContext.bundle.getResource(resourceName).openStream
+
+		new CRFClassifier(new SeqClassifierFlags) => [
+			loadClassifier(new GZIPInputStream(inputStream))
+		]
+	}
+	
+	override Annotation analyzeTextFromFile(String fileName) {
 		Files.toString(new File(fileName), Charsets.UTF_8).analyzeText
 	}
 	
@@ -285,10 +334,7 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 		return entlink
 	}
 	
-	/**
-	 * Convert analyzed document into a specification model.
-	 */
-	def SpecDocument analyzedDocToSpecDoc(Annotation document) {
+	override SpecDocument analyzedDocToSpecDoc(Annotation document) {
 		val specdoc = SpecFactory.eINSTANCE.createSpecDocument
 
 		val tag2entlink = new HashMap<XMLTag, EntityLink>

@@ -26,12 +26,7 @@ class LauncherComponent {
 		args = map.get("launcher.arguments") as String[];
 	}
 	
-	@Reference(target="(reprotool.feature=*)", multiple=true, optional=true)
-	def void setFeature(Object object, Map<String, Object> map) {
-		println("feature:" + map.get("reprotool.feature"))
-	}
-	
-	extension LogService logService
+	private LogService logService
 
 	@Reference
 	def void setLogService(LogService logService){
@@ -41,8 +36,7 @@ class LauncherComponent {
 	val toolMap = new HashMap<String, ITool>
 
 	def INFO(String msg) {
-//		println("LOG:" + msg)
-		log(LogService.LOG_INFO, msg)
+		logService.log(LogService.LOG_INFO, msg)
 	}
 
 	@Reference(multiple=true, optional=true, dynamic=true)
@@ -86,7 +80,10 @@ class LauncherComponent {
 		toolInstance.execute(toolArgs)
 	}
 	
+	var BundleContext bundleContext
+	
 	@Activate def void activate(BundleContext context) {
+		bundleContext = context
 		INFO('''reprotool launcher activated with «toolMap.size» tools''')
 //		context.getBundle(0).stop
 

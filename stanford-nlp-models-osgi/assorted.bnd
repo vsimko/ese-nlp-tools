@@ -1,4 +1,3 @@
 Export-Package: edu.stanford.nlp.models.regexner,\
-	edu.stanford.nlp.models.sutime.*,\
 	edu.stanford.nlp.pipeline
 Bundle-Version: ${corenlp-version}
