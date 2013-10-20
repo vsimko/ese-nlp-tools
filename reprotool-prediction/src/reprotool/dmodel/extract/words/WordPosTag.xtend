@@ -1,10 +1,7 @@
 package reprotool.dmodel.extract.words
 
-import org.junit.Assert
-import org.junit.Test
 import reprotool.dmodel.api.AbstractFeatureExtractor
 import reprotool.dmodel.api.Feature
-import reprotool.dmodel.api.FeatureExtractorFactory
 import spec.SpecWord
 
 import static extension reprotool.dmodel.extensions.SpecWordExtensions.*
@@ -28,17 +25,4 @@ class WordPosTag extends AbstractFeatureExtractor {
 		word.getRelativeWordInSentence(wordOffsetInSentence)?.posTag
 	}
 	
-}
-
-class WordPosTagTest {
-	
-	extension FeatureExtractorFactory = FeatureExtractorFactory.INSTANCE
-	@Test
-	def test1() {
-		
-		val f = "pos:-1".featureExtractor
-		
-		Assert.assertEquals("pos", f.extractorName)
-		Assert.assertEquals("pos:-1", f.featureName)
-	}
 }

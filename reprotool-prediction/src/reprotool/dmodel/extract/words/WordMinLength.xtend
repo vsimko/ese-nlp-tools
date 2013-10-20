@@ -26,7 +26,7 @@ class WordMinLength extends AbstractFeatureExtractor {
 	- Coreference resolution:
 	  It uses the representative coreference mention (if there is any).
 	  If there are no coreferences, the original SpecWord is used instead.
-	- param[0] is an optional parameter representing the word offset in the sentence, e.g. lemma:-1 is the previous word
-	- examples: lemma lemma:1 lemma:-1 lemma:2 lemma:-2
+	- param[0] is an optional parameter representing the word offset in the sentence, e.g. wminlen:-1 is the previous word
+	- examples: wminlen wminlen:1 wminlen:-1 wminlen:2 wminlen:-2
 	'''
 }

@@ -7,7 +7,7 @@ import spec.SpecWord
 
 import static extension reprotool.dmodel.extensions.SpecWordExtensions.*
 
-@Feature("wordsuffix")
+@Feature("wsuffix")
 class WordSuffix extends AbstractFeatureExtractor implements FeatureExtractor {
 	
 	override getDocumentation() '''
