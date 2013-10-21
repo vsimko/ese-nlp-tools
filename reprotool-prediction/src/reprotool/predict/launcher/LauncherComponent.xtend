@@ -6,8 +6,8 @@ import aQute.bnd.annotation.component.Reference
 import java.util.HashMap
 import java.util.Map
 import org.osgi.framework.BundleContext
-import org.osgi.service.log.LogService
 import reprotool.dmodel.api.ITool
+import reprotool.predict.logging.ReprotoolLogger
 
 @Component(
 	provide=LauncherComponent,
@@ -26,18 +26,12 @@ class LauncherComponent {
 		args = map.get("launcher.arguments") as String[];
 	}
 	
-	private LogService logService
-
-	@Reference
-	def void setLogService(LogService logService){
-		this.logService = logService
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
 	}
 	
 	val toolMap = new HashMap<String, ITool>
-
-	def INFO(String msg) {
-		logService.log(LogService.LOG_INFO, msg)
-	}
 
 	@Reference(multiple=true, optional=true, dynamic=true)
 	def void addTool(ITool tool) {
@@ -84,7 +78,7 @@ class LauncherComponent {
 	
 	@Activate def void activate(BundleContext context) {
 		bundleContext = context
-		INFO('''reprotool launcher activated with «toolMap.size» tools''')
+		'''reprotool launcher activated with «toolMap.size» tools'''.info
 //		context.getBundle(0).stop
 
 //		// first argument specifies the tool, other args will be passed to the tool
