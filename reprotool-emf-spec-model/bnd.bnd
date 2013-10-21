@@ -1,8 +1,7 @@
 Bundle-Version: 1.0.0
 Private-Package: spec.impl,\
 	spec.util
-Export-Package: spec,\
-	spec.loaders
+Export-Package: spec
 -buildpath: com.google.guava,\
 	org.eclipse.xtext.xbase.lib,\
 	org.eclipse.emf.mwe2.launch,\
