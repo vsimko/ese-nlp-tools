@@ -1,4 +1,4 @@
-package reprotool.prediction.api.loaders
+package reprotool.predict.smloader
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
@@ -58,20 +58,6 @@ class SpecModelLoader {
 		]
 	}
 	
-	// extension method
-	def private void removeEAnnotationsFromDomainModel(Specification specModel) {
-		// removing all "backlinks" EAnnotations because they point to objects that will not be serialized
-		specModel.domainModel.modelPackage.eAllContents
-			.filter(ENamedElement)
-			.toList // copy the collection because we are going to modify it during iteration
-			.forEach[
-				if( ! EAnnotations.empty) {
-					'''Removed «EAnnotations.size» EAnnotation(s) containing «EAnnotations.map[references.size].sum(0)» reference(s) from "«name»" '''.debug
-					EAnnotations.clear
-				}
-			]
-	}
-	
 	/**
 	 * Loads a domain model to the specification from XMI file.
 	 */
@@ -94,6 +80,20 @@ class SpecModelLoader {
 		]
 	}
 	
+	// extension method
+	def private void removeEAnnotationsFromDomainModel(Specification specModel) {
+		// removing all "backlinks" EAnnotations because they point to objects that will not be serialized
+		specModel.domainModel.modelPackage.eAllContents
+			.filter(ENamedElement)
+			.toList // copy the collection because we are going to modify it during iteration
+			.forEach[
+				if( ! EAnnotations.empty) {
+					'''Removed «EAnnotations.size» EAnnotation(s) containing «EAnnotations.map[references.size].sum(0)» reference(s) from "«name»" '''.debug
+					EAnnotations.clear
+				}
+			]
+	}
+
 	// extension method
 	def private void resolveEntityLinks(SpecSentence sentence, DomainModel domainModel) {
 		sentence.entityLinks.forEach[resolveEntityLinks(domainModel)]
