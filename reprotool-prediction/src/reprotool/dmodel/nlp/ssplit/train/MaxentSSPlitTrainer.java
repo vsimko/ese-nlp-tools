@@ -1,4 +1,4 @@
-package reprotool.dmodel.nlp;
+package reprotool.dmodel.nlp.ssplit.train;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import java.util.List;
 
 import reprotool.dmodel.api.classifiers.MaxentClassifier;
 import reprotool.dmodel.api.samples.FeatureEvent;
+import reprotool.dmodel.nlp.ssplit.MaxentSSplitAnnotator;
+import reprotool.dmodel.nlp.ssplit.MaxentSSplitCtxGen;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;

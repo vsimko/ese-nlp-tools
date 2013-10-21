@@ -1,7 +1,8 @@
-package reprotool.dmodel.nlp
+package reprotool.dmodel.nlp.pipeline
 
 import aQute.bnd.annotation.component.Activate
 import aQute.bnd.annotation.component.Component
+import aQute.bnd.annotation.component.Deactivate
 import aQute.bnd.annotation.component.Reference
 import com.google.common.base.Charsets
 import com.google.common.io.Files
@@ -45,7 +46,9 @@ import java.util.Properties
 import java.util.zip.GZIPInputStream
 import org.eclipse.xtext.xbase.lib.Pair
 import org.osgi.framework.BundleContext
-import org.osgi.service.log.LogService
+import reprotool.dmodel.api.classifiers.MaxentClassifier
+import reprotool.dmodel.nlp.ssplit.MaxentSSplitAnnotator
+import reprotool.predict.logging.ReprotoolLogger
 import spec.EntityLink
 import spec.SpecDocument
 import spec.SpecFactory
@@ -61,19 +64,15 @@ class StanfordPoolHackAnnotatorFactory extends AnnotatorFactory {
 	override signature() '''hacked'''
 }
 
-@Component(immediate=true, provide=ReprotoolLinguisticPipeline)
+@Component(provide=ReprotoolLinguisticPipeline, immediate=true)
 class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 	
-	LogService logService
 	boolean beVerbose = false
 	val hackedAnnotatorPool = new AnnotatorPool
 	 
-	@Reference def void setLogService(LogService logService){
-		this.logService = logService
-	}
-	
-	private def void info(CharSequence s) {
-		logService.log(LogService.LOG_INFO, s.toString)
+	private extension ReprotoolLogger logger
+	@Reference def void setLogger(ReprotoolLogger logger) {
+		this.logger = logger
 	}
 
 	def List<String> getXmlContext(CoreLabel token) {
@@ -90,114 +89,117 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 		hackedAnnotatorPool.register(name, new StanfordPoolHackAnnotatorFactory(a))
 	}
 	
+	var Thread activationThread
+	
+	def void checkActivationInterrupted() {
+		if(Thread.currentThread.isInterrupted)
+			throw new InterruptedException("Activation thread interrupted")
+	}
+	
 	/** Registers all annotators relevant for Reprotool */
 	@Activate def void activate(BundleContext bundleContext) {
 		
-		"REPROTOOL Linguistic Pipeline - Activation Started".info
+		"REPROTOOL Linguistic Pipeline - Activation Started in a background thread".info
 		
-		// hacking the poor Stanford implementation which refers to this static field from multiple places in the code
-		StanfordCoreNLP.getDeclaredField("pool") => [
-			accessible = true
-			set(null, hackedAnnotatorPool)
-		]
-
-		val MAXSENTENCELEN = 256
+		activationThread = new Thread([|
+			
+			try {
+				
+				// hacking the poor Stanford implementation which refers to this static field from multiple places in the code
+				StanfordCoreNLP.getDeclaredField("pool") => [
+					accessible = true
+					set(null, hackedAnnotatorPool)
+				]
 		
-		// TODO: this is not thread-safe !!!
-		// TODO: also there is no deactivation code for this component
-		new Thread([|
-		// TOKENIZE: Identifies tokens using edu.stanford.nlp.process.PTBTokenizer
-		// ========================================================================
-		"tokenize".addAnnotator(new PTBTokenizerAnnotator(
-			beVerbose,
-			"tokenizeNLs,invertible,ptb3Escaping=true" // options
-		))
+				val MAXSENTENCELEN = 256
+				
+				// TOKENIZE: Identifies tokens using edu.stanford.nlp.process.PTBTokenizer
+				// ========================================================================
+				"tokenize".addAnnotator(new PTBTokenizerAnnotator(
+					beVerbose,
+					"tokenizeNLs,invertible,ptb3Escaping=true" // options
+				))
+		      	checkActivationInterrupted
+				
+				// CLEAN: Removes XML tags possibly selectively keeps the text between them.
+				// ========================================================================
+				"cleanxml".addAnnotator(new ReprotoolXmlAnnotator(
+					".*", // clean xml tags
+					"[hH][123456]|p|P|ul|UL|ol|OL",	// sentence ending tags
+					"datetime|date", // date tags
+					"style|STYLE|script|SCRIPT|head|HEAD", // don't create tokens from text within these tags
+					true // allow flaws
+				))
+		      	checkActivationInterrupted
 		
-		// CLEAN: Removes XML tags possibly selectively keeps the text between them.
-		// ========================================================================
-		"cleanxml".addAnnotator(new ReprotoolXmlAnnotator(
-			".*", // clean xml tags
-			"[hH][123456]|p|P|ul|UL|ol|OL",	// sentence ending tags
-			"datetime|date", // date tags
-			"style|STYLE|script|SCRIPT|head|HEAD", // don't create tokens from text within these tags
-			true // allow flaws
-		))
-
-		// SSPLIT: Sentence splitter (based on the OpenNLP MaxEnt classifier)
-		// ========================================================================
-		"ssplit".addAnnotator(new MaxentSSplitAnnotator("reprotool/predict/models/ssplit/ssplit.maxent.gz")) // must be on classpath
+				// SSPLIT: Sentence splitter (based on the OpenNLP MaxEnt classifier)
+				// ========================================================================
+				val ssplitStream = bundleContext.bundle.getResource("reprotool/predict/models/ssplit/ssplit.maxent.gz").openStream
+				val ssplitModel = MaxentClassifier.loadMaxentModel(ssplitStream)
+				ssplitStream.close
+				val ssplitAnnotator = new MaxentSSplitAnnotator
+				ssplitAnnotator.setMaxentModel(ssplitModel)
+				"ssplit".addAnnotator(ssplitAnnotator)
+		      	checkActivationInterrupted
+				
+				// POSTAG: Maximum Entropy POS-tagger
+				// ========================================================================
+				"pos".addAnnotator(new POSTaggerAnnotator(
+					//DefaultPaths.DEFAULT_POS_MODEL, // POS model location (on classpath)
+					//"reprotool/dmodel/nlp/models/wsj-0-18-bidirectional-distsim.tagger",
+					bundleContext.bundle.getResource("edu/stanford/nlp/models/pos-tagger/wsj-bidirectional/wsj-0-18-bidirectional-distsim.tagger").toExternalForm,
+					beVerbose,
+					MAXSENTENCELEN // maximum sentence length
+				))
+		      	checkActivationInterrupted
 		
-	//		// SSPLIT: Sentence splitter
-	//		// ========================================================================
-	//		"ssplit".addAnnotator(
-	//		WordsToSentencesAnnotator.newlineSplitter(
-	//			verbose,
-	//			PTBTokenizer.newlineToken, "\n" // new line tokens ...
-	//		) => [
-	//			//setOneSentence(false)
-	//			//addHtmlSentenceBoundaryToDiscard(newHashSet("S"))
-	//			//setSentenceBoundaryToDiscard("???")
-	//		])
-	//		
-		// POSTAG: Maximum Entropy POS-tagger
-		// ========================================================================
-		"pos".addAnnotator(new POSTaggerAnnotator(
-			//DefaultPaths.DEFAULT_POS_MODEL, // POS model location (on classpath)
-			//"reprotool/dmodel/nlp/models/wsj-0-18-bidirectional-distsim.tagger",
-			bundleContext.bundle.getResource("edu/stanford/nlp/models/pos-tagger/wsj-bidirectional/wsj-0-18-bidirectional-distsim.tagger").toExternalForm,
-			beVerbose,
-			MAXSENTENCELEN // maximum sentence length
-		))
-
-		// LEMMATIZER:
-		// ========================================================================
-		"lemma".addAnnotator(new MorphaAnnotator(beVerbose))
-
-		// NER: Stanford NER
-		// ========================================================================
-		"ner".addAnnotator(new NERCombinerAnnotator(
-			new NERClassifierCombiner(
-				NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
-                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
-                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
-                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
-                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
-            ),
-			beVerbose
-		))
-
-	//		"ner".addAnnotator(new NERCombinerAnnotator(
-	//			new NERClassifierCombiner(
-	//				NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
-	//                NumberSequenceClassifier.USE_SUTIME_DEFAULT,
-	//                new Properties => [
-	//					// todo
-	//				],//			save(System.out, null)
-	//				
-	//                newArrayList(
-	//                	DefaultPaths.DEFAULT_NER_THREECLASS_MODEL,
-	//                	DefaultPaths.DEFAULT_NER_MUC_MODEL,
-	//                	DefaultPaths.DEFAULT_NER_CONLL_MODEL
-	//                ) as String[] // trained models
-	//            ),
-	//			beVerbose
-	//		))
-
-		// PARSER: Standard Lexicalized Parser of sentences
-		// ========================================================================
-		"parse".addAnnotator(new ParserAnnotator(
-			DefaultPaths.DEFAULT_PARSER_MODEL, // trained model
-			beVerbose,
-			MAXSENTENCELEN, // maximum sentence length
-			newArrayList("-retainTmpSubcategories") as String[] // flags
-      	))
-      	
-		// COREF: Stanford Deterministic Coreference Resolution System
-		// ========================================================================
-		"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
-
-		"REPROTOOL Linguistic Pipeline - Activation Finished".info
-		]).start
+				// LEMMATIZER:
+				// ========================================================================
+				"lemma".addAnnotator(new MorphaAnnotator(beVerbose))
+		      	checkActivationInterrupted
+		
+				// NER: Stanford NER
+				// ========================================================================
+				"ner".addAnnotator(new NERCombinerAnnotator(
+					new NERClassifierCombiner(
+						NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
+		                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
+		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
+		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
+		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
+		            ),
+					beVerbose
+				))
+		      	checkActivationInterrupted
+		
+				// PARSER: Standard Lexicalized Parser of sentences
+				// ========================================================================
+				"parse".addAnnotator(new ParserAnnotator(
+					DefaultPaths.DEFAULT_PARSER_MODEL, // trained model
+					beVerbose,
+					MAXSENTENCELEN, // maximum sentence length
+					newArrayList("-retainTmpSubcategories") as String[] // flags
+		      	))
+		      	checkActivationInterrupted
+		      	
+				// COREF: Stanford Deterministic Coreference Resolution System
+				// ========================================================================
+				"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
+		      	checkActivationInterrupted
+		      	
+			} catch(Exception e) {
+				e.message.error
+			}
+			
+			"REPROTOOL Linguistic Pipeline - background thread finished".info
+		])
+		
+		activationThread.start
+	}
+	
+	@Deactivate def void deactivate(BundleContext bundleContext) {
+		activationThread.interrupt
+		activationThread.join
 	}
 	
 	def private AbstractSequenceClassifier<CoreLabel> prepareCRFClassifier(BundleContext bundleContext, String resourceName) {

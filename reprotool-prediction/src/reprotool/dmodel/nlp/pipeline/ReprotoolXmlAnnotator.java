@@ -1,4 +1,4 @@
-package reprotool.dmodel.nlp;
+package reprotool.dmodel.nlp.pipeline;
 
 import java.util.ArrayList;
 import java.util.Collections;

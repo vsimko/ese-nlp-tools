@@ -1,4 +1,4 @@
-package reprotool.dmodel.nlp;
+package reprotool.dmodel.nlp.ssplit;
 
 import java.util.ArrayList;
 import java.util.List;

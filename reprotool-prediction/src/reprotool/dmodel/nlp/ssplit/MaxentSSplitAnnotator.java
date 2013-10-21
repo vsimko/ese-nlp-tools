@@ -1,14 +1,10 @@
-package reprotool.dmodel.nlp;
+package reprotool.dmodel.nlp.ssplit;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import opennlp.model.MaxentModel;
-
-import org.apache.log4j.Logger;
-
-import reprotool.dmodel.api.classifiers.MaxentClassifier;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation;
@@ -34,23 +30,18 @@ import edu.stanford.nlp.util.CoreMap;
  */
 public class MaxentSSplitAnnotator implements Annotator {
 
-	final static private Logger logger = Logger.getLogger(MaxentSSplitAnnotator.class);
-	
 	final static public Pattern EOS_PREFILTER_PATTERN = Pattern.compile("[.?!]");
 	final static public String EOS_POSITIVE_OUTCOME = "S";
 	final static public String EOS_NEGATIVE_OUTCOME = "N";
 	final static public String NEWLINE_TOKEN = "*NL*";
 
-	final private MaxentModel model;
+	// --------------------------------------------------
+	private MaxentModel model;
 	
-	public MaxentSSplitAnnotator(MaxentModel model) {
+	public void setMaxentModel(MaxentModel model) {
 		this.model = model;
 	}
-	
-	public MaxentSSplitAnnotator(final String maxentModelFileName) throws Exception {
-		logger.info("Reding a Maxent model for sentence splitter from a file on the classpath");
-		model = MaxentClassifier.loadMaxentModel(maxentModelFileName);
-	}
+	// --------------------------------------------------
 	
 	@Override
 	public void annotate(final Annotation annotation) {
@@ -92,13 +83,14 @@ public class MaxentSSplitAnnotator implements Annotator {
 			annotation.set(CoreAnnotations.SentencesAnnotation.class, sentences);
 
 		} else
-			throw new RuntimeException("unable to find words/tokens in: "
-					+ annotation);
+			throw new RuntimeException("unable to find words/tokens in: " + annotation);
 	}
 	
 	/**
-	 * Preparing an array containing the trimmed version of the original text
-	 * stored in the tokens it will be used by the context generator later.
+	 * Utility function that prepares an array containing the trimmed
+	 * version of the original text stored in the tokens it will be
+	 * used by the context generator later.
+	 * 
 	 * @param tokens
 	 * @return an array of trimmed text from tokens
 	 */
@@ -159,11 +151,10 @@ public class MaxentSSplitAnnotator implements Annotator {
 	 * Given the context features, the classifier uses a MaxEnt model to predict the outcome feature.
 	 */
 	private boolean predictEOS(final String[] context) {
-		
 		// computing probabilities of the possible outcome classes
-		// in our case, this is just either EOS_POSITIVE_OUTCOME or  
+		// in our case, this is just EOS_POSITIVE_OUTCOME
 		final double[] probs = model.eval(context);
-		final String outcome = model.getBestOutcome(probs);	// using the probabilities to get the best outcome
+		final String outcome = model.getBestOutcome(probs); // using the probabilities to get the best outcome
 		return outcome.equals(EOS_POSITIVE_OUTCOME);
 	}
 }
