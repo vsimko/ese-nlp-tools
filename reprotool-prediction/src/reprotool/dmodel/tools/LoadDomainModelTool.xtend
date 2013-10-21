@@ -4,7 +4,7 @@ import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.prediction.api.loaders.SpecModelLoader
+import reprotool.predict.smloader.SpecModelLoader
 
 @Component
 class LoadDomainModelTool implements ITool {

@@ -36,7 +36,6 @@
 	org.apache.felix.metatype;version='[1.0.4,1.0.5)',\
 	org.apache.felix.scr;version='[1.6.2,1.6.3)',\
 	org.apache.felix.webconsole;version='[3.1.8,3.1.9)',\
-	org.apache.log4j;version='[1.2.15,1.2.16)',\
 	org.apache.xerces;version='[2.9.0,2.9.1)',\
 	org.apache.xml.resolver;version='[1.2.0,1.2.1)',\
 	org.apache.xml.serializer;version='[2.7.1,2.7.2)',\
@@ -44,7 +43,7 @@
 	org.eclipse.xtext.xbase.lib;version='[2.4.2,2.4.3)',\
 	osgi.cmpn;version='[4.2.0,4.2.1)',\
 	reprotool-emf-spec-model;version=latest,\
-	reprotool-prediction.api;version=latest,\
+	reprotool-prediction.core;version=latest,\
 	reprotool-prediction.dmtools;version=latest,\
 	reprotool-prediction.dmtools.phases;version=latest,\
 	reprotool-prediction.extractors;version=latest,\
@@ -52,6 +51,9 @@
 	reprotool-prediction.logging;version=latest,\
 	reprotool-prediction.models.dm;version=latest,\
 	reprotool-prediction.models.ssplit;version=latest,\
+	reprotool-prediction.nlp.pipeline;version=latest,\
+	reprotool-prediction.nlp.ssplit;version=latest,\
+	reprotool-prediction.smloader;version=latest,\
 	stanford-corenlp-osgi.api;version=latest,\
 	stanford-corenlp-osgi.net;version=latest,\
 	stanford-nlp-models-osgi.dcoref;version=latest,\

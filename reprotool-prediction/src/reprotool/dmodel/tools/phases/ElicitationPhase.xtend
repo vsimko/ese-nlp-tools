@@ -20,7 +20,7 @@ import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.ctxgen.RelationContext
 import reprotool.dmodel.extract.mwent.RoleInLink
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.prediction.api.loaders.SpecModelLoader
+import reprotool.predict.smloader.SpecModelLoader
 import spec.DomainEntityType
 import spec.SpecFactory
 import spec.SpecSentence

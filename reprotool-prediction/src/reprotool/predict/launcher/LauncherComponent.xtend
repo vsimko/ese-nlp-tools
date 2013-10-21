@@ -119,8 +119,6 @@ class LauncherComponent {
 
 	
 //
-//		Logger::rootLogger.setLevel(Level::ALL) // TODO: we need to solve the problem of log4j configuration when running inside OSGi
-//
 //
 //
 //		val args = context.getArguments.get("application.args") as String[]

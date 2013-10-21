@@ -17,7 +17,7 @@ import reprotool.dmodel.api.samples.CrossValidatingEvaluator
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.extensions.Combinations
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.prediction.api.loaders.SpecModelLoader
+import reprotool.predict.smloader.SpecModelLoader
 import spec.Specification
 
 import static extension reprotool.dmodel.extensions.StatisticalExtensions.*

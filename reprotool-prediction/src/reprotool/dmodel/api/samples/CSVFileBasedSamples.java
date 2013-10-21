@@ -6,15 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
 import au.com.bytecode.opencsv.CSVReader;
-
-import com.google.common.base.Joiner;
 
 public class CSVFileBasedSamples implements Iterable<FeatureEvent> {
 
-	final private static Logger logger = Logger.getLogger(CSVFileBasedSamples.class);
 	final private File file;
 	final private String outcomeFeatureName;
 
@@ -80,14 +75,13 @@ public class CSVFileBasedSamples implements Iterable<FeatureEvent> {
 			}
 
 			@Override
-			public FeatureEvent next() {
+			public FeatureEvent next(){
 				final String[] listOfFeatures = new String[columnNames.length];
 				final String[] csvLine = getCurrentAndAdvance();
 
 				// sanity check - lines with wrong number of columns are skipped
 				if(listOfFeatures.length != csvLine.length) {
-					logger.warn("Fond a line in CSV file which has a different number of columns than the header: " + Joiner.on(", ").join(csvLine));
-					return null;
+					return null; // Fond a line in CSV file which has a different number of columns than the header
 				}
 				
 				for(int i=0; i<listOfFeatures.length; i++) {

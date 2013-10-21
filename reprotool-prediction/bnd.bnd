@@ -1,4 +1,5 @@
 -sub: *.bnd
+
 -buildpath: org.apache.log4j,\
 	org.eclipse.emf.ecore,\
 	com.google.inject,\

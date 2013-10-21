@@ -12,7 +12,7 @@ import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.prediction.api.loaders.SpecModelLoader
+import reprotool.predict.smloader.SpecModelLoader
 
 @Component
 class TrainingPhase implements ITool {

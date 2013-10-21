@@ -3,9 +3,9 @@ package reprotool.dmodel.tools
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
 import reprotool.dmodel.api.ITool
-import reprotool.dmodel.nlp.ReprotoolLinguisticPipeline
+import reprotool.dmodel.nlp.pipeline.ReprotoolLinguisticPipeline
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.prediction.api.loaders.SpecModelLoader
+import reprotool.predict.smloader.SpecModelLoader
 
 @Component
 class LoadAnnotatedDocumentTool implements ITool {
