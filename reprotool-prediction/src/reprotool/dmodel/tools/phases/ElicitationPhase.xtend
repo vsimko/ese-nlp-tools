@@ -1,8 +1,6 @@
 package reprotool.dmodel.tools.phases
 
-import aQute.bnd.annotation.component.Activate
 import aQute.bnd.annotation.component.Component
-import aQute.bnd.annotation.component.Deactivate
 import aQute.bnd.annotation.component.Reference
 import java.io.File
 import java.util.HashMap
@@ -12,7 +10,6 @@ import opennlp.model.MaxentModel
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EClassifier
 import org.eclipse.emf.ecore.EcoreFactory
-import org.osgi.framework.BundleContext
 import reprotool.dmodel.api.FeatureExtractorFactory
 import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
@@ -28,15 +25,42 @@ import spec.SpecWord
 import spec.Specification
 
 import static extension reprotool.dmodel.extensions.ReprotoolEcoreExtensions.*
+import aQute.bnd.annotation.component.Activate
+import org.osgi.framework.BundleContext
+import java.util.Hashtable
+import aQute.bnd.annotation.component.Deactivate
+import org.osgi.framework.ServiceRegistration
+
+@Component
+class ElicitationPhaseModelLoader {
+
+	val List<ServiceRegistration> registeredServices = newArrayList
+
+	@Activate def void activate(BundleContext context) {
+		registeredServices += context.loadAndRegisterModel("linktype")
+		registeredServices += context.loadAndRegisterModel("roleinlink")
+		registeredServices += context.loadAndRegisterModel("relcl")
+	}
+	
+	@Deactivate def void deactivate(BundleContext context) {
+		registeredServices.forEach[unregister]
+	}
+	
+	// helper method
+	private def static loadAndRegisterModel(BundleContext context, String modelName) {
+		context.registerService(
+			MaxentModel.name,
+			MaxentClassifier.loadMaxentModel(
+				context.bundle.getResource('''reprotool/predict/models/dm/«modelName».maxent.gz''').openStream
+			),
+			new Hashtable(#{"model" -> modelName})
+		)
+	}
+}
 
 @Component
 class ElicitationPhase implements ITool {
 	
-	private static val DOMAIN_MODEL_PACKAGE_NAME = "domainmodel"
-	private var List<EClassifier> domainModel
-	private var Specification specModel
-	private var String projectDir
-
 	override getUsage() '''
 		The elicitation phase requires a XMI file containing documents processed
 		by the linguistic pipeline.
@@ -63,31 +87,28 @@ class ElicitationPhase implements ITool {
 	}
 	
 	private MaxentModel linktypeModel
-	private MaxentModel relclModel
+	@Reference(target="(model=linktype)")
+	def void set_linktypeModel(MaxentModel model) {
+		this.linktypeModel = model
+	}
+	
 	private MaxentModel roleinlinkModel
+	@Reference(target="(model=roleinlink)")
+	def void set_roleinlinkModel(MaxentModel model) {
+		this.roleinlinkModel = model
+	}
 	
-	@Activate def void activate(BundleContext bundleContext) {
-		linktypeModel = MaxentClassifier.loadMaxentModel(
-			bundleContext.bundle.getResource("reprotool/predict/models/dm/linktype.maxent.gz").openStream
-		)
+	private MaxentModel relclModel
+	@Reference(target="(model=relcl)")
+	def void set_relclModel(MaxentModel model) {
+		this.relclModel = model
+	}
+	
+	private static val DOMAIN_MODEL_PACKAGE_NAME = "domainmodel"
+	private var List<EClassifier> domainModel
+	private var Specification specModel
+	private var String projectDir
 
-		relclModel = MaxentClassifier.loadMaxentModel(
-			bundleContext.bundle.getResource("reprotool/predict/models/dm/relcl.maxent.gz").openStream
-		)
-		
-		roleinlinkModel = MaxentClassifier.loadMaxentModel(
-			bundleContext.bundle.getResource("reprotool/predict/models/dm/roleinlink.maxent.gz").openStream
-		)
-		
-		'''Activated the «ElicitationPhase.name» with models: linktype=«linktypeModel», relcl=«relclModel», roleinlink=«roleinlinkModel»'''.debug
-	}
-	
-	@Deactivate def void deactivate(BundleContext bundleContext) {
-		linktypeModel = null
-		relclModel = null
-		roleinlinkModel = null
-	}
-	
 	override execute(String[] args) {
 		
 		// check arguments
