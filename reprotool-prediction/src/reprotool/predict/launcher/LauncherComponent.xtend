@@ -1,15 +1,14 @@
 package reprotool.predict.launcher
 
-import aQute.bnd.annotation.component.Activate
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import java.util.HashMap
 import java.util.Map
-import org.osgi.framework.BundleContext
+import java.util.concurrent.ConcurrentHashMap
 import reprotool.dmodel.api.ITool
 import reprotool.predict.logging.ReprotoolLogger
 
 @Component(
+	immediate=true,
 	provide=LauncherComponent,
 	properties = #[
 		"osgi.command.scope:String=reprotool",
@@ -31,22 +30,23 @@ class LauncherComponent {
 		this.logger = logger
 	}
 	
-	val toolMap = new HashMap<String, ITool>
+	// we use a dynamic+optional+multiple reference and therefore multiple threads can access the toolMap
+	val toolMap = new ConcurrentHashMap<String, ITool>
 
 	@Reference(multiple=true, optional=true, dynamic=true)
 	def void addTool(ITool tool) {
 		val toolName = tool.class.simpleName
-		if(toolMap.containsKey(toolName))
+		val previousItem = toolMap.putIfAbsent(toolName, tool)
+		if(previousItem != null)
 			throw new Exception('''Tool already registered : «toolName»''')
-		toolMap.put( toolName, tool )
 	}
 	
 	def void removeTool(ITool tool) {
 		val toolName = tool.class.simpleName
 		toolMap.remove(toolName)
-
 	}
 	
+	// GOGO COMMAND
 	def showtools() '''
 		Available tools are:
 		 «FOR toolName:toolMap.keySet»
@@ -54,6 +54,7 @@ class LauncherComponent {
 		 «ENDFOR»
 	'''
 	
+	// GOGO COMMAND
 	def void runtool(String[] args) {
 		
 		if(args.empty) {
@@ -73,96 +74,4 @@ class LauncherComponent {
 		}
 		toolInstance.execute(toolArgs)
 	}
-	
-	var BundleContext bundleContext
-	
-	@Activate def void activate(BundleContext context) {
-		bundleContext = context
-		'''reprotool launcher activated with «toolMap.size» tools'''.info
-//		context.getBundle(0).stop
-
-//		// first argument specifies the tool, other args will be passed to the tool
-//		val toolName = if(args.empty) "empty" else args.head
-//		val toolArgs = args.tail
-//		
-//		println('''TOOL: «toolName»''')
-//		println('''ARGS: «toolArgs.join(", ")»''')
-		
-//		if(toolmap.containsKey(toolName)) {
-//			val clazz = toolmap.get(toolName)
-//			val method = clazz.getMethod("main", typeof(String[]))
-//
-//			val invokeArgs = newArrayList
-//			val String[] argsAsArray = toolArgs.toList
-//			invokeArgs.add(argsAsArray)
-//			
-//			method.invoke(null, invokeArgs.toArray)
-//		} else {
-//			println('''
-//				===========================================================
-//				Prediction framework (by Viliam Simko 2013)
-//				===========================================================
-//				Unknown tool : «toolName»
-//				Available tools are:
-//				«FOR availToolName : toolmap.keySet»
-//					- «availToolName»
-//				«ENDFOR»
-//			''')
-//		}
-	}
-
-	
-//
-//
-//
-//		val args = context.getArguments.get("application.args") as String[]
-//		
-//		// first argument specifies the tool, other args will be passed to the tool
-//		val toolName = if(args.empty) "empty" else args.head
-//		val toolArgs = args.tail
-//
-//		val toolmap = newHashMap(
-//
-//			//tools
-//			"ShowExtractors"	-> "reprotool.predict.dmodel.cli.ShowAvailFeatureExtractors",
-//			"CreateEmptySpec"	-> "reprotool.predict.dmodel.cli.CreateEmptySpecificationTool",
-//			"ExportDomainModel"	-> "reprotool.predict.dmodel.cli.ExportDomainModelTool",
-//			"ExtractSamples"	-> "reprotool.predict.dmodel.cli.ExtractSamplesTool",
-//			"LoadDocument"		-> "reprotool.predict.dmodel.cli.LoadAnnotatedDocumentTool",
-//			"LoadDomainModel"	-> "reprotool.predict.dmodel.cli.LoadDomainModelTool",
-//			"MaxentTrainer"		-> "reprotool.predict.dmodel.cli.MaxentTrainerTool",
-//			"CleanAnnotatedDoc"	-> "reprotool.predict.dmodel.cli.RemoveAnnotationsFromDoc",
-//			"ResolveLinks"		-> "reprotool.predict.dmodel.cli.ResolveEntityLinksTool",
-//			
-//			// phases
-//			"ElicitationPhase"		-> "reprotool.predict.dmodel.cli.phases.ElicitationPhase",
-//			"FeatureSelectionPhase"	-> "reprotool.predict.dmodel.cli.phases.FeatureSelectionPhase",
-//			"TrainingPhase"			-> "reprotool.predict.dmodel.cli.phases.TrainingPhase"
-//		)
-//		
-//		if(toolmap.containsKey(toolName)) {
-//			val className = toolmap.get(toolName)
-//			val clazz = super.class.classLoader.loadClass(className)
-//			val method = clazz.getMethod("main", typeof(String[]))
-//
-//			val invokeArgs = newArrayList
-//			val String[] argsAsArray = toolArgs.toList
-//			invokeArgs.add(argsAsArray)
-//			
-//			method.invoke(null, invokeArgs.toArray)
-//		} else {
-//			println('''
-//				===========================================================
-//				Prediction framework (by Viliam Simko 2013)
-//				===========================================================
-//				Unknown tool : «toolName»
-//				Available tools are:
-//				«FOR availToolName : toolmap.keySet»
-//					- «availToolName»
-//				«ENDFOR»
-//			''')
-//		}
-//		
-//		return IApplication::EXIT_OK
-//	}
 }
