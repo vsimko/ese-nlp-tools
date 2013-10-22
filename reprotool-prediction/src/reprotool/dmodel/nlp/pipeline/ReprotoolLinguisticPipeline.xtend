@@ -212,7 +212,22 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 	
 	/** Performs analysis by reading the text from file */
 	def Annotation analyzeTextFromFile(String fileName) {
-		Files.toString(new File(fileName), Charsets.UTF_8).analyzeText
+//		val in = new ByteArrayInputStream(fileName.toString.bytes)
+//		val out = new ByteArrayOutputStream
+		
+		return Files.toString(new File(fileName), Charsets.UTF_8).analyzeText
+
+//		new Tidy => [
+//			XHTML = true
+//			breakBeforeBR = true
+//			//hideComments = true
+//			indentAttributes = false
+//			smartIndent = false
+//			wraplen = 0
+//			dropEmptyParas = true			
+//			wrapAttVals = false
+//			parse(in, out)
+//		]
 	}
 	
 	/**
