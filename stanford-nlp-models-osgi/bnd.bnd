@@ -1,2 +1,9 @@
 corenlp-version: 1.3.4
+
+-sourcepath: 
+-classpath: models/
 -sub: *.bnd
+
+# The following packages are not used, so if you need them, you should create a new subbnd file
+#   edu/stanford/nlp/pipeline
+#   edu/stanford/nlp/models/regexner

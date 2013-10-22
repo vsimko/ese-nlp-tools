@@ -1,12 +1,4 @@
 Bundle-Version: 3.0.0
 Bundle-Name: REPROTOOL: Prediction Framework API
 Service-Component: *
-
-Import-Package: com.google.common.collect;version='[12.0,13)',\
-	com.google.common.io;version='[12.0,13)',\
-	com.google.common.base;version='[12.0,13)',\
-	*
-
-	# TODO: reprotool.dmodel.extract.* is required by FeatureExtractorFactory class
-	
 Export-Package: reprotool.predict.smloader

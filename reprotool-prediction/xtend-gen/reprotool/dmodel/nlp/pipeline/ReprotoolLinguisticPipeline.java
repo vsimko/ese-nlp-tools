@@ -282,8 +282,7 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
     try {
       File _file = new File(fileName);
       String _string = Files.toString(_file, Charsets.UTF_8);
-      Annotation _analyzeText = this.analyzeText(_string);
-      return _analyzeText;
+      return this.analyzeText(_string);
     } catch (Throwable _e) {
       throw Exceptions.sneakyThrow(_e);
     }

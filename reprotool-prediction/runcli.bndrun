@@ -54,7 +54,7 @@
 	reprotool-prediction.nlp.pipeline;version=latest,\
 	reprotool-prediction.nlp.ssplit;version=latest,\
 	reprotool-prediction.smloader;version=latest,\
-	stanford-corenlp-osgi.api;version=latest,\
+	stanford-corenlp-osgi.framework;version=latest,\
 	stanford-corenlp-osgi.net;version=latest,\
 	stanford-nlp-models-osgi.dcoref;version=latest,\
 	stanford-nlp-models-osgi.lexparser;version=latest,\

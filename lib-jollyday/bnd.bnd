@@ -1,4 +1,5 @@
 -buildpath: lib/jollyday-0.4.7.jar;version=file
+-sourcepath: 
 Export-Package: de.jollyday,\
 	de.jollyday.impl,\
 	de.jollyday.config,\
@@ -20,4 +21,4 @@ Import-Package: edu/stanford/nlp/models/sutime/jollyday,\
 
 # This is a hack for the jollytime which loads the property file using a classloader
 Bundle-ClassPath: .
-Include-Resource: src/jollyday.properties
+Include-Resource: @lib/jollyday-0.4.7.jar!/jollyday.properties

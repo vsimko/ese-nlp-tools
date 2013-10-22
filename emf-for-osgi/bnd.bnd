@@ -22,6 +22,7 @@ xmi-version: 2.9.0.v20130528-0742
 libpath: libs/2.9.0
 
 -sub: *.bnd
+-sourcepath: 
 -buildpath: ${libpath}/org.eclipse.emf.ecore_${ecore-version}.jar;version=file,\
 	${libpath}/org.eclipse.emf.common_${common-version}.jar;version=file,\
 	${libpath}/org.eclipse.emf.ecore.xmi_${xmi-version}.jar;version=file

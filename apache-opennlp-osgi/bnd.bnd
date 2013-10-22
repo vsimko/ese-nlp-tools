@@ -1,2 +1,3 @@
 -buildpath: lib/opennlp-tools-1.5.2-incubating.jar;version=file
+-classpath: models
 -sub: *.bnd

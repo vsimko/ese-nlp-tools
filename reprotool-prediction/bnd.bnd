@@ -1,21 +1,21 @@
 -sub: *.bnd
-
--buildpath: org.apache.log4j,\
-	org.eclipse.emf.ecore,\
-	com.google.inject,\
-	osgi.core,\
-	biz.aQute.bnd.annotation,\
+-classpath=models/
+-buildpath: osgi.core,\
 	osgi.cmpn,\
+	biz.aQute.bnd.annotation,\
+	com.google.inject,\
+	com.google.guava,\
 	org.eclipse.core.contenttype,\
 	org.eclipse.core.jobs,\
+	org.eclipse.emf.ecore,\
 	org.eclipse.xtend.lib,\
 	org.eclipse.xtext.xbase.lib,\
-	com.google.guava;version=12.0.1,\
 	org.apache.felix.gogo.runtime,\
 	emf-for-osgi.minimal;version=latest,\
 	emf-for-osgi.xmi;version=latest,\
 	reprotool-emf-spec-model;version=latest,\
+	stanford-corenlp-osgi.framework;version=latest,\
 	apache-opennlp-osgi.maxent;version=latest,\
 	lib-junit4;version=latest,\
 	lib-opencsv.core;version=latest,\
-	stanford-corenlp-osgi.api;version=latest
+	lib-jtidy;version=latest

@@ -33,7 +33,9 @@ class FeatureExtractorFactory {
 		this.logger = logger
 	}
 
-	private val avaiableExtractors = newArrayList(
+	// at the moment we provide a static list of feature extractors
+	// in future, this will be loaded dynamically using OSGi
+	private val availableExtractors = newArrayList(
 		SemParentPosTag,
 		SemParentRelation,
 		WordHasCapitalLetter,
@@ -59,7 +61,8 @@ class FeatureExtractorFactory {
 	)
 	
 	new() {
-		avaiableExtractors.forEach[loadFromClass]
+		// prepare mapping: "extractor name" -> Class
+		availableExtractors.forEach[loadFromClass]
 	}
 
 	private def loadFromClass(Class<?> clazz) {
@@ -84,9 +87,13 @@ class FeatureExtractorFactory {
 	private val Map<String, Class<? extends FeatureExtractor>> mapExtractorNameToClass = newHashMap
 	
 	def getLoadedExtractors() {
-		mapExtractorNameToClass.keySet
+		return mapExtractorNameToClass.keySet
 	}
 	
+	/**
+	 * Created a new instance of a feature extractor and configures it using the provided parameters.
+	 * Example: "pos:1" instantiates the WordPosTag class and uses "1" as a parameter.
+	 */
 	def getFeatureExtractor(String featureName) {
 		
 		if(featureName.matches("[=\\s]"))
@@ -108,6 +115,6 @@ class FeatureExtractorFactory {
 	}
 	
 	def getFeatureExtractors(Iterable<String> featureNames) {
-		featureNames.map[featureExtractor]
+		return featureNames.map[featureExtractor]
 	}
 }

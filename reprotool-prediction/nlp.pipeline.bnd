@@ -4,12 +4,7 @@ Service-Component: *
 
 Export-Package: reprotool.dmodel.nlp.pipeline
 
-Import-Package: com.google.common.base;version='[12.0,13.0)',\
-	com.google.common.io;version='[12.0,13.0)',\
-	reprotool/predict/models/ssplit,\
+Import-Package: reprotool/predict/models/ssplit,\
 	edu/stanford/nlp/models/pos-tagger/wsj-bidirectional,\
 	edu/stanford/nlp/models/ner,\
 	*
-
-	# TODO: reprotool.dmodel.extract.* is required by FeatureExtractorFactory class
-	

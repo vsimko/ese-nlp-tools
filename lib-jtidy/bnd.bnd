@@ -1,3 +1,4 @@
 -buildpath: lib/jtidy-r938.jar;version=file
+-sourcepath:
 Export-Package: org.w3c.tidy;version=${Bundle-Version}
 Bundle-Version: 938.0.0

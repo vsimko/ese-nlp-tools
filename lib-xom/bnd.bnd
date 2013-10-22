@@ -1,3 +1,4 @@
+-sourcepath: 
 -buildpath: lib/xom-1.2.10.jar;version=file,\
 	org.apache.xerces;version=2.9.0.v201101211617
 Export-Package: nu.xom;version=${Bundle-Version},\

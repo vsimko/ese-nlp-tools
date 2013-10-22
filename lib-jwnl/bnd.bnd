@@ -1,3 +1,4 @@
+-sourcepath: 
 -buildpath: lib/jwnl-1.4_rc3.jar;version=file
 Export-Package: net.didion.jwnl;version=${Bundle-Version},\
 	net.didion.jwnl.data;version=${Bundle-Version},\
