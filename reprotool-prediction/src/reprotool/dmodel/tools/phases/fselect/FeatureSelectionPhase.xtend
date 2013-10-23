@@ -1,4 +1,4 @@
-package reprotool.dmodel.tools.phases
+package reprotool.dmodel.tools.phases.fselect
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
@@ -11,7 +11,6 @@ import java.util.List
 import java.util.Properties
 import java.util.Set
 import reprotool.dmodel.api.FeatureExtractorFactory
-import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.CrossValidatingEvaluator
 import reprotool.dmodel.api.samples.ExtractedSamples
@@ -21,9 +20,10 @@ import reprotool.predict.smloader.SpecModelLoader
 import spec.Specification
 
 import static extension reprotool.dmodel.extensions.StatisticalExtensions.*
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class FeatureSelectionPhase implements ITool {
+class FeatureSelectionPhase implements IExecutableTool {
 	
 	override getUsage() '''
 	The feature selection phase requires a single configuration file which drives

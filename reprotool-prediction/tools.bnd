@@ -1,6 +1,7 @@
-Bundle-Version: 3.0.0
+Bundle-Version: 3.0.1
 Bundle-Name: REPROTOOL: Domain Model Elicitation Tools
 Bundle-Vendor: Viliam Simko
 
 Service-Component: *
 Export-Package: reprotool.dmodel.tools
+Bundle-Category: REPROTOOL

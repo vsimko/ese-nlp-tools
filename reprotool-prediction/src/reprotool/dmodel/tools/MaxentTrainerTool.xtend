@@ -2,13 +2,13 @@ package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.FileBasedSamples
 import reprotool.predict.logging.ReprotoolLogger
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class MaxentTrainerTool implements ITool {
+class MaxentTrainerTool implements IExecutableTool {
 
 	override getUsage() '''
 		This tool is used for training a Maximum Entropy classifier.

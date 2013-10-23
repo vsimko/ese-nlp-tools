@@ -2,12 +2,12 @@ package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import reprotool.dmodel.api.ITool
 import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.smloader.SpecModelLoader
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class ExportDomainModelTool implements ITool {
+class ExportDomainModelTool implements IExecutableTool {
 	
 	override getUsage() '''
 	Exports a domain model stored inside a Specification model into a separate ecore XMI file.

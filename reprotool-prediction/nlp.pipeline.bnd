@@ -8,3 +8,4 @@ Import-Package: reprotool/predict/models/ssplit,\
 	edu/stanford/nlp/models/pos-tagger/wsj-bidirectional,\
 	edu/stanford/nlp/models/ner,\
 	*
+Bundle-Category: REPROTOOL

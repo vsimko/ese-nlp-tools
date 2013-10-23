@@ -5,13 +5,13 @@ import aQute.bnd.annotation.component.Reference
 import java.io.BufferedWriter
 import java.io.FileWriter
 import reprotool.dmodel.api.FeatureExtractorFactory
-import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.smloader.SpecModelLoader
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class ExtractSamplesTool implements ITool {
+class ExtractSamplesTool implements IExecutableTool {
 
 	override getUsage() '''
 	Uses a context generator + list of feature extractors to extract samples from a Specification model.

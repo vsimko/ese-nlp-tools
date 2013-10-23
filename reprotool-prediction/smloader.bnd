@@ -2,3 +2,4 @@ Bundle-Version: 3.0.0
 Bundle-Name: REPROTOOL: Prediction Framework API
 Service-Component: *
 Export-Package: reprotool.predict.smloader
+Bundle-Category: REPROTOOL

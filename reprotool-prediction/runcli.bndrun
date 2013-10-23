@@ -9,11 +9,15 @@
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.http.jetty)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.metatype)',\
 	osgi.identity;filter:='(&(osgi.identity=org.apache.felix.scr)(version>=1.6.2))',\
+	osgi.identity;filter:='(&(osgi.identity=aQute.xray.plugin)(version>=1.0.3))',\
 	osgi.identity;filter:='(osgi.identity=reprotool-prediction.launcher)',\
-	osgi.identity;filter:='(osgi.identity=reprotool-prediction.dmtools)',\
-	osgi.identity;filter:='(osgi.identity=reprotool-prediction.dmtools.phases)'
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.elicit)',\
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.fselect)',\
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.train)',\
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools)'
 -resolve.effective: active
--runbundles: apache-opennlp-osgi.maxent;version=latest,\
+-runbundles: aQute.xray.plugin;version='[1.0.3,1.0.4)',\
+	apache-opennlp-osgi.maxent;version=latest,\
 	com.google.guava;version='[12.0.1,12.0.2)',\
 	com.google.inject;version='[3.0.0,3.0.1)',\
 	emf-for-osgi.minimal;version=latest,\
@@ -44,22 +48,19 @@
 	osgi.cmpn;version='[4.2.0,4.2.1)',\
 	reprotool-emf-spec-model;version=latest,\
 	reprotool-prediction.core;version=latest,\
-	reprotool-prediction.dmtools;version=latest,\
-	reprotool-prediction.dmtools.phases;version=latest,\
 	reprotool-prediction.extractors;version=latest,\
 	reprotool-prediction.launcher;version=latest,\
 	reprotool-prediction.logging;version=latest,\
 	reprotool-prediction.models.dm;version=latest,\
-	reprotool-prediction.models.ssplit;version=latest,\
-	reprotool-prediction.nlp.pipeline;version=latest,\
-	reprotool-prediction.nlp.ssplit;version=latest,\
 	reprotool-prediction.smloader;version=latest,\
+	reprotool-prediction.tools;version=latest,\
+	reprotool-prediction.tools.phases.elicit;version=latest,\
+	reprotool-prediction.tools.phases.fselect;version=latest,\
+	reprotool-prediction.tools.phases.train;version=latest,\
 	stanford-corenlp-osgi.framework;version=latest,\
 	stanford-corenlp-osgi.net;version=latest,\
 	stanford-nlp-models-osgi.dcoref;version=latest,\
 	stanford-nlp-models-osgi.lexparser;version=latest,\
-	stanford-nlp-models-osgi.ner;version=latest,\
-	stanford-nlp-models-osgi.pos.wsj.bidir;version=latest,\
 	stanford-nlp-models-osgi.sutime;version=latest
 -runrepos: Workspace,\
 	Bndtools Hub,\

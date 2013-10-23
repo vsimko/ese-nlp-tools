@@ -2,13 +2,13 @@ package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import reprotool.dmodel.api.ITool
 import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.smloader.SpecModelLoader
 import spec.SpecFactory
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class CreateEmptySpecificationTool implements ITool {
+class CreateEmptySpecificationTool implements IExecutableTool {
 	
 	override getUsage() '''
 	This tool creates an empty specification model stored in an XMI file.

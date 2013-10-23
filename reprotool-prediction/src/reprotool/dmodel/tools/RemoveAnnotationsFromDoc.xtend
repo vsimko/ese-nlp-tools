@@ -4,13 +4,13 @@ import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
 import java.io.FileReader
 import java.io.FileWriter
-import reprotool.dmodel.api.ITool
+import reprotool.predict.exectoolapi.IExecutableTool
 import reprotool.predict.logging.ReprotoolLogger
 
 import static extension com.google.common.io.CharStreams.*
 
 @Component
-class RemoveAnnotationsFromDoc implements ITool {
+class RemoveAnnotationsFromDoc implements IExecutableTool {
 
 	override getUsage() '''
 	Removes annotations (HTML "a" tags) from a given document.

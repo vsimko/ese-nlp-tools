@@ -1,4 +1,4 @@
-package reprotool.dmodel.tools.phases
+package reprotool.dmodel.tools.phases.train
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
@@ -8,14 +8,14 @@ import java.util.Map
 import java.util.Properties
 import java.util.Set
 import reprotool.dmodel.api.FeatureExtractorFactory
-import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.smloader.SpecModelLoader
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class TrainingPhase implements ITool {
+class TrainingPhase implements IExecutableTool {
 
 	override getUsage() '''
 	The training phase requires a configuration file and a fully

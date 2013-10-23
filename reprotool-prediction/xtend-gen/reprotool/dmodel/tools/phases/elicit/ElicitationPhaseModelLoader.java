@@ -1,4 +1,4 @@
-package reprotool.dmodel.tools.phases;
+package reprotool.dmodel.tools.phases.elicit;
 
 import aQute.bnd.annotation.component.Activate;
 import aQute.bnd.annotation.component.Component;

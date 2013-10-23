@@ -1,5 +1,6 @@
 Bundle-Version: 3.0.0
-Export-Package: reprotool.predict.launcher;version=${Bundle-Version}
+Export-Package: reprotool.predict.launcher,\
+	reprotool.predict.exectoolapi
 Service-Component: *
 Bundle-Name: REPROTOOL: Launcher
 Import-Package: com.google.common.collect;version='[12.0,13)',\
@@ -7,3 +8,4 @@ Import-Package: com.google.common.collect;version='[12.0,13)',\
 	com.google.common.base;version='[12.0,13)',\
 	*
 Bundle-Vendor: Viliam Simko
+Bundle-Category: REPROTOOL

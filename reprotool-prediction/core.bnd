@@ -8,3 +8,4 @@ Export-Package: reprotool.dmodel.api,\
 	reprotool.prediction.api.loaders,\
 	reprotool.dmodel.extensions,\
 	reprotool.dmodel.ctxgen
+Bundle-Category: REPROTOOL

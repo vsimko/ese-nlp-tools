@@ -1,14 +1,13 @@
-package reprotool.dmodel.tools
-
+package reprotool.dmodel.tools.phases.preproc
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import reprotool.dmodel.api.ITool
 import reprotool.dmodel.nlp.pipeline.ReprotoolLinguisticPipeline
 import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.smloader.SpecModelLoader
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class LoadAnnotatedDocumentTool implements ITool {
+class LoadAnnotatedDocument implements IExecutableTool {
 	
 	override getUsage() '''
 		This tool performs a thorough linguistic analysis on the selected document and

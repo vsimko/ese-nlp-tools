@@ -9,3 +9,4 @@ Import-Package: com.google.common.collect;version='[12.0,13)',\
 Service-Component: *
 Bundle-Name: REPROTOOL: Feature Extractors
 Bundle-Vendor: Viliam Simko
+Bundle-Category: REPROTOOL

@@ -4,8 +4,8 @@ import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
 import java.util.Map
 import java.util.concurrent.ConcurrentHashMap
-import reprotool.dmodel.api.ITool
 import reprotool.predict.logging.ReprotoolLogger
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component(
 	immediate=true,
@@ -31,17 +31,17 @@ class LauncherComponent {
 	}
 	
 	// we use a dynamic+optional+multiple reference and therefore multiple threads can access the toolMap
-	val toolMap = new ConcurrentHashMap<String, ITool>
+	val toolMap = new ConcurrentHashMap<String, IExecutableTool>
 
 	@Reference(multiple=true, optional=true, dynamic=true)
-	def void addTool(ITool tool) {
+	def void addTool(IExecutableTool tool) {
 		val toolName = tool.class.simpleName
 		val previousItem = toolMap.putIfAbsent(toolName, tool)
 		if(previousItem != null)
 			throw new Exception('''Tool already registered : «toolName»''')
 	}
 	
-	def void removeTool(ITool tool) {
+	def void removeTool(IExecutableTool tool) {
 		val toolName = tool.class.simpleName
 		toolMap.remove(toolName)
 	}

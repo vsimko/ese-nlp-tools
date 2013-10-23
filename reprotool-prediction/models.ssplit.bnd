@@ -2,3 +2,4 @@ Bundle-Version: 3.0.0
 Bundle-Name: REPROTOOL : Default MaxEnt model for sentence splitter
 Export-Package: reprotool.predict.models.ssplit
 
+Bundle-Category: REPROTOOL

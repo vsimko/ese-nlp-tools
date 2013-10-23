@@ -1,12 +1,12 @@
 package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
-import reprotool.dmodel.api.FeatureExtractorFactory
-import reprotool.dmodel.api.ITool
 import aQute.bnd.annotation.component.Reference
+import reprotool.dmodel.api.FeatureExtractorFactory
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class ShowAvailFeatureExtractors implements ITool {
+class ShowAvailFeatureExtractors implements IExecutableTool {
 
 	override getUsage() '''
 	Lists all avaiable feature extractors registered in the system.
@@ -24,7 +24,10 @@ class ShowAvailFeatureExtractors implements ITool {
 
 		factory.loadedExtractors.forEach[
 			val fex = factory.getFeatureExtractor(it)
-			println('''«fex»\n«fex.documentation»''')
+			println('''
+				«fex»
+				«fex.documentation»
+			''')
 		]
 	}
 }

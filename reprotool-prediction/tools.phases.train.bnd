@@ -1,0 +1,7 @@
+Bundle-Version: 3.0.0
+Bundle-Name: REPROTOOL: Tools for the Training Phase
+Bundle-Vendor: Viliam Simko
+
+Service-Component: *
+Export-Package: reprotool.dmodel.tools.phases.train
+Bundle-Category: REPROTOOL

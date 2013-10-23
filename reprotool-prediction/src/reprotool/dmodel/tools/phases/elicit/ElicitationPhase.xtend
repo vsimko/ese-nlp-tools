@@ -1,4 +1,4 @@
-package reprotool.dmodel.tools.phases
+package reprotool.dmodel.tools.phases.elicit
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EClassifier
 import org.eclipse.emf.ecore.EcoreFactory
 import reprotool.dmodel.api.FeatureExtractorFactory
-import reprotool.dmodel.api.ITool
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.ctxgen.RelationContext
@@ -30,6 +29,7 @@ import org.osgi.framework.BundleContext
 import java.util.Hashtable
 import aQute.bnd.annotation.component.Deactivate
 import org.osgi.framework.ServiceRegistration
+import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
 class ElicitationPhaseModelLoader {
@@ -59,7 +59,7 @@ class ElicitationPhaseModelLoader {
 }
 
 @Component
-class ElicitationPhase implements ITool {
+class ElicitationPhase implements IExecutableTool {
 	
 	override getUsage() '''
 		The elicitation phase requires a XMI file containing documents processed
