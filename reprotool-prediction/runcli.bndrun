@@ -14,9 +14,10 @@
 	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.elicit)',\
 	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.fselect)',\
 	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.train)',\
-	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools)'
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools)',\
+	osgi.identity;filter:='(osgi.identity=reprotool-prediction.tools.phases.preproc)'
 -resolve.effective: active
--runbundles: aQute.xray.plugin;version='[1.0.3,1.0.4)',\
+-runbundles: aQute.xray.plugin;version='[1.3.0,1.3.1)',\
 	apache-opennlp-osgi.maxent;version=latest,\
 	com.google.guava;version='[12.0.1,12.0.2)',\
 	com.google.inject;version='[3.0.0,3.0.1)',\
@@ -31,7 +32,7 @@
 	lib-junit4;version=latest,\
 	lib-opencsv.core;version=latest,\
 	lib-xom;version=latest,\
-	org.apache.felix.configadmin;version='[1.4.0,1.4.1)',\
+	org.apache.felix.configadmin;version='[1.6.0,1.6.1)',\
 	org.apache.felix.gogo.command;version='[0.12.0,0.12.1)',\
 	org.apache.felix.gogo.runtime;version='[0.10.0,0.10.1)',\
 	org.apache.felix.gogo.shell;version='[0.10.0,0.10.1)',\
@@ -43,25 +44,35 @@
 	org.apache.xerces;version='[2.9.0,2.9.1)',\
 	org.apache.xml.resolver;version='[1.2.0,1.2.1)',\
 	org.apache.xml.serializer;version='[2.7.1,2.7.2)',\
-	org.eclipse.xtend.lib;version='[2.4.2,2.4.3)',\
-	org.eclipse.xtext.xbase.lib;version='[2.4.2,2.4.3)',\
-	osgi.cmpn;version='[4.2.0,4.2.1)',\
+	org.eclipse.xtend.lib;version='[2.4.3,2.4.4)',\
+	org.eclipse.xtext.xbase.lib;version='[2.4.3,2.4.4)',\
+	osgi.cmpn;version='[5.0.0,5.0.1)',\
+	osgi.enterprise;version='[4.2.0,4.2.1)',\
+	osgi.residential;version='[4.3.0,4.3.1)',\
 	reprotool-emf-spec-model;version=latest,\
 	reprotool-prediction.core;version=latest,\
 	reprotool-prediction.extractors;version=latest,\
 	reprotool-prediction.launcher;version=latest,\
 	reprotool-prediction.logging;version=latest,\
 	reprotool-prediction.models.dm;version=latest,\
+	reprotool-prediction.models.ssplit;version=latest,\
+	reprotool-prediction.nlp.pipeline;version=latest,\
+	reprotool-prediction.nlp.ssplit;version=latest,\
 	reprotool-prediction.smloader;version=latest,\
 	reprotool-prediction.tools;version=latest,\
 	reprotool-prediction.tools.phases.elicit;version=latest,\
 	reprotool-prediction.tools.phases.fselect;version=latest,\
+	reprotool-prediction.tools.phases.preproc;version=latest,\
 	reprotool-prediction.tools.phases.train;version=latest,\
 	stanford-corenlp-osgi.framework;version=latest,\
 	stanford-corenlp-osgi.net;version=latest,\
 	stanford-nlp-models-osgi.dcoref;version=latest,\
 	stanford-nlp-models-osgi.lexparser;version=latest,\
+	stanford-nlp-models-osgi.ner;version=latest,\
+	stanford-nlp-models-osgi.pos.wsj.bidir;version=latest,\
 	stanford-nlp-models-osgi.sutime;version=latest
 -runrepos: Workspace,\
 	Bndtools Hub,\
 	Local
+-runvm: -Xms128m -Xmx768m\n\
+	-Xmx768m

@@ -70,24 +70,24 @@ public class TrainingPhaseConfig {
     Set<String> _set = IterableExtensions.<String>toSet(((Iterable<String>)Conversions.doWrapArray(_split)));
     this.outcomes = _set;
     final Procedure1<String> _function = new Procedure1<String>() {
-        public void apply(final String it) {
-          String _plus = (it + ".");
-          String _plus_1 = (_plus + TrainingPhaseConfig.SUBFIELD_GENERATOR);
-          String _property = config.getProperty(_plus_1);
-          TrainingPhaseConfig.this.generators.put(it, _property);
-        }
-      };
+      public void apply(final String it) {
+        String _plus = (it + ".");
+        String _plus_1 = (_plus + TrainingPhaseConfig.SUBFIELD_GENERATOR);
+        String _property = config.getProperty(_plus_1);
+        TrainingPhaseConfig.this.generators.put(it, _property);
+      }
+    };
     IterableExtensions.<String>forEach(this.outcomes, _function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
-        public void apply(final String it) {
-          String _plus = (it + ".");
-          String _plus_1 = (_plus + TrainingPhaseConfig.SUBFIELD_CONTEXT);
-          String _property = config.getProperty(_plus_1);
-          String[] _split = _property.split("[,;\\s]+");
-          Set<String> _set = IterableExtensions.<String>toSet(((Iterable<String>)Conversions.doWrapArray(_split)));
-          TrainingPhaseConfig.this.contexts.put(it, _set);
-        }
-      };
+      public void apply(final String it) {
+        String _plus = (it + ".");
+        String _plus_1 = (_plus + TrainingPhaseConfig.SUBFIELD_CONTEXT);
+        String _property = config.getProperty(_plus_1);
+        String[] _split = _property.split("[,;\\s]+");
+        Set<String> _set = IterableExtensions.<String>toSet(((Iterable<String>)Conversions.doWrapArray(_split)));
+        TrainingPhaseConfig.this.contexts.put(it, _set);
+      }
+    };
     IterableExtensions.<String>forEach(this.outcomes, _function_1);
     int _size = this.outcomes.size();
     Collection<String> _values = this.generators.values();
@@ -154,10 +154,10 @@ public class TrainingPhaseConfig {
         _builder.append("\t");
         IntegerRange _upTo = new IntegerRange(1, 30);
         final Function1<Integer,String> _function = new Function1<Integer,String>() {
-            public String apply(final Integer it) {
-              return "-";
-            }
-          };
+          public String apply(final Integer it) {
+            return "-";
+          }
+        };
         Iterable<String> _map = IterableExtensions.<Integer, String>map(_upTo, _function);
         String _join_1 = IterableExtensions.join(_map);
         _builder.append(_join_1, "	");

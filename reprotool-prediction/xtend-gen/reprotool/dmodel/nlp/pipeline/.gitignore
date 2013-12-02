@@ -2,3 +2,5 @@
 /.StanfordPoolHackAnnotatorFactory.java._trace
 /.ThreadFilteringPrintStream.java._trace
 /.LoggingPrintStream.java._trace
+/ReprotoolLinguisticPipeline.java
+/StanfordPoolHackAnnotatorFactory.java

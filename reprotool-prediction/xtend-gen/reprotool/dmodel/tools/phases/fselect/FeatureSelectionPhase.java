@@ -108,20 +108,20 @@ public class FeatureSelectionPhase implements IExecutableTool {
       this.logger.info(_builder);
       Properties _properties = new Properties();
       final Procedure1<Properties> _function = new Procedure1<Properties>() {
-          public void apply(final Properties it) {
-            try {
-              FileReader _fileReader = new FileReader(configFileName);
-              it.load(_fileReader);
-              File _file = new File(configFileName);
-              File _absoluteFile = _file.getAbsoluteFile();
-              String _parent = _absoluteFile.getParent();
-              String _property = it.getProperty("projectdir", _parent);
-              it.setProperty("projectdir", _property);
-            } catch (Throwable _e) {
-              throw Exceptions.sneakyThrow(_e);
-            }
+        public void apply(final Properties it) {
+          try {
+            FileReader _fileReader = new FileReader(configFileName);
+            it.load(_fileReader);
+            File _file = new File(configFileName);
+            File _absoluteFile = _file.getAbsoluteFile();
+            String _parent = _absoluteFile.getParent();
+            String _property = it.getProperty("projectdir", _parent);
+            it.setProperty("projectdir", _property);
+          } catch (Throwable _e) {
+            throw Exceptions.sneakyThrow(_e);
           }
-        };
+        }
+      };
       Properties _doubleArrow = ObjectExtensions.<Properties>operator_doubleArrow(_properties, _function);
       FeatureSelectionPhaseConfig _featureSelectionPhaseConfig = new FeatureSelectionPhaseConfig(_doubleArrow);
       final FeatureSelectionPhaseConfig config = _featureSelectionPhaseConfig;
@@ -166,22 +166,22 @@ public class FeatureSelectionPhase implements IExecutableTool {
       final PrintWriter writerAggreg = _printWriter;
       writerAggreg.println("FsetID;FallOut;F1;F1-ci;Precision;Precision-ci;Recall;Recall-ci;SP;SP-ci;MCC;MCC-ci;Context;Outcome;CtxSize");
       final Procedure2<List<String>,Integer> _function_1 = new Procedure2<List<String>,Integer>() {
-          public void apply(final List<String> ctx, final Integer currentRunId) {
-            final List<String> immutableContext = ImmutableList.<String>copyOf(ctx);
-            StringConcatenation _builder = new StringConcatenation();
-            _builder.append("We need to generate a new result based on the context: ");
-            _builder.append(immutableContext, "");
-            FeatureSelectionPhase.this.logger.info(_builder);
-            final String newResult = FeatureSelectionPhase.this.generateNewResult(specModel, immutableContext, config);
-            StringConcatenation _builder_1 = new StringConcatenation();
-            _builder_1.append("set");
-            _builder_1.append(currentRunId, "");
-            _builder_1.append(";");
-            _builder_1.append(newResult, "");
-            writerAggreg.println(_builder_1);
-            writerAggreg.flush();
-          }
-        };
+        public void apply(final List<String> ctx, final Integer currentRunId) {
+          final List<String> immutableContext = ImmutableList.<String>copyOf(ctx);
+          StringConcatenation _builder = new StringConcatenation();
+          _builder.append("We need to generate a new result based on the context: ");
+          _builder.append(immutableContext, "");
+          FeatureSelectionPhase.this.logger.info(_builder);
+          final String newResult = FeatureSelectionPhase.this.generateNewResult(specModel, immutableContext, config);
+          StringConcatenation _builder_1 = new StringConcatenation();
+          _builder_1.append("set");
+          _builder_1.append(currentRunId, "");
+          _builder_1.append(";");
+          _builder_1.append(newResult, "");
+          writerAggreg.println(_builder_1);
+          writerAggreg.flush();
+        }
+      };
       IterableExtensions.<List<String>>forEach(contextsToEvaluate, _function_1);
       writerAggreg.close();
       InputOutput.<String>println("done. see logs");
@@ -203,51 +203,51 @@ public class FeatureSelectionPhase implements IExecutableTool {
         MaxentClassifier _createEmptyClassifier = MaxentClassifier.createEmptyClassifier();
         final ContingencyTable[] results = evaluator.evaluate(_createEmptyClassifier, randsamples);
         final Function1<ContingencyTable,Double> _function = new Function1<ContingencyTable,Double>() {
-            public Double apply(final ContingencyTable it) {
-              double _precision = it.getPrecision();
-              return Double.valueOf(_precision);
-            }
-          };
+          public Double apply(final ContingencyTable it) {
+            double _precision = it.getPrecision();
+            return Double.valueOf(_precision);
+          }
+        };
         List<Double> _map = ListExtensions.<ContingencyTable, Double>map(((List<ContingencyTable>)Conversions.doWrapArray(results)), _function);
         final Iterable<Double> precision_list = StatisticalExtensions.nanToZero(_map);
         final double precision_mean = StatisticalExtensions.mean(precision_list);
         final double precision_ci = StatisticalExtensions.confidence(precision_list);
         final Function1<ContingencyTable,Double> _function_1 = new Function1<ContingencyTable,Double>() {
-            public Double apply(final ContingencyTable it) {
-              double _recall = it.getRecall();
-              return Double.valueOf(_recall);
-            }
-          };
+          public Double apply(final ContingencyTable it) {
+            double _recall = it.getRecall();
+            return Double.valueOf(_recall);
+          }
+        };
         List<Double> _map_1 = ListExtensions.<ContingencyTable, Double>map(((List<ContingencyTable>)Conversions.doWrapArray(results)), _function_1);
         final Iterable<Double> recall_list = StatisticalExtensions.nanToZero(_map_1);
         final double recall_mean = StatisticalExtensions.mean(recall_list);
         final double recall_ci = StatisticalExtensions.confidence(recall_list);
         final Function1<ContingencyTable,Double> _function_2 = new Function1<ContingencyTable,Double>() {
-            public Double apply(final ContingencyTable it) {
-              double _f1Measure = it.getF1Measure();
-              return Double.valueOf(_f1Measure);
-            }
-          };
+          public Double apply(final ContingencyTable it) {
+            double _f1Measure = it.getF1Measure();
+            return Double.valueOf(_f1Measure);
+          }
+        };
         List<Double> _map_2 = ListExtensions.<ContingencyTable, Double>map(((List<ContingencyTable>)Conversions.doWrapArray(results)), _function_2);
         final Iterable<Double> f1_list = StatisticalExtensions.nanToZero(_map_2);
         final double f1_mean = StatisticalExtensions.mean(f1_list);
         final double f1_ci = StatisticalExtensions.confidence(f1_list);
         final Function1<ContingencyTable,Double> _function_3 = new Function1<ContingencyTable,Double>() {
-            public Double apply(final ContingencyTable it) {
-              double _specificity = it.getSpecificity();
-              return Double.valueOf(_specificity);
-            }
-          };
+          public Double apply(final ContingencyTable it) {
+            double _specificity = it.getSpecificity();
+            return Double.valueOf(_specificity);
+          }
+        };
         List<Double> _map_3 = ListExtensions.<ContingencyTable, Double>map(((List<ContingencyTable>)Conversions.doWrapArray(results)), _function_3);
         final Iterable<Double> specificity_list = StatisticalExtensions.nanToZero(_map_3);
         final double specificity_mean = StatisticalExtensions.mean(specificity_list);
         final double specificity_ci = StatisticalExtensions.confidence(specificity_list);
         final Function1<ContingencyTable,Double> _function_4 = new Function1<ContingencyTable,Double>() {
-            public Double apply(final ContingencyTable it) {
-              double _mCC = it.getMCC();
-              return Double.valueOf(_mCC);
-            }
-          };
+          public Double apply(final ContingencyTable it) {
+            double _mCC = it.getMCC();
+            return Double.valueOf(_mCC);
+          }
+        };
         List<Double> _map_4 = ListExtensions.<ContingencyTable, Double>map(((List<ContingencyTable>)Conversions.doWrapArray(results)), _function_4);
         final Iterable<Double> mcc_list = StatisticalExtensions.nanToZero(_map_4);
         final double mcc_mean = StatisticalExtensions.mean(mcc_list);
@@ -276,11 +276,11 @@ public class FeatureSelectionPhase implements IExecutableTool {
       List<List<Integer>> _randomCombinationsAsList = Combinations.randomCombinationsAsList(_size_1, (subsetSize).intValue(), howmany);
       for (final List<Integer> comb : _randomCombinationsAsList) {
         final Function1<Integer,String> _function = new Function1<Integer,String>() {
-            public String apply(final Integer it) {
-              String _get = list.get((it).intValue());
-              return _get;
-            }
-          };
+          public String apply(final Integer it) {
+            String _get = list.get((it).intValue());
+            return _get;
+          }
+        };
         List<String> _map = ListExtensions.<Integer, String>map(comb, _function);
         result.add(_map);
       }
