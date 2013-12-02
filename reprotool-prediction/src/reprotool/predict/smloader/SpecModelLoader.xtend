@@ -52,6 +52,13 @@ class SpecModelLoader {
 	
 	def void saveDomainModel(Specification specModel, String outFileName) {
 		specModel.removeEAnnotationsFromDomainModel
+		
+		// TODO: currently, we assume that generated package name=nsPrefix=nsURI 
+		specModel.domainModel.modelPackage => [
+			setNsPrefix(name)
+			setNsURI(name)
+		]
+		
 		new XMIResourceImpl => [
 			contents.add(specModel.domainModel.modelPackage)
 			save(new FileOutputStream(outFileName), null)
