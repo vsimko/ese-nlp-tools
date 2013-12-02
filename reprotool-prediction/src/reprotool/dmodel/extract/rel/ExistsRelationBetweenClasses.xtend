@@ -7,6 +7,8 @@ import reprotool.dmodel.ctxgen.RelationContext
 @Feature("relcl")
 class ExistsRelationBetweenClasses extends AbstractFeatureExtractor {
 	
+	public static final val SUPPORTED_OUTCOMES = #[true.toString, false.toString]
+
 	def dispatch visit(RelationContext rel) {
 		rel.srcEClass.EReferences.exists[EReferenceType == rel.destEClass].toString
 	}

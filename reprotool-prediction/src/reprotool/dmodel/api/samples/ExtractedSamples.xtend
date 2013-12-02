@@ -22,7 +22,14 @@ class ExtractedSamples implements Iterable<FeatureEvent> {
 	override iterator() {
 		generator.map[ element |
 			val outcome = outcomeFeatureExtractor.featureName + "=" + outcomeFeatureExtractor.visit(element)
-			val context = contextFeatureExtractors.map[ featureName -> visit(element)].filter[Value != null].map[key + "=" + Value].toList
+
+			val context =
+				contextFeatureExtractors
+				.map[ featureName -> visit(element)] // extract the value (visitor design pattern), now we have pairs: String->String
+				.filter[Value != null] // filter elements that were not extracted by any feature extractor
+				.map[key + "=" + value] // convert String->String pairs to: "String=String"
+				.toList // materialize the iterator
+				
 			if(outcome == null && context.empty)
 				null
 			else

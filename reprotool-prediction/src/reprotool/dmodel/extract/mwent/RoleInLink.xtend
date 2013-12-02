@@ -15,6 +15,10 @@ class RoleInLink extends AbstractFeatureExtractor {
 	public static val OUTCOME_CONT = "CONT"
 	public static val OUTCOME_LAST = "LAST"
 
+	public static final val SUPPORTED_OUTCOMES = #[
+		OUTCOME_NONE, OUTCOME_HEAD, OUTCOME_CONT, OUTCOME_LAST
+	]
+
 	private var int wordOffsetInSentence
 	override onNewParams() {
 		wordOffsetInSentence = params.toIntParam(0)

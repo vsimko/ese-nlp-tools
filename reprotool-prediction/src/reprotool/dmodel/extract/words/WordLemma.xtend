@@ -15,7 +15,7 @@ class WordLemma extends AbstractFeatureExtractor {
 	}
 	
 	def dispatch visit(SpecWord word) {
-		word.getRelativeWordInSentence(wordOffsetInSentence)?.corefRepOrSelf.lemma
+		return word.getRelativeWordInSentence(wordOffsetInSentence)?.corefRepOrSelf.lemma
 	}
 
 	override getDocumentation() '''

@@ -30,6 +30,7 @@ import java.util.Hashtable
 import aQute.bnd.annotation.component.Deactivate
 import org.osgi.framework.ServiceRegistration
 import reprotool.predict.exectoolapi.IExecutableTool
+import reprotool.dmodel.extract.words.WordLinkType
 
 @Component
 class ElicitationPhaseModelLoader {
@@ -86,18 +87,21 @@ class ElicitationPhase implements IExecutableTool {
 		this.fexFactory = factory
 	}
 	
+	// See WordLinkType class for the list of supported outcome values
 	private MaxentModel linktypeModel
 	@Reference(target="(model=linktype)")
 	def void set_linktypeModel(MaxentModel model) {
 		this.linktypeModel = model
 	}
 	
+	// See RoleInLink class for the list of supported outcome values
 	private MaxentModel roleinlinkModel
 	@Reference(target="(model=roleinlink)")
 	def void set_roleinlinkModel(MaxentModel model) {
 		this.roleinlinkModel = model
 	}
 	
+	// See ExistsRelationBetweenClasses for the list of supported outcome values
 	private MaxentModel relclModel
 	@Reference(target="(model=relcl)")
 	def void set_relclModel(MaxentModel model) {
@@ -142,6 +146,7 @@ class ElicitationPhase implements IExecutableTool {
 		fillBacklinksEAnnotations		// requires EClasses
 		mergeEClassesWithSameName		// requires "backlinks"
 		predictRelations				// requires "backlinks"
+		removeSpacesFromDomainModel
 		saveResults
 		
 		// ------------------------
@@ -172,13 +177,30 @@ class ElicitationPhase implements IExecutableTool {
 	private def void predictDomEntCandidates() {
 		"TASK : Predicting which words represent domain entities".info
 		
-		val samples = new ExtractedSamples(fexFactory, specModel, "words", linktypeModel.contextFeatureNames, linktypeModel.getOutcomeFeatureName)
+		// We need to convert the EMF "specModel" into a list of samples
+		// Here, a sample corresponds to an instance of SpecWord class.
+		// The sample contains features: "contextFeatureNames" + "outcomeFeatureName"
+		val samples = new ExtractedSamples(
+			fexFactory,	// this factory provides the necessary feature extractors 
+			specModel,	// this is the huge EMF model (Specification Model)
+			"words",	// we are extracting samples corresponding to words (SpecWord instances)
+			linktypeModel.getContextFeatureNames,	// list of context features
+			linktypeModel.getOutcomeFeatureName		// the outcome 
+		)
+		
+		// Now, we need a classifier that processes the samples
 		val classifier = MaxentClassifier.createFromModel(linktypeModel)
 
+		// The classifier is implemented as an iterator
+		// that converts a list of input samples to a list of predictions.
 		classifier.predictIterator(samples).forEach[ event |
+
+			// in this lambda function, we handle a single prediction
 			val outcome = event.outcomeFeatureValue
+			
+			// our "linktypeModel" classification model predicted  
 			switch outcome {
-				case "class" : {
+				case WordLinkType.OUTCOME_CLASS : {
 					val attachedWord = event.attachment as SpecWord
 					val sentence = attachedWord.eContainer as SpecSentence
 					sentence.entityLinks += SpecFactory.eINSTANCE.createEntityLink => [
@@ -186,7 +208,7 @@ class ElicitationPhase implements IExecutableTool {
 						entType = DomainEntityType.CLASS
 					]
 				}
-				case "ref" : {
+				case WordLinkType.OUTCOME_REFERENCE : {
 					val attachedWord = event.attachment as SpecWord
 					val sentence = attachedWord.eContainer as SpecSentence
 					sentence.entityLinks += SpecFactory.eINSTANCE.createEntityLink => [
@@ -201,7 +223,13 @@ class ElicitationPhase implements IExecutableTool {
 	private def void predictMultiWordEntities() {
 		"TASK : Predicting which words represent entities composed of multiple words".info
 		
-		val samples = new ExtractedSamples(fexFactory, specModel, "words", roleinlinkModel.contextFeatureNames, roleinlinkModel.getOutcomeFeatureName)
+		val samples = new ExtractedSamples(
+			fexFactory,
+			specModel,
+			"words",
+			roleinlinkModel.getContextFeatureNames,
+			roleinlinkModel.getOutcomeFeatureName
+		)
 		val classifier = MaxentClassifier.createFromModel(roleinlinkModel)
 		
 		
@@ -334,5 +362,10 @@ class ElicitationPhase implements IExecutableTool {
 				}
 			}
 		]
+	}
+	
+	private def void removeSpacesFromDomainModel() {
+		"TASK : Removing spaces from class names in the domain model".info
+		domainModel.filter(EClass).forEach[name = name.replaceAll(" ", "")]
 	}
 }

@@ -2,6 +2,10 @@ package reprotool.dmodel.ctxgen
 
 import spec.Specification
 
+/**
+ * TODO: Currently hard-coded in current implementation
+ * Only "words" and "relations" are supported at the moment.
+ */
 class ContextGeneratorFactory {
 	
 	def static IContextGenerator<?> getContextGenerator(String ctxGenName, Specification specModel) {
