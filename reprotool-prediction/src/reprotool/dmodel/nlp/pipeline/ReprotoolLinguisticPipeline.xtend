@@ -96,7 +96,10 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 			throw new InterruptedException("Activation thread interrupted")
 	}
 	
-	/** Registers all annotators relevant for Reprotool */
+	/**
+	 * Registers all annotators relevant for Reprotool
+	 * TODO: split annotators into multiple OSGi services and load them lazily.
+	 */
 	@Activate def void activate(BundleContext bundleContext) {
 		
 		"REPROTOOL Linguistic Pipeline - Activation Started in a background thread".info
@@ -105,7 +108,8 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 			
 			try {
 				
-				// hacking the poor Stanford implementation which refers to this static field from multiple places in the code
+				// hacking the poor Stanford implementation which refers to this static field
+				// from multiple places in the code
 				StanfordCoreNLP.getDeclaredField("pool") => [
 					accessible = true
 					set(null, hackedAnnotatorPool)
@@ -158,19 +162,19 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 				"lemma".addAnnotator(new MorphaAnnotator(beVerbose))
 		      	checkActivationInterrupted
 		
-				// NER: Stanford NER
-				// ========================================================================
-				"ner".addAnnotator(new NERCombinerAnnotator(
-					new NERClassifierCombiner(
-						NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
-		                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
-		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
-		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
-		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
-		            ),
-					beVerbose
-				))
-		      	checkActivationInterrupted
+//				// NER: Stanford NER
+//				// ========================================================================
+//				"ner".addAnnotator(new NERCombinerAnnotator(
+//					new NERClassifierCombiner(
+//						NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
+//		                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
+//		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
+//		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
+//		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
+//		            ),
+//					beVerbose
+//				))
+//		      	checkActivationInterrupted
 		
 				// PARSER: Standard Lexicalized Parser of sentences
 				// ========================================================================
@@ -182,10 +186,10 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 		      	))
 		      	checkActivationInterrupted
 		      	
-				// COREF: Stanford Deterministic Coreference Resolution System
-				// ========================================================================
-				"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
-		      	checkActivationInterrupted
+//				// COREF: Stanford Deterministic Coreference Resolution System
+//				// ========================================================================
+//				"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
+//		      	checkActivationInterrupted
 		      	
 			} catch(Exception e) {
 				e.message.error
@@ -322,9 +326,10 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 			var href = tag.attributes.get("href")
 			if(href == null)			href = tag.attributes.get("HREF")
 			if(href == null)			return null
-			if(!href.startsWith("#"))	return null
-			href = href.substring(1);
-			// we have a valid href value at this point
+			if(href.startsWith("#"))
+				href = href.substring(1);
+				
+			// ASSERT we should have a valid href value at this point
 			
 			entlink = SpecFactory.eINSTANCE.createEntityLink
 			entlink.entLabel = href
