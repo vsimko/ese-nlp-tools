@@ -1,0 +1,21 @@
+6 domenovych entit
+18 trid
+
+uspesnost metody
+- co vsechno by se melo namatchovat ? Napr. CashBox - pouze CashBox nebo i CashBoxControllerEventHandlerImpl ?
+- detekovat prefixy/suffixy ?  
+  - *ControllerEventHandlerImpl, *ControllerEventHandlerIf, *TO
+  - casto byvaji I* pro interfacy, E* pro enumy atd.
+  - detekovat na vsech tridach (lepsi - klasifikator podle typu trida x interface, podle predku atd.)
+  - otocit stringy a pouzit opet jaro-winkler pro detekci suffixu ? (slozitejsi)
+  - oriznout stringy na stejnou delku ? (ztrata presnosti)
+  - zacinaji velkym pismenem
+  - *Impl x *EventHandlerImpl - odsekavat postupne ? Posledni slovo musi zustat
+  
+threshold: 0.84
+found (classes): 5/6 
+precision (pairs):0.39473684210526316
+recall (pairs):   0.8333333333333334
+
+- poznamenat, ze nektere linky jsou urceny korektne, ale odvozena dom. entita neni ext. system, 
+  napr. Store, Stock, CashDesk (coz snizuje precision).    
