@@ -42,19 +42,19 @@ class Main {
 		//
 		// 2) sort values by score and cut off at selected limit
 		//
-		// 3) compare with gold set
+		// 3) compare with gold set and print precision/recall values
 		
 		val map = scoreAndMatch(predicted, actual)
 		filter(map, THRESHOLD)
 		
-		println("actual:")
+		println('''actual («map.keySet.size» predicted, «map.values.flatten.size» implementation classes''')
 		for (entry : map.entrySet) {
 			entry.value.sortInplaceBy[-it.value]
 			println('''«entry.key» «entry.value»''')
 		}
 
 		println
-		println("gold:")
+		println('''gold («gold.keySet.size» predicted, «gold.values.flatten.size» implementation classes''')
 		for (entry : gold.entrySet) {
 			println('''«entry.key» «entry.value»''')
 		}
@@ -83,8 +83,9 @@ class Main {
 		// false-negative	- # pairs in gold not in actual (missed)
 		val falseNeg = Sets::difference(goldPairs, actualPairs).size
 		
-		val goldClasses = gold.keySet
-		val actualClasses = actual.keySet
+		val goldPredicted = gold.keySet
+		val actualPredicted = actual.keySet
+		
 		
 		val precision = precision(truePos, falsePos)
 		val recall = recall(truePos, falseNeg)
@@ -92,7 +93,10 @@ class Main {
 		
 		println
 		println('''threshold: «THRESHOLD»''')
-		println('''found (classes): «Sets::intersection(goldClasses, actualClasses).size»/«goldClasses.size» ''')
+		println('''found (predicted classes): «Sets::intersection(goldPredicted, actualPredicted).size»/«goldPredicted.size» ''')
+		println('''gold pairs: «goldPairs.size»''')
+		println('''actual all pairs: «actualPairs.size»''')
+		println('''actual correct pairs: «truePos»''')
 		println('''precision (pairs):«precision»''')
 		println('''recall (pairs):   «recall»''')		
 		println('''f1 (pairs):       «f1»''')
