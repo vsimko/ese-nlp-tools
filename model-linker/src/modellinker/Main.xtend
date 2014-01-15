@@ -44,22 +44,37 @@ class Main {
 		//
 		// 3) compare with gold set and print precision/recall values
 		
-		val map = scoreAndMatch(predicted, actual)
-		filter(map, THRESHOLD)
+//		val map = scoreAndMatch(predicted, actual)
+//		 
+//		filter(map, THRESHOLD)
 		
-		println('''actual («map.keySet.size» predicted, «map.values.flatten.size» implementation classes''')
-		for (entry : map.entrySet) {
-			entry.value.sortInplaceBy[-it.value]
-			println('''«entry.key» «entry.value»''')
-		}
-
-		println
-		println('''gold («gold.keySet.size» predicted, «gold.values.flatten.size» implementation classes''')
-		for (entry : gold.entrySet) {
-			println('''«entry.key» «entry.value»''')
-		}
+//		println('''actual («map.keySet.size» predicted, «map.values.flatten.size» implementation classes''')
+//		for (entry : map.entrySet) {
+//			entry.value.sortInplaceBy[-it.value]
+//			println('''«entry.key» «entry.value»''')
+//		}
+//
+//		println
+//		println('''gold («gold.keySet.size» predicted, «gold.values.flatten.size» implementation classes''')
+//		for (entry : gold.entrySet) {
+//			println('''«entry.key» «entry.value»''')
+//		}
 		
-		evaluate(map, gold)
+//		evaluate(map, gold)
+		
+		val matrix = similarityMatrix(predicted, actual)
+		printMatrix(matrix)
+	}
+	
+	def static printMatrix(TreeMap<String, List<Pair<String, Double>>> map) {
+		
+		// header
+		println('''X,«map.firstEntry.value.map[key].join(",")»''')
+		
+		// values
+		for (row : map.entrySet) {
+			println('''«row.key»,«row.value.map[value].join(",")»''')
+		}
 	}
 	
 	def static evaluate(TreeMap<String, List<Pair<String, Double>>> actual, TreeMap<String, List<String>> gold) {
@@ -186,6 +201,31 @@ class Main {
 			
 			val list = map.get(maxEntity)
 			list.add(new Pair(act, max))
+		}
+		
+		map
+	}
+	
+	private def static TreeMap<String, List<Pair<String, Double>>> similarityMatrix(String[] predicted, 
+		String[] actual
+	) {
+//		val strategy = new LevenshteinDistanceStrategy
+//		val strategy = new JaroStrategy
+		val strategy = new JaroWinklerStrategy
+//		val strategy = new DiceCoefficientStrategy
+		
+		val service = new StringSimilarityServiceImpl(strategy)
+		
+		val map = new TreeMap<String, List<Pair<String, Double>>>
+		
+		for (pred : predicted) {
+			val list = <Pair<String, Double>>newArrayList
+			map.put(pred, list)
+			
+			for (act : actual) {
+				val score = service.score(act, pred)
+				list.add(new Pair(act, score))
+			}
 		}
 		
 		map
