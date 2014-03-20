@@ -146,92 +146,93 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
   
   /**
    * Registers all annotators relevant for Reprotool
+   * TODO: split annotators into multiple OSGi services and load them lazily.
    */
   @Activate
   public void activate(final BundleContext bundleContext) {
     this.logger.info("REPROTOOL Linguistic Pipeline - Activation Started in a background thread");
     final Runnable _function = new Runnable() {
-        public void run() {
-          try {
-            Field _declaredField = StanfordCoreNLP.class.getDeclaredField("pool");
-            final Procedure1<Field> _function = new Procedure1<Field>() {
-                public void apply(final Field it) {
-                  try {
-                    it.setAccessible(true);
-                    it.set(null, ReprotoolLinguisticPipeline.this.hackedAnnotatorPool);
-                  } catch (Throwable _e) {
-                    throw Exceptions.sneakyThrow(_e);
-                  }
-                }
-              };
-            ObjectExtensions.<Field>operator_doubleArrow(_declaredField, _function);
-            final int MAXSENTENCELEN = 256;
-            PTBTokenizerAnnotator _pTBTokenizerAnnotator = new PTBTokenizerAnnotator(
-              ReprotoolLinguisticPipeline.this.beVerbose, 
-              "tokenizeNLs,invertible,ptb3Escaping=true");
-            ReprotoolLinguisticPipeline.this.addAnnotator("tokenize", _pTBTokenizerAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            ReprotoolXmlAnnotator _reprotoolXmlAnnotator = new ReprotoolXmlAnnotator(
-              ".*", 
-              "[hH][123456]|p|P|ul|UL|ol|OL", 
-              "datetime|date", 
-              "style|STYLE|script|SCRIPT|head|HEAD", 
-              true);
-            ReprotoolLinguisticPipeline.this.addAnnotator("cleanxml", _reprotoolXmlAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            Bundle _bundle = bundleContext.getBundle();
-            URL _resource = _bundle.getResource("reprotool/predict/models/ssplit/ssplit.maxent.gz");
-            final InputStream ssplitStream = _resource.openStream();
-            final MaxentModel ssplitModel = MaxentClassifier.loadMaxentModel(ssplitStream);
-            ssplitStream.close();
-            MaxentSSplitAnnotator _maxentSSplitAnnotator = new MaxentSSplitAnnotator();
-            final MaxentSSplitAnnotator ssplitAnnotator = _maxentSSplitAnnotator;
-            ssplitAnnotator.setMaxentModel(ssplitModel);
-            ReprotoolLinguisticPipeline.this.addAnnotator("ssplit", ssplitAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            Bundle _bundle_1 = bundleContext.getBundle();
-            URL _resource_1 = _bundle_1.getResource("edu/stanford/nlp/models/pos-tagger/wsj-bidirectional/wsj-0-18-bidirectional-distsim.tagger");
-            String _externalForm = _resource_1.toExternalForm();
-            POSTaggerAnnotator _pOSTaggerAnnotator = new POSTaggerAnnotator(_externalForm, 
-              ReprotoolLinguisticPipeline.this.beVerbose, MAXSENTENCELEN);
-            ReprotoolLinguisticPipeline.this.addAnnotator("pos", _pOSTaggerAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            MorphaAnnotator _morphaAnnotator = new MorphaAnnotator(ReprotoolLinguisticPipeline.this.beVerbose);
-            ReprotoolLinguisticPipeline.this.addAnnotator("lemma", _morphaAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            AbstractSequenceClassifier<CoreLabel> _prepareCRFClassifier = ReprotoolLinguisticPipeline.this.prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL);
-            AbstractSequenceClassifier<CoreLabel> _prepareCRFClassifier_1 = ReprotoolLinguisticPipeline.this.prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL);
-            AbstractSequenceClassifier<CoreLabel> _prepareCRFClassifier_2 = ReprotoolLinguisticPipeline.this.prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL);
-            NERClassifierCombiner _nERClassifierCombiner = new NERClassifierCombiner(
-              NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT, 
-              false, _prepareCRFClassifier, _prepareCRFClassifier_1, _prepareCRFClassifier_2);
-            NERCombinerAnnotator _nERCombinerAnnotator = new NERCombinerAnnotator(_nERClassifierCombiner, 
-              ReprotoolLinguisticPipeline.this.beVerbose);
-            ReprotoolLinguisticPipeline.this.addAnnotator("ner", _nERCombinerAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("-retainTmpSubcategories");
-            ParserAnnotator _parserAnnotator = new ParserAnnotator(
-              DefaultPaths.DEFAULT_PARSER_MODEL, 
-              ReprotoolLinguisticPipeline.this.beVerbose, MAXSENTENCELEN, 
-              ((String[]) ((String[])Conversions.unwrapArray(_newArrayList, String.class))));
-            ReprotoolLinguisticPipeline.this.addAnnotator("parse", _parserAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-            Properties _properties = new Properties();
-            DeterministicCorefAnnotator _deterministicCorefAnnotator = new DeterministicCorefAnnotator(_properties);
-            ReprotoolLinguisticPipeline.this.addAnnotator("dcoref", _deterministicCorefAnnotator);
-            ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
-          } catch (final Throwable _t) {
-            if (_t instanceof Exception) {
-              final Exception e = (Exception)_t;
-              String _message = e.getMessage();
-              ReprotoolLinguisticPipeline.this.logger.error(_message);
-            } else {
-              throw Exceptions.sneakyThrow(_t);
+      public void run() {
+        try {
+          Field _declaredField = StanfordCoreNLP.class.getDeclaredField("pool");
+          final Procedure1<Field> _function = new Procedure1<Field>() {
+            public void apply(final Field it) {
+              try {
+                it.setAccessible(true);
+                it.set(null, ReprotoolLinguisticPipeline.this.hackedAnnotatorPool);
+              } catch (Throwable _e) {
+                throw Exceptions.sneakyThrow(_e);
+              }
             }
+          };
+          ObjectExtensions.<Field>operator_doubleArrow(_declaredField, _function);
+          final int MAXSENTENCELEN = 256;
+          PTBTokenizerAnnotator _pTBTokenizerAnnotator = new PTBTokenizerAnnotator(
+            ReprotoolLinguisticPipeline.this.beVerbose, 
+            "tokenizeNLs,invertible,ptb3Escaping=true");
+          ReprotoolLinguisticPipeline.this.addAnnotator("tokenize", _pTBTokenizerAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          ReprotoolXmlAnnotator _reprotoolXmlAnnotator = new ReprotoolXmlAnnotator(
+            ".*", 
+            "[hH][123456]|p|P|ul|UL|ol|OL", 
+            "datetime|date", 
+            "style|STYLE|script|SCRIPT|head|HEAD", 
+            true);
+          ReprotoolLinguisticPipeline.this.addAnnotator("cleanxml", _reprotoolXmlAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          Bundle _bundle = bundleContext.getBundle();
+          URL _resource = _bundle.getResource("reprotool/predict/models/ssplit/ssplit.maxent.gz");
+          final InputStream ssplitStream = _resource.openStream();
+          final MaxentModel ssplitModel = MaxentClassifier.loadMaxentModel(ssplitStream);
+          ssplitStream.close();
+          MaxentSSplitAnnotator _maxentSSplitAnnotator = new MaxentSSplitAnnotator();
+          final MaxentSSplitAnnotator ssplitAnnotator = _maxentSSplitAnnotator;
+          ssplitAnnotator.setMaxentModel(ssplitModel);
+          ReprotoolLinguisticPipeline.this.addAnnotator("ssplit", ssplitAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          Bundle _bundle_1 = bundleContext.getBundle();
+          URL _resource_1 = _bundle_1.getResource("edu/stanford/nlp/models/pos-tagger/wsj-bidirectional/wsj-0-18-bidirectional-distsim.tagger");
+          String _externalForm = _resource_1.toExternalForm();
+          POSTaggerAnnotator _pOSTaggerAnnotator = new POSTaggerAnnotator(_externalForm, 
+            ReprotoolLinguisticPipeline.this.beVerbose, MAXSENTENCELEN);
+          ReprotoolLinguisticPipeline.this.addAnnotator("pos", _pOSTaggerAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          MorphaAnnotator _morphaAnnotator = new MorphaAnnotator(ReprotoolLinguisticPipeline.this.beVerbose);
+          ReprotoolLinguisticPipeline.this.addAnnotator("lemma", _morphaAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          AbstractSequenceClassifier<CoreLabel> _prepareCRFClassifier = ReprotoolLinguisticPipeline.this.prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL);
+          AbstractSequenceClassifier<CoreLabel> _prepareCRFClassifier_1 = ReprotoolLinguisticPipeline.this.prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL);
+          AbstractSequenceClassifier<CoreLabel> _prepareCRFClassifier_2 = ReprotoolLinguisticPipeline.this.prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL);
+          NERClassifierCombiner _nERClassifierCombiner = new NERClassifierCombiner(
+            NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT, 
+            false, _prepareCRFClassifier, _prepareCRFClassifier_1, _prepareCRFClassifier_2);
+          NERCombinerAnnotator _nERCombinerAnnotator = new NERCombinerAnnotator(_nERClassifierCombiner, 
+            ReprotoolLinguisticPipeline.this.beVerbose);
+          ReprotoolLinguisticPipeline.this.addAnnotator("ner", _nERCombinerAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("-retainTmpSubcategories");
+          ParserAnnotator _parserAnnotator = new ParserAnnotator(
+            DefaultPaths.DEFAULT_PARSER_MODEL, 
+            ReprotoolLinguisticPipeline.this.beVerbose, MAXSENTENCELEN, 
+            ((String[]) ((String[])Conversions.unwrapArray(_newArrayList, String.class))));
+          ReprotoolLinguisticPipeline.this.addAnnotator("parse", _parserAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+          Properties _properties = new Properties();
+          DeterministicCorefAnnotator _deterministicCorefAnnotator = new DeterministicCorefAnnotator(_properties);
+          ReprotoolLinguisticPipeline.this.addAnnotator("dcoref", _deterministicCorefAnnotator);
+          ReprotoolLinguisticPipeline.this.checkActivationInterrupted();
+        } catch (final Throwable _t) {
+          if (_t instanceof Exception) {
+            final Exception e = (Exception)_t;
+            String _message = e.getMessage();
+            ReprotoolLinguisticPipeline.this.logger.error(_message);
+          } else {
+            throw Exceptions.sneakyThrow(_t);
           }
-          ReprotoolLinguisticPipeline.this.logger.info("REPROTOOL Linguistic Pipeline - background thread finished");
         }
-      };
+        ReprotoolLinguisticPipeline.this.logger.info("REPROTOOL Linguistic Pipeline - background thread finished");
+      }
+    };
     Thread _thread = new Thread(_function);
     this.activationThread = _thread;
     this.activationThread.start();
@@ -257,15 +258,15 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
         SeqClassifierFlags _seqClassifierFlags = new SeqClassifierFlags();
         CRFClassifier<CoreLabel> _cRFClassifier = new CRFClassifier<CoreLabel>(_seqClassifierFlags);
         final Procedure1<CRFClassifier<CoreLabel>> _function = new Procedure1<CRFClassifier<CoreLabel>>() {
-            public void apply(final CRFClassifier<CoreLabel> it) {
-              try {
-                GZIPInputStream _gZIPInputStream = new GZIPInputStream(inputStream);
-                it.loadClassifier(_gZIPInputStream);
-              } catch (Throwable _e) {
-                throw Exceptions.sneakyThrow(_e);
-              }
+          public void apply(final CRFClassifier<CoreLabel> it) {
+            try {
+              GZIPInputStream _gZIPInputStream = new GZIPInputStream(inputStream);
+              it.loadClassifier(_gZIPInputStream);
+            } catch (Throwable _e) {
+              throw Exceptions.sneakyThrow(_e);
             }
-          };
+          }
+        };
         CRFClassifier<CoreLabel> _doubleArrow = ObjectExtensions.<CRFClassifier<CoreLabel>>operator_doubleArrow(_cRFClassifier, _function);
         _xblockexpression = (_doubleArrow);
       }
@@ -340,7 +341,7 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
   }
   
   public HashMap<CoreLabel,CoreLabel> getCoreferences(final Annotation document) {
-    HashMap<CoreLabel,CoreLabel> _hashMap = new HashMap<CoreLabel,CoreLabel>();
+    HashMap<CoreLabel,CoreLabel> _hashMap = new HashMap<CoreLabel, CoreLabel>();
     final HashMap<CoreLabel,CoreLabel> result = _hashMap;
     Map<Integer,CorefChain> _corefChain = this.getCorefChain(document);
     boolean _notEquals = (!Objects.equal(_corefChain, null));
@@ -348,11 +349,11 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
       Map<Integer,CorefChain> _corefChain_1 = this.getCorefChain(document);
       Set<Entry<Integer,CorefChain>> _entrySet = _corefChain_1.entrySet();
       final Function1<Entry<Integer,CorefChain>,CorefChain> _function = new Function1<Entry<Integer,CorefChain>,CorefChain>() {
-          public CorefChain apply(final Entry<Integer,CorefChain> it) {
-            CorefChain _value = it.getValue();
-            return _value;
-          }
-        };
+        public CorefChain apply(final Entry<Integer,CorefChain> it) {
+          CorefChain _value = it.getValue();
+          return _value;
+        }
+      };
       Iterable<CorefChain> _map = IterableExtensions.<Entry<Integer,CorefChain>, CorefChain>map(_entrySet, _function);
       for (final CorefChain entry : _map) {
         List<CorefMention> _mentionsInTextualOrder = entry.getMentionsInTextualOrder();
@@ -424,12 +425,10 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
         return null;
       }
       boolean _startsWith = href.startsWith("#");
-      boolean _not_1 = (!_startsWith);
-      if (_not_1) {
-        return null;
+      if (_startsWith) {
+        String _substring = href.substring(1);
+        href = _substring;
       }
-      String _substring = href.substring(1);
-      href = _substring;
       EntityLink _createEntityLink = SpecFactory.eINSTANCE.createEntityLink();
       entlink = _createEntityLink;
       entlink.setEntLabel(href);
@@ -443,52 +442,52 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
    */
   public SpecDocument analyzedDocToSpecDoc(final Annotation document) {
     final SpecDocument specdoc = SpecFactory.eINSTANCE.createSpecDocument();
-    HashMap<XMLTag,EntityLink> _hashMap = new HashMap<XMLTag,EntityLink>();
+    HashMap<XMLTag,EntityLink> _hashMap = new HashMap<XMLTag, EntityLink>();
     final HashMap<XMLTag,EntityLink> tag2entlink = _hashMap;
-    HashMap<Pair<Integer,Integer>,SpecWord> _hashMap_1 = new HashMap<Pair<Integer,Integer>,SpecWord>();
+    HashMap<Pair<Integer,Integer>,SpecWord> _hashMap_1 = new HashMap<Pair<Integer, Integer>, SpecWord>();
     final HashMap<Pair<Integer,Integer>,SpecWord> idx2word = _hashMap_1;
     List<CoreMap> _sentences = this.getSentences(document);
     final Procedure2<CoreMap,Integer> _function = new Procedure2<CoreMap,Integer>() {
-        public void apply(final CoreMap sentence, final Integer sentIndex) {
-          final SpecSentence specSentence = SpecFactory.eINSTANCE.createSpecSentence();
-          EList<SpecSentence> _sentences = specdoc.getSentences();
-          _sentences.add(specSentence);
-          List<CoreLabel> _tokens = ReprotoolLinguisticPipeline.this.getTokens(sentence);
-          final Procedure2<CoreLabel,Integer> _function = new Procedure2<CoreLabel,Integer>() {
-              public void apply(final CoreLabel token, final Integer tokenIndex) {
-                final SpecWord specWord = SpecFactory.eINSTANCE.createSpecWord();
-                EList<SpecWord> _words = specSentence.getWords();
-                _words.add(specWord);
-                Pair<Integer,Integer> _of = Pair.<Integer, Integer>of(sentIndex, tokenIndex);
-                idx2word.put(_of, specWord);
-                String _wordStr = ReprotoolLinguisticPipeline.this.getWordStr(token);
-                specWord.setOriginal(_wordStr);
-                String _tag = token.tag();
-                specWord.setPosTag(_tag);
-                String _lemma = token.lemma();
-                specWord.setLemma(_lemma);
-                EntityLink _entityLink = null;
-                XMLTag _innermostXmlTag = ReprotoolLinguisticPipeline.this.getInnermostXmlTag(token);
-                if (_innermostXmlTag!=null) {
-                  _entityLink=ReprotoolLinguisticPipeline.this.toEntityLink(_innermostXmlTag, tag2entlink);
-                }
-                final EntityLink entLink = _entityLink;
-                boolean _notEquals = (!Objects.equal(entLink, null));
-                if (_notEquals) {
-                  EList<SpecWord> _linkedWords = entLink.getLinkedWords();
-                  _linkedWords.add(specWord);
-                  EList<EntityLink> _entityLinks = specSentence.getEntityLinks();
-                  _entityLinks.add(entLink);
-                }
-              }
-            };
-          IterableExtensions.<CoreLabel>forEach(_tokens, _function);
-          SemanticGraph _collapsedCCProcessedDependencies = ReprotoolLinguisticPipeline.this.getCollapsedCCProcessedDependencies(sentence);
-          IndexedWord _firstRoot = null;
-          if (_collapsedCCProcessedDependencies!=null) {
-            _firstRoot=_collapsedCCProcessedDependencies.getFirstRoot();
+      public void apply(final CoreMap sentence, final Integer sentIndex) {
+        final SpecSentence specSentence = SpecFactory.eINSTANCE.createSpecSentence();
+        EList<SpecSentence> _sentences = specdoc.getSentences();
+        _sentences.add(specSentence);
+        List<CoreLabel> _tokens = ReprotoolLinguisticPipeline.this.getTokens(sentence);
+        final Procedure2<CoreLabel,Integer> _function = new Procedure2<CoreLabel,Integer>() {
+          public void apply(final CoreLabel token, final Integer tokenIndex) {
+            final SpecWord specWord = SpecFactory.eINSTANCE.createSpecWord();
+            EList<SpecWord> _words = specSentence.getWords();
+            _words.add(specWord);
+            Pair<Integer,Integer> _of = Pair.<Integer, Integer>of(sentIndex, tokenIndex);
+            idx2word.put(_of, specWord);
+            String _wordStr = ReprotoolLinguisticPipeline.this.getWordStr(token);
+            specWord.setOriginal(_wordStr);
+            String _tag = token.tag();
+            specWord.setPosTag(_tag);
+            String _lemma = token.lemma();
+            specWord.setLemma(_lemma);
+            EntityLink _entityLink = null;
+            XMLTag _innermostXmlTag = ReprotoolLinguisticPipeline.this.getInnermostXmlTag(token);
+            if (_innermostXmlTag!=null) {
+              _entityLink=ReprotoolLinguisticPipeline.this.toEntityLink(_innermostXmlTag, tag2entlink);
+            }
+            final EntityLink entLink = _entityLink;
+            boolean _notEquals = (!Objects.equal(entLink, null));
+            if (_notEquals) {
+              EList<SpecWord> _linkedWords = entLink.getLinkedWords();
+              _linkedWords.add(specWord);
+              EList<EntityLink> _entityLinks = specSentence.getEntityLinks();
+              _entityLinks.add(entLink);
+            }
           }
-          final IndexedWord root = _firstRoot;
+        };
+        IterableExtensions.<CoreLabel>forEach(_tokens, _function);
+        SemanticGraph _collapsedCCProcessedDependencies = ReprotoolLinguisticPipeline.this.getCollapsedCCProcessedDependencies(sentence);
+        boolean _isEmpty = _collapsedCCProcessedDependencies.isEmpty();
+        boolean _not = (!_isEmpty);
+        if (_not) {
+          SemanticGraph _collapsedCCProcessedDependencies_1 = ReprotoolLinguisticPipeline.this.getCollapsedCCProcessedDependencies(sentence);
+          final IndexedWord root = _collapsedCCProcessedDependencies_1.getFirstRoot();
           boolean _notEquals = (!Objects.equal(root, null));
           if (_notEquals) {
             int _index = root.index();
@@ -498,58 +497,59 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
             SpecSentence _sentence = word.getSentence();
             _sentence.setSemanticRootWord(word);
           }
-          SemanticGraph _collapsedCCProcessedDependencies_1 = ReprotoolLinguisticPipeline.this.getCollapsedCCProcessedDependencies(sentence);
+          SemanticGraph _collapsedCCProcessedDependencies_2 = ReprotoolLinguisticPipeline.this.getCollapsedCCProcessedDependencies(sentence);
           Iterable<SemanticGraphEdge> _edgeIterable = null;
-          if (_collapsedCCProcessedDependencies_1!=null) {
-            _edgeIterable=_collapsedCCProcessedDependencies_1.edgeIterable();
+          if (_collapsedCCProcessedDependencies_2!=null) {
+            _edgeIterable=_collapsedCCProcessedDependencies_2.edgeIterable();
           }
           if (_edgeIterable!=null) {
             final Procedure1<SemanticGraphEdge> _function_1 = new Procedure1<SemanticGraphEdge>() {
-                public void apply(final SemanticGraphEdge edge) {
-                  EList<WordDependency> _typedDependencies = specSentence.getTypedDependencies();
-                  WordDependency _createWordDependency = SpecFactory.eINSTANCE.createWordDependency();
-                  final Procedure1<WordDependency> _function = new Procedure1<WordDependency>() {
-                      public void apply(final WordDependency it) {
-                        GrammaticalRelation _relation = edge.getRelation();
-                        String _string = _relation.toString();
-                        it.setLabel(_string);
-                        IndexedWord _governor = edge.getGovernor();
-                        int _index = _governor.index();
-                        int _minus = (_index - 1);
-                        Pair<Integer,Integer> _mappedTo = Pair.<Integer, Integer>of(sentIndex, Integer.valueOf(_minus));
-                        SpecWord _get = idx2word.get(_mappedTo);
-                        it.setLinkGov(_get);
-                        IndexedWord _dependent = edge.getDependent();
-                        int _index_1 = _dependent.index();
-                        int _minus_1 = (_index_1 - 1);
-                        Pair<Integer,Integer> _mappedTo_1 = Pair.<Integer, Integer>of(sentIndex, Integer.valueOf(_minus_1));
-                        SpecWord _get_1 = idx2word.get(_mappedTo_1);
-                        it.setLinkDep(_get_1);
-                      }
-                    };
-                  WordDependency _doubleArrow = ObjectExtensions.<WordDependency>operator_doubleArrow(_createWordDependency, _function);
-                  _typedDependencies.add(_doubleArrow);
-                }
-              };
+              public void apply(final SemanticGraphEdge edge) {
+                EList<WordDependency> _typedDependencies = specSentence.getTypedDependencies();
+                WordDependency _createWordDependency = SpecFactory.eINSTANCE.createWordDependency();
+                final Procedure1<WordDependency> _function = new Procedure1<WordDependency>() {
+                  public void apply(final WordDependency it) {
+                    GrammaticalRelation _relation = edge.getRelation();
+                    String _string = _relation.toString();
+                    it.setLabel(_string);
+                    IndexedWord _governor = edge.getGovernor();
+                    int _index = _governor.index();
+                    int _minus = (_index - 1);
+                    Pair<Integer,Integer> _mappedTo = Pair.<Integer, Integer>of(sentIndex, Integer.valueOf(_minus));
+                    SpecWord _get = idx2word.get(_mappedTo);
+                    it.setLinkGov(_get);
+                    IndexedWord _dependent = edge.getDependent();
+                    int _index_1 = _dependent.index();
+                    int _minus_1 = (_index_1 - 1);
+                    Pair<Integer,Integer> _mappedTo_1 = Pair.<Integer, Integer>of(sentIndex, Integer.valueOf(_minus_1));
+                    SpecWord _get_1 = idx2word.get(_mappedTo_1);
+                    it.setLinkDep(_get_1);
+                  }
+                };
+                WordDependency _doubleArrow = ObjectExtensions.<WordDependency>operator_doubleArrow(_createWordDependency, _function);
+                _typedDependencies.add(_doubleArrow);
+              }
+            };
             IterableExtensions.<SemanticGraphEdge>forEach(_edgeIterable, _function_1);
           }
         }
-      };
+      }
+    };
     IterableExtensions.<CoreMap>forEach(_sentences, _function);
     HashMap<CoreLabel,CoreLabel> _coreferences = this.getCoreferences(document);
     final Procedure2<CoreLabel,CoreLabel> _function_1 = new Procedure2<CoreLabel,CoreLabel>() {
-        public void apply(final CoreLabel token1, final CoreLabel token2) {
-          int _sentIndex = token1.sentIndex();
-          Integer _wordIndex = ReprotoolLinguisticPipeline.this.getWordIndex(token1);
-          Pair<Integer,Integer> _mappedTo = Pair.<Integer, Integer>of(Integer.valueOf(_sentIndex), _wordIndex);
-          final SpecWord word1 = idx2word.get(_mappedTo);
-          int _sentIndex_1 = token2.sentIndex();
-          Integer _wordIndex_1 = ReprotoolLinguisticPipeline.this.getWordIndex(token2);
-          Pair<Integer,Integer> _mappedTo_1 = Pair.<Integer, Integer>of(Integer.valueOf(_sentIndex_1), _wordIndex_1);
-          final SpecWord word2 = idx2word.get(_mappedTo_1);
-          word1.setCorefRepMention(word2);
-        }
-      };
+      public void apply(final CoreLabel token1, final CoreLabel token2) {
+        int _sentIndex = token1.sentIndex();
+        Integer _wordIndex = ReprotoolLinguisticPipeline.this.getWordIndex(token1);
+        Pair<Integer,Integer> _mappedTo = Pair.<Integer, Integer>of(Integer.valueOf(_sentIndex), _wordIndex);
+        final SpecWord word1 = idx2word.get(_mappedTo);
+        int _sentIndex_1 = token2.sentIndex();
+        Integer _wordIndex_1 = ReprotoolLinguisticPipeline.this.getWordIndex(token2);
+        Pair<Integer,Integer> _mappedTo_1 = Pair.<Integer, Integer>of(Integer.valueOf(_sentIndex_1), _wordIndex_1);
+        final SpecWord word2 = idx2word.get(_mappedTo_1);
+        word1.setCorefRepMention(word2);
+      }
+    };
     MapExtensions.<CoreLabel, CoreLabel>forEach(_coreferences, _function_1);
     return specdoc;
   }

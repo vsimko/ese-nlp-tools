@@ -2,10 +2,9 @@ package reprotool.predict.launcher
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import java.util.Map
 import java.util.concurrent.ConcurrentHashMap
-import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.exectoolapi.IExecutableTool
+import reprotool.predict.logging.ReprotoolLogger
 
 @Component(
 	immediate=true,
@@ -18,12 +17,12 @@ import reprotool.predict.exectoolapi.IExecutableTool
 )
 class LauncherComponent {
 		
-	var String[] args;
-	
-	@Reference(target="(launcher.arguments=*)")
-	def void setArgs(Object object, Map<String, Object> map) {
-		args = map.get("launcher.arguments") as String[];
-	}
+//	var String[] args;
+//	
+//	@Reference(target="(launcher.arguments=*)")
+//	def void setArgs(Object object, Map<String, Object> map) {
+//		args = map.get("launcher.arguments") as String[];
+//	}
 	
 	private extension ReprotoolLogger logger
 	@Reference def void setLogger(ReprotoolLogger logger) {

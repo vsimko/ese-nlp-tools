@@ -37,7 +37,7 @@ public class ElicitationPhaseModelLoader {
   public void activate(final BundleContext context) {
     ServiceRegistration _loadAndRegisterModel = ElicitationPhaseModelLoader.loadAndRegisterModel(context, "linktype");
     this.registeredServices.add(_loadAndRegisterModel);
-    ServiceRegistration _loadAndRegisterModel_1 = ElicitationPhaseModelLoader.loadAndRegisterModel(context, "roleinlink");
+    ServiceRegistration _loadAndRegisterModel_1 = ElicitationPhaseModelLoader.loadAndRegisterModel(context, "roleInLink");
     this.registeredServices.add(_loadAndRegisterModel_1);
     ServiceRegistration _loadAndRegisterModel_2 = ElicitationPhaseModelLoader.loadAndRegisterModel(context, "relcl");
     this.registeredServices.add(_loadAndRegisterModel_2);
@@ -46,10 +46,10 @@ public class ElicitationPhaseModelLoader {
   @Deactivate
   public void deactivate(final BundleContext context) {
     final Procedure1<ServiceRegistration> _function = new Procedure1<ServiceRegistration>() {
-        public void apply(final ServiceRegistration it) {
-          it.unregister();
-        }
-      };
+      public void apply(final ServiceRegistration it) {
+        it.unregister();
+      }
+    };
     IterableExtensions.<ServiceRegistration>forEach(this.registeredServices, _function);
   }
   
@@ -68,7 +68,7 @@ public class ElicitationPhaseModelLoader {
       Map<String,String> _tempMap = Maps.<String, String>newHashMap();
       _tempMap.put("model", modelName);
       _xsetliteral = Collections.<String, String>unmodifiableMap(_tempMap);
-      Hashtable<String,String> _hashtable = new Hashtable<String,String>(_xsetliteral);
+      Hashtable<String,String> _hashtable = new Hashtable<String, String>(_xsetliteral);
       ServiceRegistration _registerService = context.registerService(_name, _loadMaxentModel, _hashtable);
       return _registerService;
     } catch (Throwable _e) {

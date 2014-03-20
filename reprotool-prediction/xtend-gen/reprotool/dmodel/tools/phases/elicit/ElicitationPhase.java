@@ -41,6 +41,7 @@ import reprotool.dmodel.api.samples.FeatureEvent;
 import reprotool.dmodel.ctxgen.RelationContext;
 import reprotool.dmodel.extensions.ReprotoolEcoreExtensions;
 import reprotool.dmodel.extract.mwent.RoleInLink;
+import reprotool.dmodel.extract.words.WordLinkType;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
 import reprotool.predict.smloader.SpecModelLoader;
@@ -105,7 +106,7 @@ public class ElicitationPhase implements IExecutableTool {
   
   private MaxentModel roleinlinkModel;
   
-  @Reference(target = "(model=roleinlink)")
+  @Reference(target = "(model=roleInLink)")
   public void set_roleinlinkModel(final MaxentModel model) {
     this.roleinlinkModel = model;
   }
@@ -145,17 +146,17 @@ public class ElicitationPhase implements IExecutableTool {
     if (_equals) {
       DomainModel _createDomainModel = SpecFactory.eINSTANCE.createDomainModel();
       final Procedure1<DomainModel> _function = new Procedure1<DomainModel>() {
-          public void apply(final DomainModel it) {
-            EPackage _createEPackage = EcoreFactory.eINSTANCE.createEPackage();
-            final Procedure1<EPackage> _function = new Procedure1<EPackage>() {
-                public void apply(final EPackage it) {
-                  it.setName(ElicitationPhase.DOMAIN_MODEL_PACKAGE_NAME);
-                }
-              };
-            EPackage _doubleArrow = ObjectExtensions.<EPackage>operator_doubleArrow(_createEPackage, _function);
-            it.setModelPackage(_doubleArrow);
-          }
-        };
+        public void apply(final DomainModel it) {
+          EPackage _createEPackage = EcoreFactory.eINSTANCE.createEPackage();
+          final Procedure1<EPackage> _function = new Procedure1<EPackage>() {
+            public void apply(final EPackage it) {
+              it.setName(ElicitationPhase.DOMAIN_MODEL_PACKAGE_NAME);
+            }
+          };
+          EPackage _doubleArrow = ObjectExtensions.<EPackage>operator_doubleArrow(_createEPackage, _function);
+          it.setModelPackage(_doubleArrow);
+        }
+      };
       DomainModel _doubleArrow = ObjectExtensions.<DomainModel>operator_doubleArrow(_createDomainModel, _function);
       this.specModel.setDomainModel(_doubleArrow);
     }
@@ -170,6 +171,7 @@ public class ElicitationPhase implements IExecutableTool {
     this.fillBacklinksEAnnotations();
     this.mergeEClassesWithSameName();
     this.predictRelations();
+    this.removeSpacesFromDomainModel();
     this.saveResults();
     InputOutput.<String>println("done. see logs");
   }
@@ -197,19 +199,19 @@ public class ElicitationPhase implements IExecutableTool {
       int _size = contextMap.size();
       IntegerRange _upTo = new IntegerRange(1, _size);
       final Function1<Integer,String> _function = new Function1<Integer,String>() {
-          public String apply(final Integer it) {
-            return ((String) null);
-          }
-        };
+        public String apply(final Integer it) {
+          return ((String) null);
+        }
+      };
       Iterable<String> _map = IterableExtensions.<Integer, String>map(_upTo, _function);
       final String[] allContexts = contextMap.toArray(((String[])Conversions.unwrapArray(_map, String.class)));
       final Function1<String,String> _function_1 = new Function1<String,String>() {
-          public String apply(final String it) {
-            String[] _split = it.split("=");
-            String _get = _split[0];
-            return _get;
-          }
-        };
+        public String apply(final String it) {
+          String[] _split = it.split("=");
+          String _get = _split[0];
+          return _get;
+        }
+      };
       List<String> _map_1 = ListExtensions.<String, String>map(((List<String>)Conversions.doWrapArray(allContexts)), _function_1);
       List<String> _sort = IterableExtensions.<String>sort(_map_1);
       Set<String> _set = IterableExtensions.<String>toSet(_sort);
@@ -236,56 +238,59 @@ public class ElicitationPhase implements IExecutableTool {
     this.logger.info("TASK : Predicting which words represent domain entities");
     Iterable<String> _contextFeatureNames = this.getContextFeatureNames(this.linktypeModel);
     String _outcomeFeatureName = this.getOutcomeFeatureName(this.linktypeModel);
-    ExtractedSamples _extractedSamples = new ExtractedSamples(this.fexFactory, this.specModel, "words", _contextFeatureNames, _outcomeFeatureName);
+    ExtractedSamples _extractedSamples = new ExtractedSamples(
+      this.fexFactory, 
+      this.specModel, 
+      "words", _contextFeatureNames, _outcomeFeatureName);
     final ExtractedSamples samples = _extractedSamples;
     final MaxentClassifier classifier = MaxentClassifier.createFromModel(this.linktypeModel);
     Iterator<FeatureEvent> _predictIterator = classifier.predictIterator(samples);
     final Procedure1<FeatureEvent> _function = new Procedure1<FeatureEvent>() {
-        public void apply(final FeatureEvent event) {
-          final String outcome = event.getOutcomeFeatureValue();
-          boolean _matched = false;
-          if (!_matched) {
-            if (Objects.equal(outcome,"class")) {
-              _matched=true;
-              Object _attachment = event.getAttachment();
-              final SpecWord attachedWord = ((SpecWord) _attachment);
-              EObject _eContainer = attachedWord.eContainer();
-              final SpecSentence sentence = ((SpecSentence) _eContainer);
-              EList<EntityLink> _entityLinks = sentence.getEntityLinks();
-              EntityLink _createEntityLink = SpecFactory.eINSTANCE.createEntityLink();
-              final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
-                  public void apply(final EntityLink it) {
-                    EList<SpecWord> _linkedWords = it.getLinkedWords();
-                    _linkedWords.add(attachedWord);
-                    it.setEntType(DomainEntityType.CLASS);
-                  }
-                };
-              EntityLink _doubleArrow = ObjectExtensions.<EntityLink>operator_doubleArrow(_createEntityLink, _function);
-              _entityLinks.add(_doubleArrow);
-            }
-          }
-          if (!_matched) {
-            if (Objects.equal(outcome,"ref")) {
-              _matched=true;
-              Object _attachment_1 = event.getAttachment();
-              final SpecWord attachedWord_1 = ((SpecWord) _attachment_1);
-              EObject _eContainer_1 = attachedWord_1.eContainer();
-              final SpecSentence sentence_1 = ((SpecSentence) _eContainer_1);
-              EList<EntityLink> _entityLinks_1 = sentence_1.getEntityLinks();
-              EntityLink _createEntityLink_1 = SpecFactory.eINSTANCE.createEntityLink();
-              final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-                  public void apply(final EntityLink it) {
-                    EList<SpecWord> _linkedWords = it.getLinkedWords();
-                    _linkedWords.add(attachedWord_1);
-                    it.setEntType(DomainEntityType.REFERENCE);
-                  }
-                };
-              EntityLink _doubleArrow_1 = ObjectExtensions.<EntityLink>operator_doubleArrow(_createEntityLink_1, _function_1);
-              _entityLinks_1.add(_doubleArrow_1);
-            }
+      public void apply(final FeatureEvent event) {
+        final String outcome = event.getOutcomeFeatureValue();
+        boolean _matched = false;
+        if (!_matched) {
+          if (Objects.equal(outcome,WordLinkType.OUTCOME_CLASS)) {
+            _matched=true;
+            Object _attachment = event.getAttachment();
+            final SpecWord attachedWord = ((SpecWord) _attachment);
+            EObject _eContainer = attachedWord.eContainer();
+            final SpecSentence sentence = ((SpecSentence) _eContainer);
+            EList<EntityLink> _entityLinks = sentence.getEntityLinks();
+            EntityLink _createEntityLink = SpecFactory.eINSTANCE.createEntityLink();
+            final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
+              public void apply(final EntityLink it) {
+                EList<SpecWord> _linkedWords = it.getLinkedWords();
+                _linkedWords.add(attachedWord);
+                it.setEntType(DomainEntityType.CLASS);
+              }
+            };
+            EntityLink _doubleArrow = ObjectExtensions.<EntityLink>operator_doubleArrow(_createEntityLink, _function);
+            _entityLinks.add(_doubleArrow);
           }
         }
-      };
+        if (!_matched) {
+          if (Objects.equal(outcome,WordLinkType.OUTCOME_REFERENCE)) {
+            _matched=true;
+            Object _attachment_1 = event.getAttachment();
+            final SpecWord attachedWord_1 = ((SpecWord) _attachment_1);
+            EObject _eContainer_1 = attachedWord_1.eContainer();
+            final SpecSentence sentence_1 = ((SpecSentence) _eContainer_1);
+            EList<EntityLink> _entityLinks_1 = sentence_1.getEntityLinks();
+            EntityLink _createEntityLink_1 = SpecFactory.eINSTANCE.createEntityLink();
+            final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
+              public void apply(final EntityLink it) {
+                EList<SpecWord> _linkedWords = it.getLinkedWords();
+                _linkedWords.add(attachedWord_1);
+                it.setEntType(DomainEntityType.REFERENCE);
+              }
+            };
+            EntityLink _doubleArrow_1 = ObjectExtensions.<EntityLink>operator_doubleArrow(_createEntityLink_1, _function_1);
+            _entityLinks_1.add(_doubleArrow_1);
+          }
+        }
+      }
+    };
     IteratorExtensions.<FeatureEvent>forEach(_predictIterator, _function);
   }
   
@@ -293,7 +298,10 @@ public class ElicitationPhase implements IExecutableTool {
     this.logger.info("TASK : Predicting which words represent entities composed of multiple words");
     Iterable<String> _contextFeatureNames = this.getContextFeatureNames(this.roleinlinkModel);
     String _outcomeFeatureName = this.getOutcomeFeatureName(this.roleinlinkModel);
-    ExtractedSamples _extractedSamples = new ExtractedSamples(this.fexFactory, this.specModel, "words", _contextFeatureNames, _outcomeFeatureName);
+    ExtractedSamples _extractedSamples = new ExtractedSamples(
+      this.fexFactory, 
+      this.specModel, 
+      "words", _contextFeatureNames, _outcomeFeatureName);
     final ExtractedSamples samples = _extractedSamples;
     final MaxentClassifier classifier = MaxentClassifier.createFromModel(this.roleinlinkModel);
     SpecWord lastWord = null;
@@ -379,48 +387,48 @@ public class ElicitationPhase implements IExecutableTool {
     this.logger.info("TASK : Deriving names for entity links based on the words they contain");
     Iterable<EntityLink> _allEntityLinks = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
     final Function1<EntityLink,Boolean> _function = new Function1<EntityLink,Boolean>() {
-        public Boolean apply(final EntityLink it) {
-          boolean _or = false;
-          String _entLabel = it.getEntLabel();
-          boolean _equals = Objects.equal(_entLabel, null);
-          if (_equals) {
-            _or = true;
-          } else {
-            String _entLabel_1 = it.getEntLabel();
-            boolean _isEmpty = _entLabel_1.isEmpty();
-            _or = (_equals || _isEmpty);
-          }
-          return Boolean.valueOf(_or);
+      public Boolean apply(final EntityLink it) {
+        boolean _or = false;
+        String _entLabel = it.getEntLabel();
+        boolean _equals = Objects.equal(_entLabel, null);
+        if (_equals) {
+          _or = true;
+        } else {
+          String _entLabel_1 = it.getEntLabel();
+          boolean _isEmpty = _entLabel_1.isEmpty();
+          _or = (_equals || _isEmpty);
         }
-      };
+        return Boolean.valueOf(_or);
+      }
+    };
     Iterable<EntityLink> _filter = IterableExtensions.<EntityLink>filter(_allEntityLinks, _function);
     final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-        public void apply(final EntityLink it) {
-          EList<SpecWord> _linkedWords = it.getLinkedWords();
-          final Function1<SpecWord,String> _function = new Function1<SpecWord,String>() {
-              public String apply(final SpecWord it) {
-                SpecWord _corefRepOrSelf = it.getCorefRepOrSelf();
-                String _lemma = _corefRepOrSelf.getLemma();
-                String _lowerCase = _lemma.toLowerCase();
-                String _firstUpper = StringExtensions.toFirstUpper(_lowerCase);
-                return _firstUpper;
-              }
-            };
-          List<String> _map = ListExtensions.<SpecWord, String>map(_linkedWords, _function);
-          String _join = IterableExtensions.join(_map, " ");
-          it.setEntLabel(_join);
-        }
-      };
+      public void apply(final EntityLink it) {
+        EList<SpecWord> _linkedWords = it.getLinkedWords();
+        final Function1<SpecWord,String> _function = new Function1<SpecWord,String>() {
+          public String apply(final SpecWord it) {
+            SpecWord _corefRepOrSelf = it.getCorefRepOrSelf();
+            String _lemma = _corefRepOrSelf.getLemma();
+            String _lowerCase = _lemma.toLowerCase();
+            String _firstUpper = StringExtensions.toFirstUpper(_lowerCase);
+            return _firstUpper;
+          }
+        };
+        List<String> _map = ListExtensions.<SpecWord, String>map(_linkedWords, _function);
+        String _join = IterableExtensions.join(_map, " ");
+        it.setEntLabel(_join);
+      }
+    };
     IterableExtensions.<EntityLink>forEach(_filter, _function_1);
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("All EntityLinks found in the specification: ");
     Iterable<EntityLink> _allEntityLinks_1 = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
     final Function1<EntityLink,String> _function_2 = new Function1<EntityLink,String>() {
-        public String apply(final EntityLink it) {
-          String _entLabel = it.getEntLabel();
-          return _entLabel;
-        }
-      };
+      public String apply(final EntityLink it) {
+        String _entLabel = it.getEntLabel();
+        return _entLabel;
+      }
+    };
     Iterable<String> _map = IterableExtensions.<EntityLink, String>map(_allEntityLinks_1, _function_2);
     String _join = IterableExtensions.join(_map, ", ");
     _builder.append(_join, "");
@@ -431,27 +439,27 @@ public class ElicitationPhase implements IExecutableTool {
     this.logger.info("TASK : Converting entity links to EClasses in the domain model");
     Iterable<EntityLink> _allEntityLinks = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
     final Function1<EntityLink,Boolean> _function = new Function1<EntityLink,Boolean>() {
-        public Boolean apply(final EntityLink it) {
-          DomainEntityType _entType = it.getEntType();
-          boolean _equals = Objects.equal(_entType, DomainEntityType.CLASS);
-          return Boolean.valueOf(_equals);
-        }
-      };
+      public Boolean apply(final EntityLink it) {
+        DomainEntityType _entType = it.getEntType();
+        boolean _equals = Objects.equal(_entType, DomainEntityType.CLASS);
+        return Boolean.valueOf(_equals);
+      }
+    };
     Iterable<EntityLink> _filter = IterableExtensions.<EntityLink>filter(_allEntityLinks, _function);
     final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-        public void apply(final EntityLink entlink) {
-          EClass _createEClass = EcoreFactory.eINSTANCE.createEClass();
-          final Procedure1<EClass> _function = new Procedure1<EClass>() {
-              public void apply(final EClass it) {
-                String _entLabel = entlink.getEntLabel();
-                it.setName(_entLabel);
-              }
-            };
-          final EClass newEClass = ObjectExtensions.<EClass>operator_doubleArrow(_createEClass, _function);
-          entlink.setLinkedEntity(newEClass);
-          ElicitationPhase.this.domainModel.add(newEClass);
-        }
-      };
+      public void apply(final EntityLink entlink) {
+        EClass _createEClass = EcoreFactory.eINSTANCE.createEClass();
+        final Procedure1<EClass> _function = new Procedure1<EClass>() {
+          public void apply(final EClass it) {
+            String _entLabel = entlink.getEntLabel();
+            it.setName(_entLabel);
+          }
+        };
+        final EClass newEClass = ObjectExtensions.<EClass>operator_doubleArrow(_createEClass, _function);
+        entlink.setLinkedEntity(newEClass);
+        ElicitationPhase.this.domainModel.add(newEClass);
+      }
+    };
     IterableExtensions.<EntityLink>forEach(_filter, _function_1);
   }
   
@@ -461,21 +469,21 @@ public class ElicitationPhase implements IExecutableTool {
     this.logger.info(_builder);
     Iterable<EntityLink> _allEntityLinks = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
     final Function1<EntityLink,Boolean> _function = new Function1<EntityLink,Boolean>() {
-        public Boolean apply(final EntityLink it) {
-          ENamedElement _linkedEntity = it.getLinkedEntity();
-          boolean _notEquals = (!Objects.equal(_linkedEntity, null));
-          return Boolean.valueOf(_notEquals);
-        }
-      };
+      public Boolean apply(final EntityLink it) {
+        ENamedElement _linkedEntity = it.getLinkedEntity();
+        boolean _notEquals = (!Objects.equal(_linkedEntity, null));
+        return Boolean.valueOf(_notEquals);
+      }
+    };
     Iterable<EntityLink> _filter = IterableExtensions.<EntityLink>filter(_allEntityLinks, _function);
     final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-        public void apply(final EntityLink it) {
-          ENamedElement _linkedEntity = it.getLinkedEntity();
-          EAnnotation _eAnnotationOrCreate = ReprotoolEcoreExtensions.getEAnnotationOrCreate(_linkedEntity, "backlinks");
-          EList<EObject> _references = _eAnnotationOrCreate.getReferences();
-          _references.add(it);
-        }
-      };
+      public void apply(final EntityLink it) {
+        ENamedElement _linkedEntity = it.getLinkedEntity();
+        EAnnotation _eAnnotationOrCreate = ReprotoolEcoreExtensions.getEAnnotationOrCreate(_linkedEntity, "backlinks");
+        EList<EObject> _references = _eAnnotationOrCreate.getReferences();
+        _references.add(it);
+      }
+    };
     IterableExtensions.<EntityLink>forEach(_filter, _function_1);
   }
   
@@ -487,12 +495,12 @@ public class ElicitationPhase implements IExecutableTool {
       this.logger.info("TASK : Merge EClasses with the same name");
       Iterable<EClass> _filter = Iterables.<EClass>filter(this.domainModel, EClass.class);
       final Function1<EClass,Boolean> _function = new Function1<EClass,Boolean>() {
-          public Boolean apply(final EClass it) {
-            EAnnotation _eAnnotation = it.getEAnnotation("backlinks");
-            boolean _notEquals = (!Objects.equal(_eAnnotation, null));
-            return Boolean.valueOf(_notEquals);
-          }
-        };
+        public Boolean apply(final EClass it) {
+          EAnnotation _eAnnotation = it.getEAnnotation("backlinks");
+          boolean _notEquals = (!Objects.equal(_eAnnotation, null));
+          return Boolean.valueOf(_notEquals);
+        }
+      };
       boolean _exists = IterableExtensions.<EClass>exists(_filter, _function);
       boolean _not = (!_exists);
       if (_not) {
@@ -501,42 +509,42 @@ public class ElicitationPhase implements IExecutableTool {
         Exception _exception = new Exception(_builder.toString());
         throw _exception;
       }
-      HashMap<String,EClass> _hashMap = new HashMap<String,EClass>();
+      HashMap<String,EClass> _hashMap = new HashMap<String, EClass>();
       final HashMap<String,EClass> mapByName = _hashMap;
       Iterable<EClass> _filter_1 = Iterables.<EClass>filter(this.domainModel, EClass.class);
       List<EClass> _list = IterableExtensions.<EClass>toList(_filter_1);
       final Procedure1<EClass> _function_1 = new Procedure1<EClass>() {
-          public void apply(final EClass it) {
-            String _name = it.getName();
-            boolean _containsKey = mapByName.containsKey(_name);
-            if (_containsKey) {
-              String _name_1 = it.getName();
-              final EClass preservedEntity = mapByName.get(_name_1);
-              StringConcatenation _builder = new StringConcatenation();
-              _builder.append("Merging EClasses ");
-              String _name_2 = preservedEntity.getName();
-              _builder.append(_name_2, "");
-              _builder.append(" <- ");
-              String _name_3 = it.getName();
-              _builder.append(_name_3, "");
-              ElicitationPhase.this.logger.debug(_builder);
-              final Iterable<EntityLink> backlinksToUpdate = ReprotoolEcoreExtensions.getBacklinks(it);
-              final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
-                  public void apply(final EntityLink it) {
-                    it.setLinkedEntity(preservedEntity);
-                  }
-                };
-              IterableExtensions.<EntityLink>forEach(backlinksToUpdate, _function);
-              EAnnotation _eAnnotation = preservedEntity.getEAnnotation("backlinks");
-              EList<EObject> _references = _eAnnotation.getReferences();
-              Iterables.<EObject>addAll(_references, backlinksToUpdate);
-              ElicitationPhase.this.domainModel.remove(it);
-            } else {
-              String _name_4 = it.getName();
-              mapByName.put(_name_4, it);
-            }
+        public void apply(final EClass it) {
+          String _name = it.getName();
+          boolean _containsKey = mapByName.containsKey(_name);
+          if (_containsKey) {
+            String _name_1 = it.getName();
+            final EClass preservedEntity = mapByName.get(_name_1);
+            StringConcatenation _builder = new StringConcatenation();
+            _builder.append("Merging EClasses ");
+            String _name_2 = preservedEntity.getName();
+            _builder.append(_name_2, "");
+            _builder.append(" <- ");
+            String _name_3 = it.getName();
+            _builder.append(_name_3, "");
+            ElicitationPhase.this.logger.debug(_builder);
+            final Iterable<EntityLink> backlinksToUpdate = ReprotoolEcoreExtensions.getBacklinks(it);
+            final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
+              public void apply(final EntityLink it) {
+                it.setLinkedEntity(preservedEntity);
+              }
+            };
+            IterableExtensions.<EntityLink>forEach(backlinksToUpdate, _function);
+            EAnnotation _eAnnotation = preservedEntity.getEAnnotation("backlinks");
+            EList<EObject> _references = _eAnnotation.getReferences();
+            Iterables.<EObject>addAll(_references, backlinksToUpdate);
+            ElicitationPhase.this.domainModel.remove(it);
+          } else {
+            String _name_4 = it.getName();
+            mapByName.put(_name_4, it);
           }
-        };
+        }
+      };
       IterableExtensions.<EClass>forEach(_list, _function_1);
     } catch (Throwable _e) {
       throw Exceptions.sneakyThrow(_e);
@@ -548,12 +556,12 @@ public class ElicitationPhase implements IExecutableTool {
       this.logger.info("TASK : Predict relations");
       Iterable<EClass> _filter = Iterables.<EClass>filter(this.domainModel, EClass.class);
       final Function1<EClass,Boolean> _function = new Function1<EClass,Boolean>() {
-          public Boolean apply(final EClass it) {
-            EAnnotation _eAnnotation = it.getEAnnotation("backlinks");
-            boolean _notEquals = (!Objects.equal(_eAnnotation, null));
-            return Boolean.valueOf(_notEquals);
-          }
-        };
+        public Boolean apply(final EClass it) {
+          EAnnotation _eAnnotation = it.getEAnnotation("backlinks");
+          boolean _notEquals = (!Objects.equal(_eAnnotation, null));
+          return Boolean.valueOf(_notEquals);
+        }
+      };
       boolean _exists = IterableExtensions.<EClass>exists(_filter, _function);
       boolean _not = (!_exists);
       if (_not) {
@@ -569,45 +577,58 @@ public class ElicitationPhase implements IExecutableTool {
       final MaxentClassifier classifier = MaxentClassifier.createFromModel(this.relclModel);
       Iterator<FeatureEvent> _predictIterator = classifier.predictIterator(samples);
       final Procedure1<FeatureEvent> _function_1 = new Procedure1<FeatureEvent>() {
-          public void apply(final FeatureEvent event) {
-            final String outcome = event.getOutcomeFeatureValue();
-            Object _attachment = event.getAttachment();
-            final RelationContext attachedRelationContext = ((RelationContext) _attachment);
-            boolean _matched = false;
-            if (!_matched) {
-              if (Objects.equal(outcome,"true")) {
-                _matched=true;
-                final EClass src = attachedRelationContext.getSrcEClass();
-                final EClass dest = attachedRelationContext.getDestEClass();
-                StringConcatenation _builder = new StringConcatenation();
-                _builder.append("Predicted relation: ");
-                String _name = src.getName();
-                _builder.append(_name, "");
-                _builder.append(" -> ");
-                String _name_1 = dest.getName();
-                _builder.append(_name_1, "");
-                ElicitationPhase.this.logger.debug(_builder);
-                EList<EStructuralFeature> _eStructuralFeatures = src.getEStructuralFeatures();
-                EReference _createEReference = EcoreFactory.eINSTANCE.createEReference();
-                final Procedure1<EReference> _function = new Procedure1<EReference>() {
-                    public void apply(final EReference it) {
-                      SpecSentence _sentence = attachedRelationContext.getSentence();
-                      SpecWord _semanticRootWord = _sentence.getSemanticRootWord();
-                      String _lemma = _semanticRootWord.getLemma();
-                      String _lowerCase = _lemma.toLowerCase();
-                      it.setName(_lowerCase);
-                      it.setEType(dest);
-                    }
-                  };
-                EReference _doubleArrow = ObjectExtensions.<EReference>operator_doubleArrow(_createEReference, _function);
-                _eStructuralFeatures.add(_doubleArrow);
-              }
+        public void apply(final FeatureEvent event) {
+          final String outcome = event.getOutcomeFeatureValue();
+          Object _attachment = event.getAttachment();
+          final RelationContext attachedRelationContext = ((RelationContext) _attachment);
+          boolean _matched = false;
+          if (!_matched) {
+            if (Objects.equal(outcome,"true")) {
+              _matched=true;
+              final EClass src = attachedRelationContext.getSrcEClass();
+              final EClass dest = attachedRelationContext.getDestEClass();
+              StringConcatenation _builder = new StringConcatenation();
+              _builder.append("Predicted relation: ");
+              String _name = src.getName();
+              _builder.append(_name, "");
+              _builder.append(" -> ");
+              String _name_1 = dest.getName();
+              _builder.append(_name_1, "");
+              ElicitationPhase.this.logger.debug(_builder);
+              EList<EStructuralFeature> _eStructuralFeatures = src.getEStructuralFeatures();
+              EReference _createEReference = EcoreFactory.eINSTANCE.createEReference();
+              final Procedure1<EReference> _function = new Procedure1<EReference>() {
+                public void apply(final EReference it) {
+                  SpecSentence _sentence = attachedRelationContext.getSentence();
+                  SpecWord _semanticRootWord = _sentence.getSemanticRootWord();
+                  String _lemma = _semanticRootWord.getLemma();
+                  String _lowerCase = _lemma.toLowerCase();
+                  it.setName(_lowerCase);
+                  it.setEType(dest);
+                }
+              };
+              EReference _doubleArrow = ObjectExtensions.<EReference>operator_doubleArrow(_createEReference, _function);
+              _eStructuralFeatures.add(_doubleArrow);
             }
           }
-        };
+        }
+      };
       IteratorExtensions.<FeatureEvent>forEach(_predictIterator, _function_1);
     } catch (Throwable _e) {
       throw Exceptions.sneakyThrow(_e);
     }
+  }
+  
+  private void removeSpacesFromDomainModel() {
+    this.logger.info("TASK : Removing spaces from class names in the domain model");
+    Iterable<EClass> _filter = Iterables.<EClass>filter(this.domainModel, EClass.class);
+    final Procedure1<EClass> _function = new Procedure1<EClass>() {
+      public void apply(final EClass it) {
+        String _name = it.getName();
+        String _replaceAll = _name.replaceAll(" ", "");
+        it.setName(_replaceAll);
+      }
+    };
+    IterableExtensions.<EClass>forEach(_filter, _function);
   }
 }

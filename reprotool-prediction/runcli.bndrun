@@ -54,7 +54,6 @@
 	reprotool-prediction.extractors;version=latest,\
 	reprotool-prediction.launcher;version=latest,\
 	reprotool-prediction.logging;version=latest,\
-	reprotool-prediction.models.dm;version=latest,\
 	reprotool-prediction.models.ssplit;version=latest,\
 	reprotool-prediction.nlp.pipeline;version=latest,\
 	reprotool-prediction.nlp.ssplit;version=latest,\
@@ -70,7 +69,9 @@
 	stanford-nlp-models-osgi.lexparser;version=latest,\
 	stanford-nlp-models-osgi.ner;version=latest,\
 	stanford-nlp-models-osgi.pos.wsj.bidir;version=latest,\
-	stanford-nlp-models-osgi.sutime;version=latest
+	stanford-nlp-models-osgi.sutime;version=latest,\
+	reprotool-prediction.models.dm;version=latest
 -runrepos: Workspace,\
 	Bndtools Hub,\
 	Local
+-runvm: -Xms1024m -Xmx2048m

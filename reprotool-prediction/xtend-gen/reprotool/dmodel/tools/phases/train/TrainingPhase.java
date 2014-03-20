@@ -93,19 +93,19 @@ public class TrainingPhase implements IExecutableTool {
     this.logger.info(_builder_1);
     Properties _properties = new Properties();
     final Procedure1<Properties> _function = new Procedure1<Properties>() {
-        public void apply(final Properties it) {
-          try {
-            File _file = new File(configFileName);
-            File _absoluteFile = _file.getAbsoluteFile();
-            String _parent = _absoluteFile.getParent();
-            it.setProperty(TrainingPhaseConfig.FIELD_PROJECTDIR, _parent);
-            FileReader _fileReader = new FileReader(configFileName);
-            it.load(_fileReader);
-          } catch (Throwable _e) {
-            throw Exceptions.sneakyThrow(_e);
-          }
+      public void apply(final Properties it) {
+        try {
+          File _file = new File(configFileName);
+          File _absoluteFile = _file.getAbsoluteFile();
+          String _parent = _absoluteFile.getParent();
+          it.setProperty(TrainingPhaseConfig.FIELD_PROJECTDIR, _parent);
+          FileReader _fileReader = new FileReader(configFileName);
+          it.load(_fileReader);
+        } catch (Throwable _e) {
+          throw Exceptions.sneakyThrow(_e);
         }
-      };
+      }
+    };
     Properties _doubleArrow = ObjectExtensions.<Properties>operator_doubleArrow(_properties, _function);
     TrainingPhaseConfig _trainingPhaseConfig = new TrainingPhaseConfig(_doubleArrow);
     final TrainingPhaseConfig config = _trainingPhaseConfig;
@@ -144,15 +144,15 @@ public class TrainingPhase implements IExecutableTool {
         final String outModelFileName = _builder_5.toString();
         MaxentClassifier _createEmptyClassifier = MaxentClassifier.createEmptyClassifier();
         final Procedure1<MaxentClassifier> _function_1 = new Procedure1<MaxentClassifier>() {
-            public void apply(final MaxentClassifier it) {
-              try {
-                it.train(extractedSamples);
-                it.saveModelToFile(outModelFileName);
-              } catch (Throwable _e) {
-                throw Exceptions.sneakyThrow(_e);
-              }
+          public void apply(final MaxentClassifier it) {
+            try {
+              it.train(extractedSamples);
+              it.saveModelToFile(outModelFileName);
+            } catch (Throwable _e) {
+              throw Exceptions.sneakyThrow(_e);
             }
-          };
+          }
+        };
         ObjectExtensions.<MaxentClassifier>operator_doubleArrow(_createEmptyClassifier, _function_1);
         StringConcatenation _builder_6 = new StringConcatenation();
         _builder_6.append("Trained model saved to file \"");
