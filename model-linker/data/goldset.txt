@@ -1,0 +1,7 @@
+Bank [Bank, BankImpl]
+BarCodeScanner [ScannerController, ScannerControllerEventHandlerImpl, ScannerControllerEventHandlerIf]
+CardReader [CardReader, CardReaderControllerEventHandlerImpl, CardReaderControllerEventHandlerIf]
+CashBox [CashBox, CashBoxClosedEvent, CashBoxControllerEventHandlerImpl, CashBoxControllerEventHandlerIf]
+CashDesk [CashDesk, CashDeskGUI, CashDeskConnectorIf]
+LightDisplay [LightDisplayController, LightDisplayControllerEventHandlerImpl, LightDisplayControllerEventHandlerIf]
+Printer [PrinterController, PrinterControllerEventHandlerImpl, PrinterControllerEventHandlerIf]
