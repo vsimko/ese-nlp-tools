@@ -17,5 +17,4 @@
 	stanford-corenlp-osgi.framework;version=latest,\
 	apache-opennlp-osgi.maxent;version=latest,\
 	lib-junit4;version=latest,\
-	lib-opencsv.core;version=latest,\
-	lib-jtidy;version=latest
+	lib-opencsv.core;version=latest

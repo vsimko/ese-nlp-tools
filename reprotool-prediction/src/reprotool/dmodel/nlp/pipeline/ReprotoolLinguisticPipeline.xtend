@@ -162,19 +162,19 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 				"lemma".addAnnotator(new MorphaAnnotator(beVerbose))
 		      	checkActivationInterrupted
 		
-//				// NER: Stanford NER
-//				// ========================================================================
-//				"ner".addAnnotator(new NERCombinerAnnotator(
-//					new NERClassifierCombiner(
-//						NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
-//		                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
-//		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
-//		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
-//		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
-//		            ),
-//					beVerbose
-//				))
-//		      	checkActivationInterrupted
+				// NER: Stanford NER
+				// ========================================================================
+				"ner".addAnnotator(new NERCombinerAnnotator(
+					new NERClassifierCombiner(
+						NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT,
+		                false, // NumberSequenceClassifier.USE_SUTIME_DEFAULT couldn't be used because jollytime uses the default Class.getClassLoader instead of OSGi 
+		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_THREECLASS_MODEL),
+		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_MUC_MODEL),
+		                prepareCRFClassifier(bundleContext, DefaultPaths.DEFAULT_NER_CONLL_MODEL)
+		            ),
+					beVerbose
+				))
+		      	checkActivationInterrupted
 		
 				// PARSER: Standard Lexicalized Parser of sentences
 				// ========================================================================
@@ -186,10 +186,10 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 		      	))
 		      	checkActivationInterrupted
 		      	
-//				// COREF: Stanford Deterministic Coreference Resolution System
-//				// ========================================================================
-//				"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
-//		      	checkActivationInterrupted
+				// COREF: Stanford Deterministic Coreference Resolution System
+				// ========================================================================
+				"dcoref".addAnnotator(new DeterministicCorefAnnotator(new Properties))
+		      	checkActivationInterrupted
 		      	
 			} catch(Exception e) {
 				e.message.error
@@ -218,20 +218,19 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 	def Annotation analyzeTextFromFile(String fileName) {
 //		val in = new ByteArrayInputStream(fileName.toString.bytes)
 //		val out = new ByteArrayOutputStream
-		
-		return Files.toString(new File(fileName), Charsets.UTF_8).analyzeText
+//		val tidy = new Tidy
+//		tidy.XHTML = true
+//		tidy.breakBeforeBR = true
+//		tidy.hideComments = true
+//		tidy.indentAttributes = false
+//		tidy.smartIndent = false
+//		tidy.wraplen = 0
+//		tidy.dropEmptyParas = true
+//		tidy.wrapAttVals = false
+//		tidy.parse(in, out)
+//		return out.toString(Charsets.UTF_8.name).analyzeText
 
-//		new Tidy => [
-//			XHTML = true
-//			breakBeforeBR = true
-//			//hideComments = true
-//			indentAttributes = false
-//			smartIndent = false
-//			wraplen = 0
-//			dropEmptyParas = true			
-//			wrapAttVals = false
-//			parse(in, out)
-//		]
+		return Files.toString(new File(fileName), Charsets.UTF_8).analyzeText
 	}
 	
 	/**
@@ -372,21 +371,24 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 			]
 			
 			
-			// this is the ROOT word of Stanford dependency graph of the current sentence
-			val root = sentence.collapsedCCProcessedDependencies?.firstRoot
-			if(root != null) {
-				val word = idx2word.get( sentIndex -> root.index - 1 )
-				word.sentence.semanticRootWord = word
-			}
-			
-			// this is the Stanford dependency graph of the current sentence
-			sentence.collapsedCCProcessedDependencies?.edgeIterable?.forEach[ edge |
-				specSentence.typedDependencies += SpecFactory.eINSTANCE.createWordDependency => [
-					setLabel(edge.relation.toString)
-					setLinkGov(idx2word.get( sentIndex -> edge.governor.index-1  ))
-					setLinkDep(idx2word.get( sentIndex -> edge.dependent.index-1 ))
+			if( ! sentence.collapsedCCProcessedDependencies.empty) {
+				
+				// this is the ROOT word of Stanford dependency graph of the current sentence
+				val root = sentence.collapsedCCProcessedDependencies.firstRoot
+				if(root != null) {
+					val word = idx2word.get( sentIndex -> root.index - 1 )
+					word.sentence.semanticRootWord = word
+				}
+				
+				// this is the Stanford dependency graph of the current sentence
+				sentence.collapsedCCProcessedDependencies?.edgeIterable?.forEach[ edge |
+					specSentence.typedDependencies += SpecFactory.eINSTANCE.createWordDependency => [
+						setLabel(edge.relation.toString)
+						setLinkGov(idx2word.get( sentIndex -> edge.governor.index-1  ))
+						setLinkDep(idx2word.get( sentIndex -> edge.dependent.index-1 ))
+					]
 				]
-			]
+			}
 		]
 
 		document.coreferences.forEach[ token1, token2 |
