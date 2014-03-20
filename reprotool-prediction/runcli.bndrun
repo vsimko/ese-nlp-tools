@@ -70,7 +70,7 @@
 	stanford-nlp-models-osgi.ner;version=latest,\
 	stanford-nlp-models-osgi.pos.wsj.bidir;version=latest,\
 	stanford-nlp-models-osgi.sutime;version=latest,\
-	reprotool-prediction.models.dm;version=latest
+	dm-models-hybrid;version=latest
 -runrepos: Workspace,\
 	Bndtools Hub,\
 	Local

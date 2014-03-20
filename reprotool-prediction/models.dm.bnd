@@ -1,4 +1,0 @@
-Bundle-Version: 3.0.0
-Bundle-Name: REPROTOOL : Default MaxEnt models for Domain Model Elicitation
-Export-Package: reprotool.predict.models.dm
-Bundle-Category: REPROTOOL
