@@ -65,18 +65,21 @@ public class MaxentSSplitAnnotator implements Annotator {
 				final int last = sentenceTokens.size() - 1;
 				final int end = sentenceTokens.get(last).get(CharacterOffsetEndAnnotation.class);
 				final String sentenceText = text.substring(begin, end);
+				
+				if( ! sentenceText.trim().isEmpty() ) {
 
-				// create a sentence annotation with text and token offsets
-				final Annotation sentence = new Annotation(sentenceText);
-				sentence.set(CharacterOffsetBeginAnnotation.class, begin);
-				sentence.set(CharacterOffsetEndAnnotation.class, end);
-				sentence.set(CoreAnnotations.TokensAnnotation.class, sentenceTokens);
-				sentence.set(CoreAnnotations.TokenBeginAnnotation.class, tokenOffset);
-				tokenOffset += sentenceTokens.size();
-				sentence.set(CoreAnnotations.TokenEndAnnotation.class, tokenOffset);
-
-				// add the sentence to the list
-				sentences.add(sentence);
+					// create a sentence annotation with text and token offsets
+					final Annotation sentence = new Annotation(sentenceText);
+					sentence.set(CharacterOffsetBeginAnnotation.class, begin);
+					sentence.set(CharacterOffsetEndAnnotation.class, end);
+					sentence.set(CoreAnnotations.TokensAnnotation.class, sentenceTokens);
+					sentence.set(CoreAnnotations.TokenBeginAnnotation.class, tokenOffset);
+					tokenOffset += sentenceTokens.size();
+					sentence.set(CoreAnnotations.TokenEndAnnotation.class, tokenOffset);
+	
+					// add the sentence to the list
+					sentences.add(sentence);
+				}
 			}
 
 			// add the sentences annotations to the document
