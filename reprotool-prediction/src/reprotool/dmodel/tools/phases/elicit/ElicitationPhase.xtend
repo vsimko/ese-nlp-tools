@@ -39,7 +39,7 @@ class ElicitationPhaseModelLoader {
 
 	@Activate def void activate(BundleContext context) {
 		registeredServices += context.loadAndRegisterModel("linktype")
-		registeredServices += context.loadAndRegisterModel("roleinlink")
+		registeredServices += context.loadAndRegisterModel("roleInLink")
 		registeredServices += context.loadAndRegisterModel("relcl")
 	}
 	
@@ -96,7 +96,7 @@ class ElicitationPhase implements IExecutableTool {
 	
 	// See RoleInLink class for the list of supported outcome values
 	private MaxentModel roleinlinkModel
-	@Reference(target="(model=roleinlink)")
+	@Reference(target="(model=roleInLink)")
 	def void set_roleinlinkModel(MaxentModel model) {
 		this.roleinlinkModel = model
 	}
