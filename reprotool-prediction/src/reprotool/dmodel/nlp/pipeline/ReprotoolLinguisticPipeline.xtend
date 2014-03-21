@@ -131,7 +131,7 @@ class ReprotoolLinguisticPipeline extends AnnotationPipeline {
 					".*", // clean xml tags
 					"[hH][123456]|p|P|ul|UL|ol|OL",	// sentence ending tags
 					"datetime|date", // date tags
-					"style|STYLE|script|SCRIPT|head|HEAD", // don't create tokens from text within these tags
+					"[hH][123456]|style|STYLE|script|SCRIPT|head|HEAD", // don't create tokens from text within these tags
 					true // allow flaws
 				))
 		      	checkActivationInterrupted

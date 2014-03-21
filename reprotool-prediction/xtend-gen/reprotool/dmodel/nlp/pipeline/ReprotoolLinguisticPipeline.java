@@ -176,7 +176,7 @@ public class ReprotoolLinguisticPipeline extends AnnotationPipeline {
             ".*", 
             "[hH][123456]|p|P|ul|UL|ol|OL", 
             "datetime|date", 
-            "style|STYLE|script|SCRIPT|head|HEAD", 
+            "[hH][123456]|style|STYLE|script|SCRIPT|head|HEAD", 
             true);
           ReprotoolLinguisticPipeline.this.addAnnotator("cleanxml", _reprotoolXmlAnnotator);
           ReprotoolLinguisticPipeline.this.checkActivationInterrupted();

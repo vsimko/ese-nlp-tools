@@ -168,10 +168,9 @@ class ElicitationPhase implements IExecutableTool {
 			val attachedWord = event.attachment as SpecWord
 			val sentence = attachedWord.eContainer as SpecSentence
 
-//			if(attachedWord.original.contains("Enterprise") || attachedWord.original.contains("Change")) {
-			if(attachedWord.original.contains("nterprise"))
-				println(event)
-//			}
+			if(attachedWord.original.toLowerCase.contains("product")) {
+				println('''lemma=«attachedWord.lemma», orig=«attachedWord.original», pos=«attachedWord.posTag»''')
+			}
 			
 			// our "linktypeModel" classification model predicted  
 			switch outcome {

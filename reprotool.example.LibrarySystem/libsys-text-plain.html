@@ -3,41 +3,32 @@
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 	<TITLE></TITLE>
-	<META NAME="GENERATOR" CONTENT="LibreOffice 4.0.0.3 (Linux)">
+	<META NAME="GENERATOR" CONTENT="LibreOffice 4.0.4.2 (Linux)">
 	<META NAME="CREATED" CONTENT="0;0">
 	<META NAME="CHANGEDBY" CONTENT="Viliam Simko">
-	<META NAME="CHANGED" CONTENT="20130328;15095900">
+	<META NAME="CHANGED" CONTENT="20140321;16080200">
 	<STYLE TYPE="text/css">
 	<!--
-		@page { size: 21.59cm 27.94cm; margin-left: 2cm; margin-right: 1cm; margin-top: 1cm; margin-bottom: 1cm }
+		H1 { margin-bottom: 0.21cm }
+		H1.cjk { font-size: 24pt }
+		H1.ctl { font-size: 24pt }
 		P { margin-bottom: 0.21cm; font-variant: normal }
 		P.western { font-style: normal }
-		H1 { margin-bottom: 0.21cm; page-break-after: avoid }
-		H1.western { font-family: "Times New Roman", serif; font-size: 24pt; font-weight: bold }
-		H1.cjk { font-family: "DejaVu Sans"; font-size: 24pt; font-weight: bold }
-		H1.ctl { font-family: "Lohit Hindi"; font-size: 24pt; font-weight: bold }
-		H2 { margin-bottom: 0.21cm; page-break-after: avoid }
-		H2.western { font-family: "Times New Roman", serif; font-size: 18pt; font-weight: bold }
-		H2.cjk { font-family: "DejaVu Sans"; font-size: 18pt; font-weight: bold }
-		H2.ctl { font-family: "Lohit Hindi"; font-size: 18pt; font-weight: bold }
-		H3 { margin-bottom: 0.21cm; page-break-after: avoid }
-		H3.western { font-family: "Times New Roman", serif; font-size: 14pt; font-weight: bold }
-		H3.cjk { font-family: "DejaVu Sans"; font-size: 14pt; font-weight: bold }
-		H3.ctl { font-family: "Lohit Hindi"; font-size: 14pt; font-weight: bold }
-		H3.use-case { color: #800000 }
+		H2 { margin-bottom: 0.21cm }
+		H2.ctl { font-family: "Lohit Hindi" }
+		H3 { margin-bottom: 0.21cm }
+		H3.ctl { font-family: "Lohit Hindi" }
+		H3.use-case-western { color: #800000 }
+		H3.use-case-cjk { color: #800000 }
+		H3.use-case-ctl { color: #800000; font-family: "Lohit Hindi" }
 		P.foam-use-case-summary-western { border: 1px solid #000000; padding: 0.25cm; font-style: italic }
 		P.foam-use-case-summary-cjk { border: 1px solid #000000; padding: 0.25cm }
 		P.foam-use-case-summary-ctl { border: 1px solid #000000; padding: 0.25cm }
-		KBD { color: #0000ff; background: transparent }
-		KBD.western { font-family: "DejaVu Sans Mono", monospace; font-size: 10pt; font-weight: bold }
-		KBD.cjk { font-family: "DejaVu Sans Mono", monospace }
-		KBD.ctl { font-family: "Lohit Hindi", monospace }
 		A:link { color: #000000; so-language: zxx; background: #ffffcc; text-decoration: none }
-		A:visited { color: #800000; so-language: zxx; text-decoration: underline }
 	-->
 	</STYLE>
 </HEAD>
-<BODY LANG="en-GB" LINK="#000000" VLINK="#800000" DIR="LTR">
+<BODY LANG="en-GB" LINK="#000000" DIR="LTR">
 <H1 CLASS="western">Library System Specification</H1>
 <H2 CLASS="western">1. Objective</H2>
 <P CLASS="western">Some Media and user
@@ -129,7 +120,7 @@ number.
 	to create, edit and delete a medium (manage
 	medium).</P>
 </UL>
-<H3 CLASS="use-case">4.1. Use Case: Search
+<H3 CLASS="use-case-western">4.1. Use Case: Search
 medium</H3>
 <P CLASS="foam-use-case-summary-western">The user
 specifies one or more titles and obtains
@@ -152,7 +143,7 @@ attributes.
 	list of media that match the search criteria.
 		</P>
 </UL>
-<H3 CLASS="use-case">4.2 Use Case: Reserve instance</H3>
+<H3 CLASS="use-case-western">4.2 Use Case: Reserve instance</H3>
 <P CLASS="foam-use-case-summary-western">The user
 specifies an instance which he would like to
 reserve (e.g. by selection
@@ -190,7 +181,7 @@ and reserved”.
 	to “borrowed and
 	reserved”.</P>
 </UL>
-<H3 CLASS="use-case">4.3. Use Case: Borrow instance</H3>
+<H3 CLASS="use-case-western">4.3. Use Case: Borrow instance</H3>
 <P CLASS="foam-use-case-summary-western">The user
 has to identify himself
 to the system and specifies a list of
@@ -251,6 +242,105 @@ reservation list.
 	receipt for the newly borrowed instance. 
 	</P>
 </UL>
+<H3 CLASS="use-case-western">4.4. Use Case: Extend rental period of
+instance</H3>
+<P CLASS="foam-use-case-summary-western">The user
+has to identify himself to the system and
+specifies a medium
+ instances whose rental
+period he would like to extend. The return
+date
+ is updated according to the new rental
+period if it does not exceed the
+ maximum  rental
+period and if it is not reserved by another user.</P>
+<P CLASS="western">Procedure:</P>
+<UL>
+	<LI><P CLASS="western">1. User indicates his
+	wish to extend the rental period
+	of one or more
+ medium’s instances.
+</P>
+	<LI><P CLASS="western">2. System prompts the
+	user to identify himself.
+</P>
+	<LI><P CLASS="western">3. User identifies
+	himself to the system.
+</P>
+	<LI><P CLASS="western">4. System validates
+	that the user account is valid and is not
+	locked.
+</P>
+	<LI><P CLASS="western">5. System presents a
+	view containing a list of medium instances
+	the user
+ has currently borrowed.</P>
+	<LI><P CLASS="western">6. User selects an
+	instance whose rental
+	period he wants to extend.
+</P>
+	<LI><P CLASS="western">7. System validates
+	that the selected instance is not reserved
+	and that
+ its maximum rental time
+	will not be exceeded.
+</P>
+	<LI><P CLASS="western">8. System extends the
+	instance’s rental
+	period and adds the extension time
+ to the instance’s
+	total time for this rental.</P>
+</UL>
+<H3 CLASS="use-case-western">4.5. Use Case: Return instance</H3>
+<P CLASS="foam-use-case-summary-western">The user
+specifies a list of instances he would like
+to return. The
+ instances are removed from
+the borrowing list of his user account.
+The
+ status of the instances
+is set to “available” or “available and reserved”.</P>
+<P CLASS="western">Procedure:</P>
+<UL>
+	<LI><P CLASS="western">1. The user specifies an
+	instance he wants to return ( instance
+	is
+ recognised automatically at the terminal by scanning the
+	shelfmark).
+</P>
+	<LI><P CLASS="western">2. The instance is
+	locked.
+</P>
+	<LI><P CLASS="western">3. If the instance
+	did not have the status “borrowed” or “reserved and
+	borrowed”, the procedure is terminated with an error message.
+</P>
+	<LI><P CLASS="western">4. The return
+	date is added to the list of users who have
+	borrowed
+ the instance.
+</P>
+	<LI><P CLASS="western">5. The instance is
+	removed from the borrowing list of the user
+	account.
+</P>
+	<LI><P CLASS="western">6. The status
+	of the instance is changed to “available”
+	or “available and
+ reserved”.</P>
+</UL>
+<H3 CLASS="use-case-western">4.6. The system automatically</H3>
+<P CLASS="foam-use-case-summary-western">The system
+automatically
+ reminds the user when he has an
+instance that is overdue (by mail or eMail)
+,
+informs a user about a reserved and available
+instance, releases a
+ reserved instance
+not borrowed within a certain time period, and
+ informs the next user
+on the reservation list (if there is one).</P>
 <H2 CLASS="western">Requirements</H2>
 <H3 CLASS="western">Requirement SYS1.1:</H3>
 <P CLASS="western">Type: <B>Security</B> User

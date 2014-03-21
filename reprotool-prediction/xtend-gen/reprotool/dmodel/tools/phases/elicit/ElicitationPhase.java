@@ -253,9 +253,20 @@ public class ElicitationPhase implements IExecutableTool {
         EObject _eContainer = attachedWord.eContainer();
         final SpecSentence sentence = ((SpecSentence) _eContainer);
         String _original = attachedWord.getOriginal();
-        boolean _contains = _original.contains("nterprise");
+        String _lowerCase = _original.toLowerCase();
+        boolean _contains = _lowerCase.contains("product");
         if (_contains) {
-          InputOutput.<FeatureEvent>println(event);
+          StringConcatenation _builder = new StringConcatenation();
+          _builder.append("lemma=");
+          String _lemma = attachedWord.getLemma();
+          _builder.append(_lemma, "");
+          _builder.append(", orig=");
+          String _original_1 = attachedWord.getOriginal();
+          _builder.append(_original_1, "");
+          _builder.append(", pos=");
+          String _posTag = attachedWord.getPosTag();
+          _builder.append(_posTag, "");
+          InputOutput.<String>println(_builder.toString());
         }
         boolean _matched = false;
         if (!_matched) {
