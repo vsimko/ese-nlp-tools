@@ -21,6 +21,7 @@
 	apache-opennlp-osgi.maxent;version=latest,\
 	com.google.guava;version='[12.0.1,12.0.2)',\
 	com.google.inject;version='[3.0.0,3.0.1)',\
+	dm-models-hybrid-atm;version=latest,\
 	emf-for-osgi.minimal;version=latest,\
 	emf-for-osgi.xmi;version=latest,\
 	javax.inject;version='[1.0.0,1.0.1)',\
@@ -54,10 +55,10 @@
 	reprotool-prediction.extractors;version=latest,\
 	reprotool-prediction.launcher;version=latest,\
 	reprotool-prediction.logging;version=latest,\
+	reprotool-prediction.mloaders;version=latest,\
 	reprotool-prediction.models.ssplit;version=latest,\
 	reprotool-prediction.nlp.pipeline;version=latest,\
 	reprotool-prediction.nlp.ssplit;version=latest,\
-	reprotool-prediction.smloader;version=latest,\
 	reprotool-prediction.tools;version=latest,\
 	reprotool-prediction.tools.phases.elicit;version=latest,\
 	reprotool-prediction.tools.phases.fselect;version=latest,\
@@ -69,8 +70,7 @@
 	stanford-nlp-models-osgi.lexparser;version=latest,\
 	stanford-nlp-models-osgi.ner;version=latest,\
 	stanford-nlp-models-osgi.pos.wsj.bidir;version=latest,\
-	stanford-nlp-models-osgi.sutime;version=latest,\
-	dm-models-hybrid;version=latest
+	stanford-nlp-models-osgi.sutime;version=latest
 -runrepos: Workspace,\
 	Bndtools Hub,\
 	Local

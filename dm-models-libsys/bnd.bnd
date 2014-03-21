@@ -1,6 +1,6 @@
 -classpath=src/
 Bundle-Version: 1.0.0
 Bundle-Name: Library System MaxEnt models
-Export-Package: reprotool.predict.models.dm;version=3.0.0
+Export-Package: reprotool.predict.models.dm
 Bundle-Category: REPROTOOL
 Bundle-Description: MaxEnt models for Domain Model Elicitation created from LIBSYS specification

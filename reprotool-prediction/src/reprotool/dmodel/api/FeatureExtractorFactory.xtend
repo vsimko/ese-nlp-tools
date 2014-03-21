@@ -24,6 +24,9 @@ import reprotool.dmodel.extract.words.WordPosTag
 import reprotool.dmodel.extract.words.WordPrefix
 import reprotool.dmodel.extract.words.WordSuffix
 import reprotool.predict.logging.ReprotoolLogger
+import reprotool.dmodel.extract.words.SemParentRelation2
+import reprotool.dmodel.extract.words.SemParentPosTag2
+import reprotool.dmodel.extract.words.MoreOccurancesInSentence
 
 @Component(immediate=true, provide=FeatureExtractorFactory)
 class FeatureExtractorFactory {
@@ -36,8 +39,11 @@ class FeatureExtractorFactory {
 	// at the moment we provide a static list of feature extractors
 	// in future, this will be loaded dynamically using OSGi
 	private val availableExtractors = newArrayList(
+		MoreOccurancesInSentence,
 		SemParentPosTag,
+		SemParentPosTag2,
 		SemParentRelation,
+		SemParentRelation2,
 		WordHasCapitalLetter,
 		WordHasDigit,
 		WordLemma,

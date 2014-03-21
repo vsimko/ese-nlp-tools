@@ -15,12 +15,12 @@ import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.CrossValidatingEvaluator
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.extensions.Combinations
+import reprotool.predict.exectoolapi.IExecutableTool
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.predict.smloader.SpecModelLoader
+import reprotool.predict.mloaders.SpecModelLoader
 import spec.Specification
 
 import static extension reprotool.dmodel.extensions.StatisticalExtensions.*
-import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
 class FeatureSelectionPhase implements IExecutableTool {

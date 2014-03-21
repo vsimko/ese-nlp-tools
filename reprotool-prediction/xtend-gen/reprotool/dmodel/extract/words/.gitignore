@@ -22,3 +22,6 @@
 /WordPosTagTest.java
 /WordPrefix.java
 /WordSuffix.java
+/.SemParentRelation2.java._trace
+/.SemParentPosTag2.java._trace
+/.MoreOccurancesInSentence.java._trace

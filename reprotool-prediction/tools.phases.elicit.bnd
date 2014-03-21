@@ -4,10 +4,5 @@ Bundle-Vendor: Viliam Simko
 
 Service-Component: *
 Export-Package: reprotool.dmodel.tools.phases.elicit
-Import-Package: com.google.common.collect;version='[12.0,13)',\
-	com.google.common.io;version='[12.0,13)',\
-	com.google.common.base;version='[12.0,13)',\
-	reprotool/predict/models/dm,\
-	*
 
 Bundle-Category: REPROTOOL

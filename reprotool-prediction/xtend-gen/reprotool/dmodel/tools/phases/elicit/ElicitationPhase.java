@@ -44,7 +44,7 @@ import reprotool.dmodel.extract.mwent.RoleInLink;
 import reprotool.dmodel.extract.words.WordLinkType;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
-import reprotool.predict.smloader.SpecModelLoader;
+import reprotool.predict.mloaders.SpecModelLoader;
 import spec.DomainEntityType;
 import spec.DomainModel;
 import spec.EntityLink;
@@ -248,14 +248,27 @@ public class ElicitationPhase implements IExecutableTool {
     final Procedure1<FeatureEvent> _function = new Procedure1<FeatureEvent>() {
       public void apply(final FeatureEvent event) {
         final String outcome = event.getOutcomeFeatureValue();
+        Object _attachment = event.getAttachment();
+        final SpecWord attachedWord = ((SpecWord) _attachment);
+        EObject _eContainer = attachedWord.eContainer();
+        final SpecSentence sentence = ((SpecSentence) _eContainer);
+        String _original = attachedWord.getOriginal();
+        boolean _contains = _original.contains("nterprise");
+        if (_contains) {
+          InputOutput.<FeatureEvent>println(event);
+        }
         boolean _matched = false;
         if (!_matched) {
-          if (Objects.equal(outcome,WordLinkType.OUTCOME_CLASS)) {
+          boolean _or = false;
+          boolean _equals = Objects.equal(outcome, WordLinkType.OUTCOME_CLASS);
+          if (_equals) {
+            _or = true;
+          } else {
+            boolean _equals_1 = Objects.equal(outcome, WordLinkType.OUTCOME_ATTRIBUTE);
+            _or = (_equals || _equals_1);
+          }
+          if (_or) {
             _matched=true;
-            Object _attachment = event.getAttachment();
-            final SpecWord attachedWord = ((SpecWord) _attachment);
-            EObject _eContainer = attachedWord.eContainer();
-            final SpecSentence sentence = ((SpecSentence) _eContainer);
             EList<EntityLink> _entityLinks = sentence.getEntityLinks();
             EntityLink _createEntityLink = SpecFactory.eINSTANCE.createEntityLink();
             final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
@@ -272,16 +285,12 @@ public class ElicitationPhase implements IExecutableTool {
         if (!_matched) {
           if (Objects.equal(outcome,WordLinkType.OUTCOME_REFERENCE)) {
             _matched=true;
-            Object _attachment_1 = event.getAttachment();
-            final SpecWord attachedWord_1 = ((SpecWord) _attachment_1);
-            EObject _eContainer_1 = attachedWord_1.eContainer();
-            final SpecSentence sentence_1 = ((SpecSentence) _eContainer_1);
-            EList<EntityLink> _entityLinks_1 = sentence_1.getEntityLinks();
+            EList<EntityLink> _entityLinks_1 = sentence.getEntityLinks();
             EntityLink _createEntityLink_1 = SpecFactory.eINSTANCE.createEntityLink();
             final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
               public void apply(final EntityLink it) {
                 EList<SpecWord> _linkedWords = it.getLinkedWords();
-                _linkedWords.add(attachedWord_1);
+                _linkedWords.add(attachedWord);
                 it.setEntType(DomainEntityType.REFERENCE);
               }
             };
@@ -312,18 +321,26 @@ public class ElicitationPhase implements IExecutableTool {
         final String outcome = event.getOutcomeFeatureValue();
         Object _attachment = event.getAttachment();
         final SpecWord attachedWord = ((SpecWord) _attachment);
-        boolean _matched = false;
-        if (!_matched) {
-          if (Objects.equal(outcome,RoleInLink.OUTCOME_HEAD)) {
-            _matched=true;
-            lastWord = attachedWord;
-          }
+        boolean _or = false;
+        boolean _equals = Objects.equal(outcome, RoleInLink.OUTCOME_CONT);
+        if (_equals) {
+          _or = true;
+        } else {
+          boolean _equals_1 = Objects.equal(outcome, RoleInLink.OUTCOME_LAST);
+          _or = (_equals || _equals_1);
         }
-        if (!_matched) {
-          if (Objects.equal(outcome,RoleInLink.OUTCOME_CONT)) {
-            _matched=true;
+        if (_or) {
+          boolean _notEquals = (!Objects.equal(lastWord, null));
+          if (_notEquals) {
             this.mergeFrom(lastWord, attachedWord);
+          }
+          lastWord = attachedWord;
+        } else {
+          boolean _equals_2 = Objects.equal(outcome, RoleInLink.OUTCOME_HEAD);
+          if (_equals_2) {
             lastWord = attachedWord;
+          } else {
+            lastWord = null;
           }
         }
       }

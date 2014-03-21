@@ -10,9 +10,9 @@ import java.util.Set
 import reprotool.dmodel.api.FeatureExtractorFactory
 import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
-import reprotool.predict.logging.ReprotoolLogger
-import reprotool.predict.smloader.SpecModelLoader
 import reprotool.predict.exectoolapi.IExecutableTool
+import reprotool.predict.logging.ReprotoolLogger
+import reprotool.predict.mloaders.SpecModelLoader
 
 @Component
 class TrainingPhase implements IExecutableTool {

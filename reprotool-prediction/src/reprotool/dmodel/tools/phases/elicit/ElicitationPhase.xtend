@@ -15,8 +15,10 @@ import reprotool.dmodel.api.classifiers.MaxentClassifier
 import reprotool.dmodel.api.samples.ExtractedSamples
 import reprotool.dmodel.ctxgen.RelationContext
 import reprotool.dmodel.extract.mwent.RoleInLink
+import reprotool.dmodel.extract.words.WordLinkType
+import reprotool.predict.exectoolapi.IExecutableTool
 import reprotool.predict.logging.ReprotoolLogger
-import reprotool.predict.smloader.SpecModelLoader
+import reprotool.predict.mloaders.SpecModelLoader
 import spec.DomainEntityType
 import spec.SpecFactory
 import spec.SpecSentence
@@ -24,40 +26,6 @@ import spec.SpecWord
 import spec.Specification
 
 import static extension reprotool.dmodel.extensions.ReprotoolEcoreExtensions.*
-import aQute.bnd.annotation.component.Activate
-import org.osgi.framework.BundleContext
-import java.util.Hashtable
-import aQute.bnd.annotation.component.Deactivate
-import org.osgi.framework.ServiceRegistration
-import reprotool.predict.exectoolapi.IExecutableTool
-import reprotool.dmodel.extract.words.WordLinkType
-
-@Component
-class ElicitationPhaseModelLoader {
-
-	val List<ServiceRegistration> registeredServices = newArrayList
-
-	@Activate def void activate(BundleContext context) {
-		registeredServices += context.loadAndRegisterModel("linktype")
-		registeredServices += context.loadAndRegisterModel("roleInLink")
-		registeredServices += context.loadAndRegisterModel("relcl")
-	}
-	
-	@Deactivate def void deactivate(BundleContext context) {
-		registeredServices.forEach[unregister]
-	}
-	
-	// helper method
-	private def static loadAndRegisterModel(BundleContext context, String modelName) {
-		context.registerService(
-			MaxentModel.name,
-			MaxentClassifier.loadMaxentModel(
-				context.bundle.getResource('''reprotool/predict/models/dm/«modelName».maxent.gz''').openStream
-			),
-			new Hashtable(#{"model" -> modelName})
-		)
-	}
-}
 
 @Component
 class ElicitationPhase implements IExecutableTool {
@@ -197,20 +165,23 @@ class ElicitationPhase implements IExecutableTool {
 
 			// in this lambda function, we handle a single prediction
 			val outcome = event.outcomeFeatureValue
+			val attachedWord = event.attachment as SpecWord
+			val sentence = attachedWord.eContainer as SpecSentence
+
+//			if(attachedWord.original.contains("Enterprise") || attachedWord.original.contains("Change")) {
+			if(attachedWord.original.contains("nterprise"))
+				println(event)
+//			}
 			
 			// our "linktypeModel" classification model predicted  
 			switch outcome {
-				case WordLinkType.OUTCOME_CLASS : {
-					val attachedWord = event.attachment as SpecWord
-					val sentence = attachedWord.eContainer as SpecSentence
+				case outcome == WordLinkType.OUTCOME_CLASS  || outcome == WordLinkType.OUTCOME_ATTRIBUTE : {
 					sentence.entityLinks += SpecFactory.eINSTANCE.createEntityLink => [
 						linkedWords += attachedWord
 						entType = DomainEntityType.CLASS
 					]
 				}
 				case WordLinkType.OUTCOME_REFERENCE : {
-					val attachedWord = event.attachment as SpecWord
-					val sentence = attachedWord.eContainer as SpecSentence
 					sentence.entityLinks += SpecFactory.eINSTANCE.createEntityLink => [
 						linkedWords += attachedWord
 						entType = DomainEntityType.REFERENCE
@@ -238,14 +209,15 @@ class ElicitationPhase implements IExecutableTool {
 			val outcome = event.outcomeFeatureValue
 			val attachedWord = event.attachment as SpecWord
 			
-			switch outcome { // there is no fall through in Xtend's switch
-				case RoleInLink.OUTCOME_HEAD :
-					lastWord = attachedWord
-
-				case RoleInLink.OUTCOME_CONT : {
+			if(outcome == RoleInLink.OUTCOME_CONT || outcome == RoleInLink.OUTCOME_LAST) {
+				if(lastWord != null) {
 					lastWord.mergeFrom(attachedWord)
-					lastWord = attachedWord
 				}
+				lastWord = attachedWord
+			} else if(outcome == RoleInLink.OUTCOME_HEAD) {
+				lastWord = attachedWord
+			} else {
+				lastWord = null
 			}
 		}
 	}

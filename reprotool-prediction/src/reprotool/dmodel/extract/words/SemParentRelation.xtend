@@ -10,3 +10,10 @@ class SemParentRelation extends AbstractFeatureExtractor {
 		word?.semanticParentRelation?.label
 	}
 }
+
+@Feature("sprel2")
+class SemParentRelation2 extends AbstractFeatureExtractor {
+	def dispatch visit(SpecWord word) {
+		word?.semanticParent?.semanticParentRelation?.label
+	}
+}

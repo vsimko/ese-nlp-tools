@@ -2,12 +2,12 @@ package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import reprotool.predict.logging.ReprotoolLogger
-import reprotool.predict.smloader.SpecModelLoader
 import reprotool.predict.exectoolapi.IExecutableTool
+import reprotool.predict.logging.ReprotoolLogger
+import reprotool.predict.mloaders.SpecModelLoader
 
 @Component
-class LoadDomainModelTool implements IExecutableTool {
+class LoadDomainModel implements IExecutableTool {
 	
 	override getUsage() '''
 	This tool loads an existing domain model (any Ecore file) which is serialized in an XMI file

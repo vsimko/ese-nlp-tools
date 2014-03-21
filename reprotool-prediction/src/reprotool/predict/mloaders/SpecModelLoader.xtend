@@ -1,4 +1,4 @@
-package reprotool.predict.smloader
+package reprotool.predict.mloaders
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference

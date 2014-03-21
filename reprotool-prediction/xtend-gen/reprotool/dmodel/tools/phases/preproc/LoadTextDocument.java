@@ -12,13 +12,13 @@ import org.eclipse.xtext.xbase.lib.InputOutput;
 import reprotool.dmodel.nlp.pipeline.ReprotoolLinguisticPipeline;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
-import reprotool.predict.smloader.SpecModelLoader;
+import reprotool.predict.mloaders.SpecModelLoader;
 import spec.SpecDocument;
 import spec.Specification;
 
 @Component
 @SuppressWarnings("all")
-public class LoadAnnotatedDocument implements IExecutableTool {
+public class LoadTextDocument implements IExecutableTool {
   public String getUsage() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("This tool performs a thorough linguistic analysis on the selected document and");

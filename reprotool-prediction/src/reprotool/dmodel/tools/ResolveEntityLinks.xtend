@@ -2,12 +2,12 @@ package reprotool.dmodel.tools
 
 import aQute.bnd.annotation.component.Component
 import aQute.bnd.annotation.component.Reference
-import reprotool.predict.logging.ReprotoolLogger
-import reprotool.predict.smloader.SpecModelLoader
 import reprotool.predict.exectoolapi.IExecutableTool
+import reprotool.predict.logging.ReprotoolLogger
+import reprotool.predict.mloaders.SpecModelLoader
 
 @Component
-class ResolveEntityLinksTool implements IExecutableTool {
+class ResolveEntityLinks implements IExecutableTool {
 
 	override getUsage() '''
 	This tool requires that the input specification model contained a domain model

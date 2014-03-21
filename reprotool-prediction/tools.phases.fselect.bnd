@@ -1,5 +1,5 @@
 Bundle-Version: 3.0.0
-Bundle-Name: REPROTOOL: Tools for the Training Phase
+Bundle-Name: REPROTOOL: Tools for the Preprocessing Phase
 Bundle-Vendor: Viliam Simko
 
 Service-Component: *

@@ -21,7 +21,7 @@ import reprotool.dmodel.api.samples.ExtractedSamples;
 import reprotool.dmodel.tools.phases.train.TrainingPhaseConfig;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
-import reprotool.predict.smloader.SpecModelLoader;
+import reprotool.predict.mloaders.SpecModelLoader;
 import spec.Specification;
 
 @Component

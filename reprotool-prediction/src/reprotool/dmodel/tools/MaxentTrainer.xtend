@@ -8,7 +8,7 @@ import reprotool.predict.logging.ReprotoolLogger
 import reprotool.predict.exectoolapi.IExecutableTool
 
 @Component
-class MaxentTrainerTool implements IExecutableTool {
+class MaxentTrainer implements IExecutableTool {
 
 	override getUsage() '''
 		This tool is used for training a Maximum Entropy classifier.

@@ -39,7 +39,7 @@ import reprotool.dmodel.extensions.StatisticalExtensions;
 import reprotool.dmodel.tools.phases.fselect.FeatureSelectionPhaseConfig;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
-import reprotool.predict.smloader.SpecModelLoader;
+import reprotool.predict.mloaders.SpecModelLoader;
 import spec.DomainModel;
 import spec.SpecDocument;
 import spec.Specification;
