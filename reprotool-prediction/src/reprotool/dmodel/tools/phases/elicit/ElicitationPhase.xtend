@@ -25,6 +25,8 @@ import spec.SpecSentence
 import spec.SpecWord
 import spec.Specification
 
+import static extension reprotool.dmodel.extensions.SpecWordExtensions.*
+
 import static extension reprotool.dmodel.extensions.ReprotoolEcoreExtensions.*
 
 @Component
@@ -110,6 +112,7 @@ class ElicitationPhase implements IExecutableTool {
 		predictDomEntCandidates
 		predictMultiWordEntities		// requires single-word EntityLinks
 		deriveNamesForEntityLinks		// requires multi-word EntityLinks with empty name
+		removeEntityLinksWithoutLabel
 		convertEntityLinksToEClasses	// requires EntityLinks with names
 		fillBacklinksEAnnotations		// requires EClasses
 		mergeEClassesWithSameName		// requires "backlinks"
@@ -168,9 +171,9 @@ class ElicitationPhase implements IExecutableTool {
 			val attachedWord = event.attachment as SpecWord
 			val sentence = attachedWord.eContainer as SpecSentence
 
-			if(attachedWord.original.toLowerCase.contains("product")) {
-				println('''lemma=«attachedWord.lemma», orig=«attachedWord.original», pos=«attachedWord.posTag»''')
-			}
+//			if(attachedWord.original.toLowerCase.contains("product")) {
+//				println('''lemma=«attachedWord.lemma», orig=«attachedWord.original», pos=«attachedWord.posTag»''')
+//			}
 			
 			// our "linktypeModel" classification model predicted  
 			switch outcome {
@@ -208,15 +211,19 @@ class ElicitationPhase implements IExecutableTool {
 			val outcome = event.outcomeFeatureValue
 			val attachedWord = event.attachment as SpecWord
 			
-			if(outcome == RoleInLink.OUTCOME_CONT || outcome == RoleInLink.OUTCOME_LAST) {
-				if(lastWord != null) {
-					lastWord.mergeFrom(attachedWord)
+			switch outcome {
+				case RoleInLink.OUTCOME_CONT : {
+					if(lastWord != null) lastWord.mergeFrom(attachedWord)
+					lastWord = attachedWord
 				}
-				lastWord = attachedWord
-			} else if(outcome == RoleInLink.OUTCOME_HEAD) {
-				lastWord = attachedWord
-			} else {
-				lastWord = null
+				case RoleInLink.OUTCOME_LAST : {
+					if(lastWord != null) lastWord.mergeFrom(attachedWord)
+					lastWord = null
+				}
+				case RoleInLink.OUTCOME_HEAD : {
+					lastWord = attachedWord
+				}
+				default: lastWord = null
 			}
 		}
 	}
@@ -233,8 +240,7 @@ class ElicitationPhase implements IExecutableTool {
 		val linkToDelete = wordToMerge.relatedEntityLink
 		if(linkToDelete != null) {
 			wordToPreserve.relatedEntityLink.linkedWords += linkToDelete.linkedWords
-			val sentence = wordToMerge.eContainer as SpecSentence
-			sentence.entityLinks.remove(linkToDelete)
+			wordToMerge.sentence.entityLinks.remove(linkToDelete)
 		} else {
 			wordToPreserve.relatedEntityLink.linkedWords += wordToMerge
 		}
@@ -243,13 +249,31 @@ class ElicitationPhase implements IExecutableTool {
 	private def void deriveNamesForEntityLinks() {
 		"TASK : Deriving names for entity links based on the words they contain".info
 		
-		specModel.allEntityLinks
-			.filter[entLabel == null || entLabel.empty]
-			.forEach[
-				entLabel = linkedWords.map[getCorefRepOrSelf.lemma.toLowerCase.toFirstUpper].join(" ")
-			]
+		for(entlink : specModel.allEntityLinks.filter[entLabel == null || entLabel.empty]) {
 			
-		'''All EntityLinks found in the specification: «specModel.allEntityLinks.map[entLabel].join(", ")»'''.debug
+			val commonRoot = getNearestCommonSemanticParent(entlink.linkedWords.filter[posTag.matches("^(NN|JJ).*")])
+			if(commonRoot != null) {
+				
+				val words = commonRoot.semanticChildren.toList
+				words += commonRoot
+				
+				val nouns = words.filter[posTag.matches("^NN.*")].sortBy[positionInSentence]
+				entlink.entLabel = nouns.map[corefRepOrSelf.lemma.toLowerCase.toFirstUpper].toSet.join("")
+			}
+		}
+			
+		'''All EntityLinks found in the specification'''.debug
+	}
+	
+	private def void removeEntityLinksWithoutLabel() {
+		"TASK : Removing entity links without a label".info
+		val entLinksToRemove = specModel.allEntityLinks.filter[entLabel == null || entLabel.empty].toList // materialize the list
+		entLinksToRemove.forEach[
+			linkedWords.clear
+			setLinkedEntity(null)
+			sentence.entityLinks.remove(it)
+		]
+		'''Removed «entLinksToRemove.size» entity links without label'''.debug
 	}
 	
 	private def void convertEntityLinksToEClasses() {
@@ -267,7 +291,7 @@ class ElicitationPhase implements IExecutableTool {
 	}
 	
 	private def void fillBacklinksEAnnotations() {
-		'''Filling backlinks from EClasses (in the domain model) to EntityLinks (in the document)'''.info
+		'''TASK : Filling backlinks from EClasses (in the domain model) to EntityLinks (in the document)'''.info
 		specModel.allEntityLinks
 			.filter[linkedEntity != null] // some EntityLinks might not yet be connected to the domain model 
 			.forEach[
@@ -337,6 +361,6 @@ class ElicitationPhase implements IExecutableTool {
 	
 	private def void removeSpacesFromDomainModel() {
 		"TASK : Removing spaces from class names in the domain model".info
-		domainModel.filter(EClass).forEach[name = name.replaceAll(" ", "")]
+		domainModel.filter(EClass).filter[name != null].forEach[name = name.replaceAll(" ", "")]
 	}
 }
