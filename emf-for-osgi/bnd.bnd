@@ -1,31 +1,29 @@
-## For EMF Feature 2.6.1
-#version: 2.6.1
-#ecore-version: 2.6.1.v20100914-1218
-#common-version: 2.6.0.v20100914-1218
-#xmi-version: 2.5.0.v20100521-1846
-#osgi-version: [1.5,2)
-#libpath: libs/2.6.1
+emf-version: 2.9.2
+libpath: libs/${emf-version}
 
-# For EMF Feature 2.7.0 M5
-#version: 2.7.0.M5
-#ecore-version: 2.7.0.v20110128-1409
-#common-version: 2.7.0.v20110128-1409
-#xmi-version: 2.6.0.v20110126-1727
-#osgi-version: [1.6,2)
-#libpath: libs/2.7.0M5
+libs 		= ${lsr;${libpath}}
+lib_ecore	= ${filter;${libs};.*ecore_.*}
+lib_common	= ${filter;${libs};.*common_.*}
+lib_xmi		= ${filter;${libs};.*xmi_.*}
 
-## For EMF Feature 2.9.0
-version: 2.9.0
-ecore-version: 2.9.0.v20130528-0742
-common-version: 2.9.0.v20130528-0742
-xmi-version: 2.9.0.v20130528-0742
-libpath: libs/2.9.0
+Original-EMF-Ecore:		${lib_ecore}
+Original-EMF-Common:	${lib_common}
+Original-EMF-XMI:		${lib_xmi}
 
+ecore-version:	${replace;${lib_ecore};.*_(.*).jar;$1}
+common-version:	${replace;${lib_common};.*_(.*).jar;$1}
+xmi-version:	${replace;${lib_xmi};.*_(.*).jar;$1}
+
+
+# the rest of bnd config
 -sub: *.bnd
 -sourcepath: 
 -buildpath: ${libpath}/org.eclipse.emf.ecore_${ecore-version}.jar;version=file,\
 	${libpath}/org.eclipse.emf.common_${common-version}.jar;version=file,\
-	${libpath}/org.eclipse.emf.ecore.xmi_${xmi-version}.jar;version=file
+	${libpath}/org.eclipse.emf.ecore.xmi_${xmi-version}.jar;version=file,\
+	libs/xtend/org.eclipse.xtend2.lib_2.4.3.v201309030823.jar;version=file,\
+	libs/xtend/org.eclipse.xtext.xbase.lib_2.4.3.v201309030823.jar;version=file
+	
 -runfw: org.apache.felix.framework;version='[4.0.3,4.0.3]'
 -runee: J2SE-1.5
 -runbundles: org.apache.felix.gogo.shell,\

@@ -1,4 +1,5 @@
-Bundle-Version: ${ecore-version}
+Bundle-Name: EMF for OSGi (minimal setup without XMI support)
+Bundle-Version: 2.9.2
 
 Export-Package: org.eclipse.emf.common.archive;version=${common-version},\
 	org.eclipse.emf.common;version=${common-version},\
@@ -32,4 +33,3 @@ Private-Package: org.eclipse.emf.common,\
 	org.eclipse.emf.ecore.xml.type.impl,\
 	org.eclipse.emf.ecore.xml.type.internal,\
 	org.eclipse.emf.ecore.xml.type.util
-Bundle-Name: EMF for OSGi (minimal setup without XMI support)

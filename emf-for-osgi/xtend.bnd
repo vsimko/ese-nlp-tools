@@ -1,0 +1,8 @@
+Bundle-Version: 2.4.3
+
+Export-Package: \
+	org.eclipse.xtend2.lib,\
+	org.eclipse.xtext.xbase.lib
+	
+Private-Package: org.eclipse.xtext.xbase.lib.internal,\
+	org.eclipse.xtext.xbase.lib.util
