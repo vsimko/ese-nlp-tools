@@ -1,60 +1,15 @@
 package reprotool.dmodel.tools.phases.elicit;
 
-import aQute.bnd.annotation.component.Component;
-import aQute.bnd.annotation.component.Reference;
-import com.google.common.base.Objects;
-import com.google.common.collect.Iterables;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import opennlp.model.IndexHashTable;
-import opennlp.model.MaxentModel;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.ENamedElement;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.eclipse.xtext.xbase.lib.Conversions;
-import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Extension;
-import org.eclipse.xtext.xbase.lib.Functions.Function1;
-import org.eclipse.xtext.xbase.lib.InputOutput;
-import org.eclipse.xtext.xbase.lib.IntegerRange;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import org.eclipse.xtext.xbase.lib.IteratorExtensions;
-import org.eclipse.xtext.xbase.lib.ListExtensions;
-import org.eclipse.xtext.xbase.lib.ObjectExtensions;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
-import org.eclipse.xtext.xbase.lib.StringExtensions;
 import reprotool.dmodel.api.FeatureExtractorFactory;
-import reprotool.dmodel.api.classifiers.MaxentClassifier;
-import reprotool.dmodel.api.samples.ExtractedSamples;
-import reprotool.dmodel.api.samples.FeatureEvent;
-import reprotool.dmodel.ctxgen.RelationContext;
-import reprotool.dmodel.extensions.ReprotoolEcoreExtensions;
-import reprotool.dmodel.extract.mwent.RoleInLink;
-import reprotool.dmodel.extract.words.WordLinkType;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
 import reprotool.predict.mloaders.SpecModelLoader;
-import spec.DomainEntityType;
-import spec.DomainModel;
-import spec.EntityLink;
-import spec.SpecFactory;
-import spec.SpecSentence;
-import spec.SpecWord;
-import spec.Specification;
 
-@Component
-@SuppressWarnings("all")
+/* @Component
+ */@SuppressWarnings("all")
 public class ElicitationPhase implements IExecutableTool {
   public String getUsage() {
     StringConcatenation _builder = new StringConcatenation();
@@ -78,102 +33,72 @@ public class ElicitationPhase implements IExecutableTool {
   @Extension
   private ReprotoolLogger logger;
   
-  @Reference
-  public void setLogger(final ReprotoolLogger logger) {
+  /* @Reference
+   */public void setLogger(final ReprotoolLogger logger) {
     this.logger = logger;
   }
   
   private SpecModelLoader loader;
   
-  @Reference
-  public void setLoader(final SpecModelLoader loader) {
+  /* @Reference
+   */public void setLoader(final SpecModelLoader loader) {
     this.loader = loader;
   }
   
   private FeatureExtractorFactory fexFactory;
   
-  @Reference
-  public void setFexFactory(final FeatureExtractorFactory factory) {
+  /* @Reference
+   */public void setFexFactory(final FeatureExtractorFactory factory) {
     this.fexFactory = factory;
   }
   
-  private MaxentModel linktypeModel;
+  private /* MaxentModel */Object linktypeModel;
   
-  @Reference(target = "(model=linktype)")
-  public void set_linktypeModel(final MaxentModel model) {
+  /* @Reference()
+   */public void set_linktypeModel(final /* MaxentModel */Object model) {
     this.linktypeModel = model;
   }
   
-  private MaxentModel roleinlinkModel;
+  private /* MaxentModel */Object roleinlinkModel;
   
-  @Reference(target = "(model=roleInLink)")
-  public void set_roleinlinkModel(final MaxentModel model) {
+  /* @Reference()
+   */public void set_roleinlinkModel(final /* MaxentModel */Object model) {
     this.roleinlinkModel = model;
   }
   
-  private MaxentModel relclModel;
+  private /* MaxentModel */Object relclModel;
   
-  @Reference(target = "(model=relcl)")
-  public void set_relclModel(final MaxentModel model) {
+  /* @Reference()
+   */public void set_relclModel(final /* MaxentModel */Object model) {
     this.relclModel = model;
   }
   
   private final static String DOMAIN_MODEL_PACKAGE_NAME = "domainmodel";
   
-  private List<EClassifier> domainModel;
+  private /* List<EClassifier> */Object domainModel;
   
-  private Specification specModel;
+  private /* Specification */Object specModel;
   
   private String projectDir;
   
   public void execute(final String[] args) {
-    int _size = ((List<String>)Conversions.doWrapArray(args)).size();
-    boolean _notEquals = (_size != 1);
-    if (_notEquals) {
-      String _usage = this.getUsage();
-      InputOutput.<String>println(_usage);
-      return;
-    }
-    final String specModelFileName = args[0];
-    File _file = new File(specModelFileName);
-    File _absoluteFile = _file.getAbsoluteFile();
-    String _parent = _absoluteFile.getParent();
-    this.projectDir = _parent;
-    Specification _loadSpecificationModel = this.loader.loadSpecificationModel(specModelFileName);
-    this.specModel = _loadSpecificationModel;
-    DomainModel _domainModel = this.specModel.getDomainModel();
-    boolean _equals = Objects.equal(_domainModel, null);
-    if (_equals) {
-      DomainModel _createDomainModel = SpecFactory.eINSTANCE.createDomainModel();
-      final Procedure1<DomainModel> _function = new Procedure1<DomainModel>() {
-        public void apply(final DomainModel it) {
-          EPackage _createEPackage = EcoreFactory.eINSTANCE.createEPackage();
-          final Procedure1<EPackage> _function = new Procedure1<EPackage>() {
-            public void apply(final EPackage it) {
-              it.setName(ElicitationPhase.DOMAIN_MODEL_PACKAGE_NAME);
-            }
-          };
-          EPackage _doubleArrow = ObjectExtensions.<EPackage>operator_doubleArrow(_createEPackage, _function);
-          it.setModelPackage(_doubleArrow);
-        }
-      };
-      DomainModel _doubleArrow = ObjectExtensions.<DomainModel>operator_doubleArrow(_createDomainModel, _function);
-      this.specModel.setDomainModel(_doubleArrow);
-    }
-    DomainModel _domainModel_1 = this.specModel.getDomainModel();
-    EPackage _modelPackage = _domainModel_1.getModelPackage();
-    EList<EClassifier> _eClassifiers = _modelPackage.getEClassifiers();
-    this.domainModel = _eClassifiers;
-    this.predictDomEntCandidates();
-    this.predictMultiWordEntities();
-    this.deriveNamesForEntityLinks();
-    this.convertEntityLinksToEClasses();
-    this.fillBacklinksEAnnotations();
-    this.mergeEClassesWithSameName();
-    this.predictRelations();
-    this.removeSpacesFromDomainModel();
-    this.saveResults();
-    InputOutput.<String>println("done. see logs");
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field SpecFactory is undefined for the type ElicitationPhase"
+      + "\nThe method setModelPackage is undefined for the type ElicitationPhase"
+      + "\nThe method or field EcoreFactory is undefined for the type ElicitationPhase"
+      + "\nThe method setName is undefined for the type ElicitationPhase"
+      + "\ndomainModel cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nsetDomainModel cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ncreateDomainModel cannot be resolved"
+      + "\n=> cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ncreateEPackage cannot be resolved"
+      + "\n=> cannot be resolved"
+      + "\ndomainModel cannot be resolved"
+      + "\nmodelPackage cannot be resolved"
+      + "\nEClassifiers cannot be resolved");
   }
   
   private void saveResults() {
@@ -190,473 +115,245 @@ public class ElicitationPhase implements IExecutableTool {
     this.logger.info(_builder_2);
   }
   
-  private Iterable<String> getContextFeatureNames(final MaxentModel maxentModel) {
-    Set<String> _xblockexpression = null;
-    {
-      Object[] _dataStructures = maxentModel.getDataStructures();
-      Object _get = _dataStructures[1];
-      final IndexHashTable<String> contextMap = ((IndexHashTable<String>) _get);
-      int _size = contextMap.size();
-      IntegerRange _upTo = new IntegerRange(1, _size);
-      final Function1<Integer,String> _function = new Function1<Integer,String>() {
-        public String apply(final Integer it) {
-          return ((String) null);
-        }
-      };
-      Iterable<String> _map = IterableExtensions.<Integer, String>map(_upTo, _function);
-      final String[] allContexts = contextMap.toArray(((String[])Conversions.unwrapArray(_map, String.class)));
-      final Function1<String,String> _function_1 = new Function1<String,String>() {
-        public String apply(final String it) {
-          String[] _split = it.split("=");
-          String _get = _split[0];
-          return _get;
-        }
-      };
-      List<String> _map_1 = ListExtensions.<String, String>map(((List<String>)Conversions.doWrapArray(allContexts)), _function_1);
-      List<String> _sort = IterableExtensions.<String>sort(_map_1);
-      Set<String> _set = IterableExtensions.<String>toSet(_sort);
-      _xblockexpression = (_set);
-    }
-    return _xblockexpression;
+  private Iterable<String> getContextFeatureNames(final /* MaxentModel */Object maxentModel) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nIndexHashTable cannot be resolved to a type."
+      + "\nThe method split is undefined for the type ElicitationPhase"
+      + "\ndataStructures cannot be resolved"
+      + "\nget cannot be resolved"
+      + "\ntoArray cannot be resolved"
+      + "\nsize cannot be resolved"
+      + "\nmap cannot be resolved"
+      + "\nget cannot be resolved"
+      + "\nsort cannot be resolved"
+      + "\ntoSet cannot be resolved");
   }
   
-  private String getOutcomeFeatureName(final MaxentModel maxentModel) {
-    String _xblockexpression = null;
-    {
-      Object[] _dataStructures = maxentModel.getDataStructures();
-      Object _get = _dataStructures[2];
-      final String[] allOutcomes = ((String[]) _get);
-      String _get_1 = allOutcomes[0];
-      String[] _split = _get_1.split("=");
-      String _get_2 = _split[0];
-      _xblockexpression = (_get_2);
-    }
-    return _xblockexpression;
+  private String getOutcomeFeatureName(final /* MaxentModel */Object maxentModel) {
+    throw new Error("Unresolved compilation problems:"
+      + "\ndataStructures cannot be resolved"
+      + "\nget cannot be resolved");
   }
   
   private void predictDomEntCandidates() {
-    this.logger.info("TASK : Predicting which words represent domain entities");
-    Iterable<String> _contextFeatureNames = this.getContextFeatureNames(this.linktypeModel);
-    String _outcomeFeatureName = this.getOutcomeFeatureName(this.linktypeModel);
-    ExtractedSamples _extractedSamples = new ExtractedSamples(
-      this.fexFactory, 
-      this.specModel, 
-      "words", _contextFeatureNames, _outcomeFeatureName);
-    final ExtractedSamples samples = _extractedSamples;
-    final MaxentClassifier classifier = MaxentClassifier.createFromModel(this.linktypeModel);
-    Iterator<FeatureEvent> _predictIterator = classifier.predictIterator(samples);
-    final Procedure1<FeatureEvent> _function = new Procedure1<FeatureEvent>() {
-      public void apply(final FeatureEvent event) {
-        final String outcome = event.getOutcomeFeatureValue();
-        Object _attachment = event.getAttachment();
-        final SpecWord attachedWord = ((SpecWord) _attachment);
-        EObject _eContainer = attachedWord.eContainer();
-        final SpecSentence sentence = ((SpecSentence) _eContainer);
-        String _original = attachedWord.getOriginal();
-        String _lowerCase = _original.toLowerCase();
-        boolean _contains = _lowerCase.contains("product");
-        if (_contains) {
-          StringConcatenation _builder = new StringConcatenation();
-          _builder.append("lemma=");
-          String _lemma = attachedWord.getLemma();
-          _builder.append(_lemma, "");
-          _builder.append(", orig=");
-          String _original_1 = attachedWord.getOriginal();
-          _builder.append(_original_1, "");
-          _builder.append(", pos=");
-          String _posTag = attachedWord.getPosTag();
-          _builder.append(_posTag, "");
-          InputOutput.<String>println(_builder.toString());
-        }
-        boolean _matched = false;
-        if (!_matched) {
-          boolean _or = false;
-          boolean _equals = Objects.equal(outcome, WordLinkType.OUTCOME_CLASS);
-          if (_equals) {
-            _or = true;
-          } else {
-            boolean _equals_1 = Objects.equal(outcome, WordLinkType.OUTCOME_ATTRIBUTE);
-            _or = (_equals || _equals_1);
-          }
-          if (_or) {
-            _matched=true;
-            EList<EntityLink> _entityLinks = sentence.getEntityLinks();
-            EntityLink _createEntityLink = SpecFactory.eINSTANCE.createEntityLink();
-            final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
-              public void apply(final EntityLink it) {
-                EList<SpecWord> _linkedWords = it.getLinkedWords();
-                _linkedWords.add(attachedWord);
-                it.setEntType(DomainEntityType.CLASS);
-              }
-            };
-            EntityLink _doubleArrow = ObjectExtensions.<EntityLink>operator_doubleArrow(_createEntityLink, _function);
-            _entityLinks.add(_doubleArrow);
-          }
-        }
-        if (!_matched) {
-          if (Objects.equal(outcome,WordLinkType.OUTCOME_REFERENCE)) {
-            _matched=true;
-            EList<EntityLink> _entityLinks_1 = sentence.getEntityLinks();
-            EntityLink _createEntityLink_1 = SpecFactory.eINSTANCE.createEntityLink();
-            final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-              public void apply(final EntityLink it) {
-                EList<SpecWord> _linkedWords = it.getLinkedWords();
-                _linkedWords.add(attachedWord);
-                it.setEntType(DomainEntityType.REFERENCE);
-              }
-            };
-            EntityLink _doubleArrow_1 = ObjectExtensions.<EntityLink>operator_doubleArrow(_createEntityLink_1, _function_1);
-            _entityLinks_1.add(_doubleArrow_1);
-          }
-        }
-      }
-    };
-    IteratorExtensions.<FeatureEvent>forEach(_predictIterator, _function);
+    throw new Error("Unresolved compilation problems:"
+      + "\nSpecWord cannot be resolved to a type."
+      + "\nSpecSentence cannot be resolved to a type."
+      + "\nThe method createFromModel is undefined for the type ElicitationPhase"
+      + "\nThe method outcomeFeatureValue is undefined for the type ElicitationPhase"
+      + "\nThe method attachment is undefined for the type ElicitationPhase"
+      + "\nThe method or field SpecFactory is undefined for the type ElicitationPhase"
+      + "\nThe method or field linkedWords is undefined for the type ElicitationPhase"
+      + "\nThe method or field entType is undefined for the type ElicitationPhase"
+      + "\nThe method or field DomainEntityType is undefined for the type ElicitationPhase"
+      + "\nThe method or field SpecFactory is undefined for the type ElicitationPhase"
+      + "\nThe method or field linkedWords is undefined for the type ElicitationPhase"
+      + "\nThe method or field entType is undefined for the type ElicitationPhase"
+      + "\nThe method or field DomainEntityType is undefined for the type ElicitationPhase"
+      + "\nThere is no context to infer the closure\'s argument types from. Consider typing the arguments or put the closures into a typed context."
+      + "\ngetContextFeatureNames cannot be resolved"
+      + "\ngetOutcomeFeatureName cannot be resolved"
+      + "\npredictIterator cannot be resolved"
+      + "\nforEach cannot be resolved"
+      + "\neContainer cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\n|| cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nentityLinks cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ncreateEntityLink cannot be resolved"
+      + "\n=> cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\nCLASS cannot be resolved"
+      + "\nentityLinks cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ncreateEntityLink cannot be resolved"
+      + "\n=> cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\nREFERENCE cannot be resolved");
   }
   
   private void predictMultiWordEntities() {
-    this.logger.info("TASK : Predicting which words represent entities composed of multiple words");
-    Iterable<String> _contextFeatureNames = this.getContextFeatureNames(this.roleinlinkModel);
-    String _outcomeFeatureName = this.getOutcomeFeatureName(this.roleinlinkModel);
-    ExtractedSamples _extractedSamples = new ExtractedSamples(
-      this.fexFactory, 
-      this.specModel, 
-      "words", _contextFeatureNames, _outcomeFeatureName);
-    final ExtractedSamples samples = _extractedSamples;
-    final MaxentClassifier classifier = MaxentClassifier.createFromModel(this.roleinlinkModel);
-    SpecWord lastWord = null;
-    Iterator<FeatureEvent> _predictIterator = classifier.predictIterator(samples);
-    Iterable<FeatureEvent> _iterable = IteratorExtensions.<FeatureEvent>toIterable(_predictIterator);
-    for (final FeatureEvent event : _iterable) {
-      {
-        final String outcome = event.getOutcomeFeatureValue();
-        Object _attachment = event.getAttachment();
-        final SpecWord attachedWord = ((SpecWord) _attachment);
-        boolean _or = false;
-        boolean _equals = Objects.equal(outcome, RoleInLink.OUTCOME_CONT);
-        if (_equals) {
-          _or = true;
-        } else {
-          boolean _equals_1 = Objects.equal(outcome, RoleInLink.OUTCOME_LAST);
-          _or = (_equals || _equals_1);
-        }
-        if (_or) {
-          boolean _notEquals = (!Objects.equal(lastWord, null));
-          if (_notEquals) {
-            this.mergeFrom(lastWord, attachedWord);
-          }
-          lastWord = attachedWord;
-        } else {
-          boolean _equals_2 = Objects.equal(outcome, RoleInLink.OUTCOME_HEAD);
-          if (_equals_2) {
-            lastWord = attachedWord;
-          } else {
-            lastWord = null;
-          }
-        }
-      }
-    }
+    throw new Error("Unresolved compilation problems:"
+      + "\nSpecWord cannot be resolved to a type."
+      + "\nSpecWord cannot be resolved to a type."
+      + "\nThe method createFromModel is undefined for the type ElicitationPhase"
+      + "\ngetContextFeatureNames cannot be resolved"
+      + "\ngetOutcomeFeatureName cannot be resolved"
+      + "\npredictIterator cannot be resolved"
+      + "\ntoIterable cannot be resolved"
+      + "\noutcomeFeatureValue cannot be resolved"
+      + "\nattachment cannot be resolved"
+      + "\n!= cannot be resolved"
+      + "\nmergeFrom cannot be resolved"
+      + "\n!= cannot be resolved"
+      + "\nmergeFrom cannot be resolved");
   }
   
-  private void mergeFrom(final SpecWord wordToPreserve, final SpecWord wordToMerge) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("merging ");
-    _builder.append(wordToPreserve, "");
-    _builder.append(" ");
-    {
-      EntityLink _relatedEntityLink = wordToPreserve.getRelatedEntityLink();
-      boolean _equals = Objects.equal(_relatedEntityLink, null);
-      if (_equals) {
-        _builder.append("[NOLINK]");
-      }
-    }
-    _builder.append(" <- ");
-    _builder.append(wordToMerge, "");
-    _builder.append(" ");
-    {
-      EntityLink _relatedEntityLink_1 = wordToMerge.getRelatedEntityLink();
-      boolean _equals_1 = Objects.equal(_relatedEntityLink_1, null);
-      if (_equals_1) {
-        _builder.append("[NOLINK]");
-      }
-    }
-    this.logger.debug(_builder);
-    EntityLink _relatedEntityLink_2 = wordToPreserve.getRelatedEntityLink();
-    boolean _equals_2 = Objects.equal(_relatedEntityLink_2, null);
-    if (_equals_2) {
-      StringConcatenation _builder_1 = new StringConcatenation();
-      _builder_1.append("We predicted merging words ");
-      _builder_1.append(wordToPreserve, "");
-      _builder_1.append(" <- ");
-      _builder_1.append(wordToMerge, "");
-      _builder_1.append(", however, the word to be preserved is not related to EntityLink");
-      this.logger.warn(_builder_1);
-      return;
-    }
-    final EntityLink linkToDelete = wordToMerge.getRelatedEntityLink();
-    boolean _notEquals = (!Objects.equal(linkToDelete, null));
-    if (_notEquals) {
-      EntityLink _relatedEntityLink_3 = wordToPreserve.getRelatedEntityLink();
-      EList<SpecWord> _linkedWords = _relatedEntityLink_3.getLinkedWords();
-      EList<SpecWord> _linkedWords_1 = linkToDelete.getLinkedWords();
-      Iterables.<SpecWord>addAll(_linkedWords, _linkedWords_1);
-      EObject _eContainer = wordToMerge.eContainer();
-      final SpecSentence sentence = ((SpecSentence) _eContainer);
-      EList<EntityLink> _entityLinks = sentence.getEntityLinks();
-      _entityLinks.remove(linkToDelete);
-    } else {
-      EntityLink _relatedEntityLink_4 = wordToPreserve.getRelatedEntityLink();
-      EList<SpecWord> _linkedWords_2 = _relatedEntityLink_4.getLinkedWords();
-      _linkedWords_2.add(wordToMerge);
-    }
+  private void mergeFrom(final /* SpecWord */Object wordToPreserve, final /* SpecWord */Object wordToMerge) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nrelatedEntityLink cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nrelatedEntityLink cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nrelatedEntityLink cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nrelatedEntityLink cannot be resolved"
+      + "\n!= cannot be resolved"
+      + "\nrelatedEntityLink cannot be resolved"
+      + "\nlinkedWords cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\nlinkedWords cannot be resolved"
+      + "\nsentence cannot be resolved"
+      + "\nentityLinks cannot be resolved"
+      + "\nremove cannot be resolved"
+      + "\nrelatedEntityLink cannot be resolved"
+      + "\nlinkedWords cannot be resolved"
+      + "\n+= cannot be resolved");
   }
   
   private void deriveNamesForEntityLinks() {
-    this.logger.info("TASK : Deriving names for entity links based on the words they contain");
-    Iterable<EntityLink> _allEntityLinks = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
-    final Function1<EntityLink,Boolean> _function = new Function1<EntityLink,Boolean>() {
-      public Boolean apply(final EntityLink it) {
-        boolean _or = false;
-        String _entLabel = it.getEntLabel();
-        boolean _equals = Objects.equal(_entLabel, null);
-        if (_equals) {
-          _or = true;
-        } else {
-          String _entLabel_1 = it.getEntLabel();
-          boolean _isEmpty = _entLabel_1.isEmpty();
-          _or = (_equals || _isEmpty);
-        }
-        return Boolean.valueOf(_or);
-      }
-    };
-    Iterable<EntityLink> _filter = IterableExtensions.<EntityLink>filter(_allEntityLinks, _function);
-    final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-      public void apply(final EntityLink it) {
-        EList<SpecWord> _linkedWords = it.getLinkedWords();
-        final Function1<SpecWord,String> _function = new Function1<SpecWord,String>() {
-          public String apply(final SpecWord it) {
-            SpecWord _corefRepOrSelf = it.getCorefRepOrSelf();
-            String _lemma = _corefRepOrSelf.getLemma();
-            String _lowerCase = _lemma.toLowerCase();
-            String _firstUpper = StringExtensions.toFirstUpper(_lowerCase);
-            return _firstUpper;
-          }
-        };
-        List<String> _map = ListExtensions.<SpecWord, String>map(_linkedWords, _function);
-        String _join = IterableExtensions.join(_map, " ");
-        it.setEntLabel(_join);
-      }
-    };
-    IterableExtensions.<EntityLink>forEach(_filter, _function_1);
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("All EntityLinks found in the specification: ");
-    Iterable<EntityLink> _allEntityLinks_1 = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
-    final Function1<EntityLink,String> _function_2 = new Function1<EntityLink,String>() {
-      public String apply(final EntityLink it) {
-        String _entLabel = it.getEntLabel();
-        return _entLabel;
-      }
-    };
-    Iterable<String> _map = IterableExtensions.<EntityLink, String>map(_allEntityLinks_1, _function_2);
-    String _join = IterableExtensions.join(_map, ", ");
-    _builder.append(_join, "");
-    this.logger.debug(_builder);
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field entLabel is undefined for the type ElicitationPhase"
+      + "\nThe method or field entLabel is undefined for the type ElicitationPhase"
+      + "\nThe method or field posTag is undefined for the type ElicitationPhase"
+      + "\nThe method or field posTag is undefined for the type ElicitationPhase"
+      + "\nInvalid number of arguments. The method getCorefRepOrSelf(SpecWord) is not applicable without arguments"
+      + "\nallEntityLinks cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\n|| cannot be resolved"
+      + "\nempty cannot be resolved"
+      + "\nlinkedWords cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\nmatches cannot be resolved"
+      + "\n!= cannot be resolved"
+      + "\nsemanticChildren cannot be resolved"
+      + "\ntoList cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\nmatches cannot be resolved"
+      + "\nentLabel cannot be resolved"
+      + "\nmap cannot be resolved"
+      + "\nlemma cannot be resolved"
+      + "\ntoLowerCase cannot be resolved"
+      + "\ntoFirstUpper cannot be resolved"
+      + "\ntoSet cannot be resolved"
+      + "\njoin cannot be resolved");
+  }
+  
+  private void removeEntityLinksWithoutLabel() {
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field entLabel is undefined for the type ElicitationPhase"
+      + "\nThe method or field entLabel is undefined for the type ElicitationPhase"
+      + "\nThe method or field linkedWords is undefined for the type ElicitationPhase"
+      + "\nThe method setLinkedEntity is undefined for the type ElicitationPhase"
+      + "\nThe method or field sentence is undefined for the type ElicitationPhase"
+      + "\nallEntityLinks cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\n|| cannot be resolved"
+      + "\nempty cannot be resolved"
+      + "\ntoList cannot be resolved"
+      + "\nforEach cannot be resolved"
+      + "\nclear cannot be resolved"
+      + "\nentityLinks cannot be resolved"
+      + "\nremove cannot be resolved"
+      + "\nsize cannot be resolved");
   }
   
   private void convertEntityLinksToEClasses() {
-    this.logger.info("TASK : Converting entity links to EClasses in the domain model");
-    Iterable<EntityLink> _allEntityLinks = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
-    final Function1<EntityLink,Boolean> _function = new Function1<EntityLink,Boolean>() {
-      public Boolean apply(final EntityLink it) {
-        DomainEntityType _entType = it.getEntType();
-        boolean _equals = Objects.equal(_entType, DomainEntityType.CLASS);
-        return Boolean.valueOf(_equals);
-      }
-    };
-    Iterable<EntityLink> _filter = IterableExtensions.<EntityLink>filter(_allEntityLinks, _function);
-    final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-      public void apply(final EntityLink entlink) {
-        EClass _createEClass = EcoreFactory.eINSTANCE.createEClass();
-        final Procedure1<EClass> _function = new Procedure1<EClass>() {
-          public void apply(final EClass it) {
-            String _entLabel = entlink.getEntLabel();
-            it.setName(_entLabel);
-          }
-        };
-        final EClass newEClass = ObjectExtensions.<EClass>operator_doubleArrow(_createEClass, _function);
-        entlink.setLinkedEntity(newEClass);
-        ElicitationPhase.this.domainModel.add(newEClass);
-      }
-    };
-    IterableExtensions.<EntityLink>forEach(_filter, _function_1);
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field entType is undefined for the type ElicitationPhase"
+      + "\nThe method or field DomainEntityType is undefined for the type ElicitationPhase"
+      + "\nThe method or field EcoreFactory is undefined for the type ElicitationPhase"
+      + "\nThe method setName is undefined for the type ElicitationPhase"
+      + "\nThe method entLabel is undefined for the type ElicitationPhase"
+      + "\nThe method or field linkedEntity is undefined for the type ElicitationPhase"
+      + "\nThere is no context to infer the closure\'s argument types from. Consider typing the arguments or put the closures into a typed context."
+      + "\nallEntityLinks cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nCLASS cannot be resolved"
+      + "\nforEach cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ncreateEClass cannot be resolved"
+      + "\n=> cannot be resolved");
   }
   
   private void fillBacklinksEAnnotations() {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("Filling backlinks from EClasses (in the domain model) to EntityLinks (in the document)");
-    this.logger.info(_builder);
-    Iterable<EntityLink> _allEntityLinks = ReprotoolEcoreExtensions.allEntityLinks(this.specModel);
-    final Function1<EntityLink,Boolean> _function = new Function1<EntityLink,Boolean>() {
-      public Boolean apply(final EntityLink it) {
-        ENamedElement _linkedEntity = it.getLinkedEntity();
-        boolean _notEquals = (!Objects.equal(_linkedEntity, null));
-        return Boolean.valueOf(_notEquals);
-      }
-    };
-    Iterable<EntityLink> _filter = IterableExtensions.<EntityLink>filter(_allEntityLinks, _function);
-    final Procedure1<EntityLink> _function_1 = new Procedure1<EntityLink>() {
-      public void apply(final EntityLink it) {
-        ENamedElement _linkedEntity = it.getLinkedEntity();
-        EAnnotation _eAnnotationOrCreate = ReprotoolEcoreExtensions.getEAnnotationOrCreate(_linkedEntity, "backlinks");
-        EList<EObject> _references = _eAnnotationOrCreate.getReferences();
-        _references.add(it);
-      }
-    };
-    IterableExtensions.<EntityLink>forEach(_filter, _function_1);
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field linkedEntity is undefined for the type ElicitationPhase"
+      + "\nThe method or field linkedEntity is undefined for the type ElicitationPhase"
+      + "\nallEntityLinks cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\n!= cannot be resolved"
+      + "\nforEach cannot be resolved"
+      + "\ngetEAnnotationOrCreate cannot be resolved"
+      + "\nreferences cannot be resolved"
+      + "\n+= cannot be resolved");
   }
   
   /**
    * Requires: "backlinks" EAnnotation for each EClass
    */
   private void mergeEClassesWithSameName() {
-    try {
-      this.logger.info("TASK : Merge EClasses with the same name");
-      Iterable<EClass> _filter = Iterables.<EClass>filter(this.domainModel, EClass.class);
-      final Function1<EClass,Boolean> _function = new Function1<EClass,Boolean>() {
-        public Boolean apply(final EClass it) {
-          EAnnotation _eAnnotation = it.getEAnnotation("backlinks");
-          boolean _notEquals = (!Objects.equal(_eAnnotation, null));
-          return Boolean.valueOf(_notEquals);
-        }
-      };
-      boolean _exists = IterableExtensions.<EClass>exists(_filter, _function);
-      boolean _not = (!_exists);
-      if (_not) {
-        StringConcatenation _builder = new StringConcatenation();
-        _builder.append("There are no \"backlinks\" EAnnotations in the domain model attached to EClasses");
-        Exception _exception = new Exception(_builder.toString());
-        throw _exception;
-      }
-      HashMap<String,EClass> _hashMap = new HashMap<String, EClass>();
-      final HashMap<String,EClass> mapByName = _hashMap;
-      Iterable<EClass> _filter_1 = Iterables.<EClass>filter(this.domainModel, EClass.class);
-      List<EClass> _list = IterableExtensions.<EClass>toList(_filter_1);
-      final Procedure1<EClass> _function_1 = new Procedure1<EClass>() {
-        public void apply(final EClass it) {
-          String _name = it.getName();
-          boolean _containsKey = mapByName.containsKey(_name);
-          if (_containsKey) {
-            String _name_1 = it.getName();
-            final EClass preservedEntity = mapByName.get(_name_1);
-            StringConcatenation _builder = new StringConcatenation();
-            _builder.append("Merging EClasses ");
-            String _name_2 = preservedEntity.getName();
-            _builder.append(_name_2, "");
-            _builder.append(" <- ");
-            String _name_3 = it.getName();
-            _builder.append(_name_3, "");
-            ElicitationPhase.this.logger.debug(_builder);
-            final Iterable<EntityLink> backlinksToUpdate = ReprotoolEcoreExtensions.getBacklinks(it);
-            final Procedure1<EntityLink> _function = new Procedure1<EntityLink>() {
-              public void apply(final EntityLink it) {
-                it.setLinkedEntity(preservedEntity);
-              }
-            };
-            IterableExtensions.<EntityLink>forEach(backlinksToUpdate, _function);
-            EAnnotation _eAnnotation = preservedEntity.getEAnnotation("backlinks");
-            EList<EObject> _references = _eAnnotation.getReferences();
-            Iterables.<EObject>addAll(_references, backlinksToUpdate);
-            ElicitationPhase.this.domainModel.remove(it);
-          } else {
-            String _name_4 = it.getName();
-            mapByName.put(_name_4, it);
-          }
-        }
-      };
-      IterableExtensions.<EClass>forEach(_list, _function_1);
-    } catch (Throwable _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
+    throw new Error("Unresolved compilation problems:"
+      + "\nEClass cannot be resolved to a type."
+      + "\nThe method or field EClass is undefined for the type ElicitationPhase"
+      + "\nThe method getEAnnotation is undefined for the type ElicitationPhase"
+      + "\nThe method or field EClass is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\nThe method backlinks is undefined for the type ElicitationPhase"
+      + "\nThe method or field linkedEntity is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\n!= cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nforEach cannot be resolved"
+      + "\ngetEAnnotation cannot be resolved"
+      + "\nreferences cannot be resolved"
+      + "\n+= cannot be resolved");
   }
   
   private void predictRelations() {
-    try {
-      this.logger.info("TASK : Predict relations");
-      Iterable<EClass> _filter = Iterables.<EClass>filter(this.domainModel, EClass.class);
-      final Function1<EClass,Boolean> _function = new Function1<EClass,Boolean>() {
-        public Boolean apply(final EClass it) {
-          EAnnotation _eAnnotation = it.getEAnnotation("backlinks");
-          boolean _notEquals = (!Objects.equal(_eAnnotation, null));
-          return Boolean.valueOf(_notEquals);
-        }
-      };
-      boolean _exists = IterableExtensions.<EClass>exists(_filter, _function);
-      boolean _not = (!_exists);
-      if (_not) {
-        StringConcatenation _builder = new StringConcatenation();
-        _builder.append("There are no \"backlinks\" EAnnotations in the domain model attached to EClasses");
-        Exception _exception = new Exception(_builder.toString());
-        throw _exception;
-      }
-      Iterable<String> _contextFeatureNames = this.getContextFeatureNames(this.relclModel);
-      String _outcomeFeatureName = this.getOutcomeFeatureName(this.relclModel);
-      ExtractedSamples _extractedSamples = new ExtractedSamples(this.fexFactory, this.specModel, "relations", _contextFeatureNames, _outcomeFeatureName);
-      final ExtractedSamples samples = _extractedSamples;
-      final MaxentClassifier classifier = MaxentClassifier.createFromModel(this.relclModel);
-      Iterator<FeatureEvent> _predictIterator = classifier.predictIterator(samples);
-      final Procedure1<FeatureEvent> _function_1 = new Procedure1<FeatureEvent>() {
-        public void apply(final FeatureEvent event) {
-          final String outcome = event.getOutcomeFeatureValue();
-          Object _attachment = event.getAttachment();
-          final RelationContext attachedRelationContext = ((RelationContext) _attachment);
-          boolean _matched = false;
-          if (!_matched) {
-            if (Objects.equal(outcome,"true")) {
-              _matched=true;
-              final EClass src = attachedRelationContext.getSrcEClass();
-              final EClass dest = attachedRelationContext.getDestEClass();
-              StringConcatenation _builder = new StringConcatenation();
-              _builder.append("Predicted relation: ");
-              String _name = src.getName();
-              _builder.append(_name, "");
-              _builder.append(" -> ");
-              String _name_1 = dest.getName();
-              _builder.append(_name_1, "");
-              ElicitationPhase.this.logger.debug(_builder);
-              EList<EStructuralFeature> _eStructuralFeatures = src.getEStructuralFeatures();
-              EReference _createEReference = EcoreFactory.eINSTANCE.createEReference();
-              final Procedure1<EReference> _function = new Procedure1<EReference>() {
-                public void apply(final EReference it) {
-                  SpecSentence _sentence = attachedRelationContext.getSentence();
-                  SpecWord _semanticRootWord = _sentence.getSemanticRootWord();
-                  String _lemma = _semanticRootWord.getLemma();
-                  String _lowerCase = _lemma.toLowerCase();
-                  it.setName(_lowerCase);
-                  it.setEType(dest);
-                }
-              };
-              EReference _doubleArrow = ObjectExtensions.<EReference>operator_doubleArrow(_createEReference, _function);
-              _eStructuralFeatures.add(_doubleArrow);
-            }
-          }
-        }
-      };
-      IteratorExtensions.<FeatureEvent>forEach(_predictIterator, _function_1);
-    } catch (Throwable _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field EClass is undefined for the type ElicitationPhase"
+      + "\nThe method getEAnnotation is undefined for the type ElicitationPhase"
+      + "\nThe method createFromModel is undefined for the type ElicitationPhase"
+      + "\nThe method outcomeFeatureValue is undefined for the type ElicitationPhase"
+      + "\nThe method attachment is undefined for the type ElicitationPhase"
+      + "\nThe method or field EcoreFactory is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\nThe method setEType is undefined for the type ElicitationPhase"
+      + "\nThere is no context to infer the closure\'s argument types from. Consider typing the arguments or put the closures into a typed context."
+      + "\n!= cannot be resolved"
+      + "\ncontextFeatureNames cannot be resolved"
+      + "\ngetOutcomeFeatureName cannot be resolved"
+      + "\npredictIterator cannot be resolved"
+      + "\nforEach cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nEStructuralFeatures cannot be resolved"
+      + "\n+= cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ncreateEReference cannot be resolved"
+      + "\n=> cannot be resolved"
+      + "\nsemanticRootWord cannot be resolved"
+      + "\nlemma cannot be resolved"
+      + "\ntoLowerCase cannot be resolved");
   }
   
   private void removeSpacesFromDomainModel() {
-    this.logger.info("TASK : Removing spaces from class names in the domain model");
-    Iterable<EClass> _filter = Iterables.<EClass>filter(this.domainModel, EClass.class);
-    final Procedure1<EClass> _function = new Procedure1<EClass>() {
-      public void apply(final EClass it) {
-        String _name = it.getName();
-        String _replaceAll = _name.replaceAll(" ", "");
-        it.setName(_replaceAll);
-      }
-    };
-    IterableExtensions.<EClass>forEach(_filter, _function);
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field EClass is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\nThe method or field name is undefined for the type ElicitationPhase"
+      + "\n!= cannot be resolved"
+      + "\nreplaceAll cannot be resolved");
   }
 }

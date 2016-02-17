@@ -257,7 +257,8 @@ class ElicitationPhase implements IExecutableTool {
 				val words = commonRoot.semanticChildren.toList
 				words += commonRoot
 				
-				val nouns = words.filter[posTag.matches("^NN.*")].sortBy[positionInSentence]
+				val nouns = words.filter[posTag.matches("^NN.*")] //.sortBy[positionInSentence]
+//				entlink.entLabel = nouns.map[corefRepOrSelf.lemma.toLowerCase.toFirstUpper].toSet.join("") + "---" + words.join(",")
 				entlink.entLabel = nouns.map[corefRepOrSelf.lemma.toLowerCase.toFirstUpper].toSet.join("")
 			}
 		}

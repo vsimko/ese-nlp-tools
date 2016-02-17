@@ -1,7 +1,5 @@
 package reprotool.dmodel.tools.phases.train;
 
-import aQute.bnd.annotation.component.Component;
-import aQute.bnd.annotation.component.Reference;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
@@ -22,10 +20,9 @@ import reprotool.dmodel.tools.phases.train.TrainingPhaseConfig;
 import reprotool.predict.exectoolapi.IExecutableTool;
 import reprotool.predict.logging.ReprotoolLogger;
 import reprotool.predict.mloaders.SpecModelLoader;
-import spec.Specification;
 
-@Component
-@SuppressWarnings("all")
+/* @Component
+ */@SuppressWarnings("all")
 public class TrainingPhase implements IExecutableTool {
   public String getUsage() {
     StringConcatenation _builder = new StringConcatenation();
@@ -51,22 +48,22 @@ public class TrainingPhase implements IExecutableTool {
   @Extension
   private ReprotoolLogger logger;
   
-  @Reference
-  public void setLogger(final ReprotoolLogger logger) {
+  /* @Reference
+   */public void setLogger(final ReprotoolLogger logger) {
     this.logger = logger;
   }
   
   private SpecModelLoader loader;
   
-  @Reference
-  public void setLoader(final SpecModelLoader loader) {
+  /* @Reference
+   */public void setLoader(final SpecModelLoader loader) {
     this.loader = loader;
   }
   
   private FeatureExtractorFactory fexFactory;
   
-  @Reference
-  public void setFexFactory(final FeatureExtractorFactory factory) {
+  /* @Reference
+   */public void setFexFactory(final FeatureExtractorFactory factory) {
     this.fexFactory = factory;
   }
   
@@ -85,7 +82,7 @@ public class TrainingPhase implements IExecutableTool {
     _builder.append(specModelFileName, "");
     _builder.append("\"");
     this.logger.info(_builder);
-    final Specification specModel = this.loader.loadSpecificationModel(specModelFileName);
+    final Object specModel = this.loader.loadSpecificationModel(specModelFileName);
     StringConcatenation _builder_1 = new StringConcatenation();
     _builder_1.append("Loading configuration file \"");
     _builder_1.append(configFileName, "");
@@ -107,8 +104,7 @@ public class TrainingPhase implements IExecutableTool {
       }
     };
     Properties _doubleArrow = ObjectExtensions.<Properties>operator_doubleArrow(_properties, _function);
-    TrainingPhaseConfig _trainingPhaseConfig = new TrainingPhaseConfig(_doubleArrow);
-    final TrainingPhaseConfig config = _trainingPhaseConfig;
+    final TrainingPhaseConfig config = new TrainingPhaseConfig(_doubleArrow);
     String _string = config.toString();
     this.logger.debug(_string);
     for (final String outcomeFeature : config.outcomes) {
@@ -124,8 +120,7 @@ public class TrainingPhase implements IExecutableTool {
         String _join = IterableExtensions.join(contextFeatures, ", ");
         _builder_2.append(_join, "");
         this.logger.info(_builder_2);
-        ExtractedSamples _extractedSamples = new ExtractedSamples(this.fexFactory, specModel, generatorName, contextFeatures, outcomeFeature);
-        final ExtractedSamples extractedSamples = _extractedSamples;
+        final ExtractedSamples extractedSamples = new ExtractedSamples(this.fexFactory, specModel, generatorName, contextFeatures, outcomeFeature);
         StringConcatenation _builder_3 = new StringConcatenation();
         _builder_3.append("Creating any necessary directories, where the trained models will be stored: ");
         _builder_3.append(config.outputDir, "");

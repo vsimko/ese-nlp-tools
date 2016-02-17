@@ -28,9 +28,6 @@ import opennlp.model.OnePassDataIndexer;
 import opennlp.model.PlainTextFileDataReader;
 import reprotool.dmodel.api.samples.FeatureEvent;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
 /**
  * Facade for the Maximum Entropy Classifier.
  * It supports prediction and training of maxent models.
@@ -102,11 +99,11 @@ public class MaxentClassifier implements IClassifier {
 	
 	
 	// these constants can be redefined in some Guice configuration module
-	@Inject(optional=true) @Named("GIS_ITERATIONS")		int gisIterations = 100;
-	@Inject(optional=true) @Named("GIS_VERBOSE")		boolean gisVerbose = false;
-	@Inject(optional=true) @Named("GIS_SMOOTHING")		boolean gisSmoothing = true;
-	@Inject(optional=true) @Named("GIS_CUTOFF")			int gisCutoff = 5;
-	@Inject(optional=true) @Named("DATAINDEXER_SORT")	boolean dataIndexerSort = true;
+	int gisIterations = 100;
+	boolean gisVerbose = false;
+	boolean gisSmoothing = true;
+	int gisCutoff = 5;
+	boolean dataIndexerSort = true;
 	
 	@Override
 	final public void train(final Iterable<FeatureEvent> trainSamples) {
