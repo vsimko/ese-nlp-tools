@@ -1,0 +1,17 @@
+Bundle-Version: 1.0.0
+
+#Main-Class: osgi.aggregator.MinimalGenerator
+
+-buildpath: osgi.core,\
+	osgi.cmpn,\
+	biz.aQute.bnd.annotation,\
+	com.google.inject,\
+	com.google.guava,\
+	org.eclipse.core.contenttype,\
+	org.eclipse.core.jobs,\
+	org.eclipse.emf.ecore,\
+	org.eclipse.xtend.lib,\
+	org.eclipse.xtext.xbase.lib,\
+	org.apache.felix.gogo.runtime
+	
+Export-Package: osgi.aggregator
